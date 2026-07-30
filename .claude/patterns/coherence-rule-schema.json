@@ -1,0 +1,579 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Template Coherence Rule Schema",
+  "description": "Declarative schema for rules in .claude/patterns/template-coherence-rules.json. Consumed by .claude/scripts/verify-linter.sh. Each rule type dispatches to a dedicated function that emits findings into the cross_file_contradiction category with structured {category, rule_type, message, severity} objects.",
+  "definitions": {
+    "severity": { "enum": ["block", "warn"] },
+    "rule_field_role_map": {
+      "description": "Pre-AOC rule type: SCOPE consumers must call canonical_function; count-based regex forbidden.",
+      "required": ["id", "type", "field", "canonical_function", "consumers"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "field_role_map" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "field": { "type": "string" },
+        "canonical_function": { "type": "string" },
+        "description": { "type": "string" },
+        "consumers": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "rule_artifact_lifecycle": {
+      "description": "Pre-AOC rule type: VERIFY-referenced artifacts must have upstream produces declaration; do_not_modify[X] cannot precede produces[X].",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "artifact_lifecycle" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_verdict_vocab_consistency": {
+      "description": "AOC v1 R1: per-agent verdict/result declarations must match registry.verdict_agents_schema; evaluate-hard-gate-predicates.py predicates must reference only registry values.",
+      "required": ["id", "type", "registry_path", "agent_files_glob", "predicate_file"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "verdict_vocab_consistency" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "registry_path": { "type": "string", "description": "Path to agent-registry.json." },
+        "agent_files_glob": { "type": "string", "description": "Glob of agent definition files to scan for verdict emissions." },
+        "predicate_file": { "type": "string", "description": "Path to evaluate-hard-gate-predicates.py (scan for predicate verdict literals)." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_ledger_ownership": {
+      "description": "AOC v1 R2: gated_paths are written only by allowed_writers. Runtime fix-ledger-write-guard.sh enforces at tool-invocation time; this rule catches template-level authorship.",
+      "required": ["id", "type", "allowed_writers", "gated_paths"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "ledger_ownership" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "allowed_writers": { "type": "array", "items": { "type": "string" } },
+        "gated_paths": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_consumer_coverage": {
+      "description": "AOC v1 R3: every file in consumers[] must reference canonical_source as authoritative input. Regex on legacy source alone triggers a stale-consumer finding.",
+      "required": ["id", "type", "canonical_source", "consumers"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "consumer_coverage" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "canonical_source": { "type": "string" },
+        "consumers": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_frontmatter_artifact_consistency": {
+      "description": "AOC v1.1 R4 (declared in PR1, implemented in PR5): a verify-report.md frontmatter schema declares fields and their cross-artifact joins; the writer must emit every declared field, and every consumer must reference only declared field names. Catches the producer-vs-consumer drift class for frontmatter (analogous to R3 for ledger). Implemented by check_frontmatter_artifact_consistency in verify-linter.sh.",
+      "required": ["id", "type", "schema_path", "writer", "consumers"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "frontmatter_artifact_consistency" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "schema_path": { "type": "string", "description": "Path to the canonical frontmatter schema (e.g., .claude/patterns/verify-report-frontmatter.json) that declares fields, types, and source artifacts." },
+        "writer": { "type": "string", "description": "Path to the state file that emits the frontmatter (e.g., .claude/skills/verify/state-7a-write-report.md)." },
+        "consumers": { "type": "array", "items": { "type": "string" }, "description": "Files that read frontmatter fields; the rule checks only declared field names appear in each consumer." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_discover_consumers": {
+      "description": "Discovery-mode rule (warn-only): grep the codebase for files mentioning `field` and compare against the consumers[] list of `against_rule` (a separate field_role_map rule). Surfaces files that look like consumers but are missing from authoritative declarations, so reviewers can decide whether to add them or document an exemption.",
+      "required": ["id", "type", "field", "against_rule", "consumption_patterns"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "discover_consumers" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "field": { "type": "string", "description": "The field name to grep for (e.g., 'golden_path')." },
+        "against_rule": { "type": "string", "description": "The id of the field_role_map rule whose consumers[] list is the authoritative declaration." },
+        "consumption_patterns": { "type": "array", "items": { "type": "string" }, "description": "Regex fragments matched against grep hits to classify a file as a consumer." },
+        "path_excludes": { "type": "array", "items": { "type": "string" }, "description": "Path prefixes excluded from discovery (e.g., test fixtures)." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_internal_href_validity": {
+      "description": "Validate that markdown hrefs inside scaffold files match canonical fixture/route literals (#1069). Cross-references scaffold-named hrefs against route_owner_hints to detect 404-class drift between scaffold templates and the routes they point to.",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "internal_href_validity" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "scaffold_glob": { "type": "string", "description": "Glob of scaffold files to scan for hrefs." },
+        "route_owner_hints": { "type": "array", "items": { "type": "string" }, "description": "Glob patterns whose existence indicates a valid route owner." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_pages_no_payload_type_exports": {
+      "description": "#1161 (b): block payload-shape type declarations in page files. Pages must import from src/lib/types.ts (canonical project-types file: scaffold-libs writes initial database row types when stack.database is present, scaffold-wire augments with API contract types per procedures/wire.md Step 6) or use TypeScript inference. Pattern A blocks Payload/Response/Request/Schema suffixes (both exported and local). Pattern B blocks redeclaration of names exported from types_source_path.",
+      "required": ["id", "type", "scope_glob"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "pages_no_payload_type_exports" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "scope_glob": { "type": "string", "description": "Comma-separated globs of files to scan (e.g., 'src/app/**/*.tsx')." },
+        "path_excludes": { "type": "array", "items": { "type": "string" }, "description": "fnmatch path patterns to exclude (e.g., 'src/app/api/**', '**/__tests__/**')." },
+        "filename_excludes": { "type": "array", "items": { "type": "string" }, "description": "fnmatch filename patterns to exclude (e.g., 'layout.tsx', 'loading.tsx', '*.test.tsx')." },
+        "suffix_pattern": { "type": "string", "description": "Override regex for Pattern A. Default catches Payload/Response/Request/Schema suffixes on both exported and local declarations." },
+        "types_source_path": { "type": "string", "description": "Path to canonical types file (default: src/lib/types.ts). Names exported here trigger Pattern B collision detection." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_artifact_transience": {
+      "description": "Provenance-schema rule: validate transient lifecycle declarations against actual deletion sources. For each state-registry entry with lifecycle != durable, the artifact path must match either lifecycle-init.sh STALE_ARTIFACTS/DELIVERY_ARTIFACTS (transient-cross-skill) OR a state-*.md `rm -f`/`Delete` action (transient-intra-skill). Orthogonal to rule_artifact_lifecycle (flow vs durability axes).",
+      "required": ["id", "type", "skill"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "artifact_transience" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "skill": { "type": "string", "description": "Which skill's states to scan. Repeat the rule per skill." },
+        "init_script": { "type": "string", "description": "Path to lifecycle-init.sh (default .claude/scripts/lifecycle-init.sh)." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_executor_enforcement": {
+      "description": "Provenance-schema rule: three-way mapping check for lead-only artifacts. For each artifact in lead-only-artifacts.json: (a) the manifest must be referenced by at least one PreToolUse hook, (b) the artifact's schema_source must declare its executor_field, (c) no .claude/agents/*.md may list the artifact as a deliverable. Closes #1152 recurrence-prevention surface.",
+      "required": ["id", "type", "manifest_path"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "executor_enforcement" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "manifest_path": { "type": "string", "description": "Path to lead-only-artifacts.json." },
+        "hooks_dir": { "type": "string", "description": "Directory of PreToolUse hooks (default .claude/hooks)." },
+        "agents_glob": { "type": "string", "description": "Glob of agent .md files (default .claude/agents/*.md)." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_gate_artifact_identity": {
+      "description": "GRAIM v2 C1+C2: validate that any VERIFY block reading a gate-readable artifact (declared in enforced_artifacts) includes identity assertions (run_id + skill match against active context).",
+      "required": ["id", "type", "manifest_path", "enforced_artifacts"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "gate_artifact_identity" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "manifest_path": { "type": "string", "description": "Path to gate-readable-artifacts-canonical.json" },
+        "enforced_artifacts": { "type": "array", "items": { "type": "string" }, "description": "Subset of artifacts in manifest_path for which identity assertion is enforced. Grows incrementally as Slice 3 migrations land." },
+        "registry_path": { "type": "string", "description": "Path to state-registry.json (default .claude/patterns/state-registry.json)." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_boundary_kind_required": {
+      "description": "GRAIM v2 C3: validate that fast-path branches in declared agents/scripts gate on boundary_kind == diff. Empty-signal fast-paths must require explicit opt-in.",
+      "required": ["id", "type", "enforced_artifacts"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "boundary_kind_required" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "agent_files_glob": { "type": "string", "description": "Glob of agent .md files (default .claude/agents/*.md)." },
+        "skill_files_glob": { "type": "string", "description": "Glob of skill state files (default .claude/skills/**/*.md)." },
+        "enforced_artifacts": { "type": "array", "items": { "type": "string" }, "description": "Subset of boundary-emitting paths for which boundary_kind gating is enforced." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_gate_artifact_discovery": {
+      "description": "GRAIM v2: warn-only auto-discovery — grep all VERIFY blocks + hooks for .runs/*.json reads and warn when a path is gate-read but not declared in the GRAIM canonical manifest. Catches promotion regressions where a telemetry artifact silently becomes gate-readable.",
+      "required": ["id", "type", "manifest_path"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "gate_artifact_discovery" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "manifest_path": { "type": "string", "description": "Path to gate-readable-artifacts-canonical.json" },
+        "registry_path": { "type": "string" },
+        "hooks_glob": { "type": "string", "description": "Glob of hook files (default .claude/hooks/*.sh)." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_bash_hook_write_operator_binding": {
+      "description": "#1236 — class-level prevention for the unbound-co-occurrence regex anti-pattern in Bash-matcher write-guard hooks. Phase 1: every entry in manifest_path must (a) point at an existing hook, (b) have its protected_path_regex literal appear in the hook source (proving it is referenced inside a bound-target match()), and (c) reference every declared write_operator in the hook source. Phase 2: scan_glob (CSV of globs across .claude/hooks and .claude/scripts) is searched for two historical anti-pattern shapes — `grep -qE '<write-op>.*<path>'` (the #1230/pre-#1185 shape) and `awk '/<path>/ && /(<write-op>)/'` (the original co-occurrence). Any match in an unregistered hook fires a 'must register' finding. Pragma `# coherence-allow: unbound-fastpath` suppresses within ±5 lines. Phase 3 (#1298): every registered hook MUST canonicalize $COMMAND via canonicalize_bash_command.py before regex matching; raw `\"$COMMAND\"` references after the canonicalize line require pragma `# coherence-allow: raw-command` within ±5 lines (escape hatch for python-source / variable-indirection regexes that intentionally consume RAW to catch heredoc-fed attacks).",
+      "required": ["id", "type", "manifest_path", "scan_glob"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "bash_hook_write_operator_binding" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "manifest_path": { "type": "string", "description": "Path to write-guard-hooks.json (the declarative manifest of registered write-guard hooks)." },
+        "scan_glob": { "type": "string", "description": "Comma-separated globs of .sh files to scan for anti-pattern shapes (e.g., '.claude/hooks/*.sh,.claude/scripts/**/*.sh')." },
+        "pragma": { "type": "string", "description": "Phase 2 pragma: comment string that suppresses the anti-pattern finding when present within ±5 lines of the match (default '# coherence-allow: unbound-fastpath')." },
+        "pragma_phase3": { "type": "string", "description": "Phase 3 pragma: comment string that suppresses the raw-$COMMAND-after-canonicalize finding when present within ±5 lines (default '# coherence-allow: raw-command')." },
+        "convention_doc": { "type": "string", "description": "Path to canonical pattern doc (e.g., .claude/patterns/bound-target-write-guard.md). Appended to finding messages as '(see <doc>)'." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_markdown_cross_file_line_reference": {
+      "description": "#1238 — flags stale line-number cross-references in template markdown. Branch 1 (cross-file): emits when a line-number qualifier (`(line N)`, `lines N-M`, `L\\d+-\\d+`, `on line N`) co-occurs within a 3-line window with a path-mention to a template-eligible file (extensions: md, yaml, yml, json, py, sh; src/ prefix excluded since src/ is scaffold-emitted code). Branch 2 (same-file): emits when the qualifier appears with NO path-mention in the 3-line window — covers self-references that rot when the same file is edited. Pragma <!-- coherence-allow: line-number-cross-reference --> on the same line or adjacent line suppresses both branches.",
+      "required": ["id", "type", "target_glob"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "markdown_cross_file_line_reference" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "target_glob": { "type": "string", "description": "Glob of markdown files to scan (e.g., '.claude/{stacks,skills,agents,patterns,templates}/**/*.md'). Brace expansion is supported by the rule handler." },
+        "pragma": { "type": "string", "description": "HTML comment that suppresses the finding when present within ±1 line (default '<!-- coherence-allow: line-number-cross-reference -->')." },
+        "convention_doc": { "type": "string", "description": "Path to canonical pattern doc (e.g., .claude/patterns/cross-reference-style.md). Appended to finding messages as '(see <doc>)'." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_validator_integration_required": {
+      "description": "#1295 PR1 — per-validator integration enforcement: each listed validator script must be referenced in executable context in at least one declared integration_point.",
+      "type": "object",
+      "required": ["id", "type", "severity", "description", "validators", "integration_points"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"const": "validator_integration_required"},
+        "severity": {"$ref": "#/definitions/severity"},
+        "description": {"type": "string"},
+        "_comment": {"type": "string"},
+        "_transitional_note": {"type": "string"},
+        "convention_doc": {"type": "string"},
+        "validators": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {"type": "string"},
+              {
+                "type": "object",
+                "required": ["path"],
+                "additionalProperties": false,
+                "properties": {
+                  "path": {"type": "string"},
+                  "required_env_prefix": {
+                    "type": "string",
+                    "description": "When set, the linter additionally asserts this env-var prefix (e.g., FOO_MODE=deny) appears immediately before the validator invocation in every integration point that references it. Defends against silent rollout regression — if a follow-up commit drops the deny-mode prefix, the rule fires."
+                  }
+                }
+              }
+            ]
+          },
+          "minItems": 1
+        },
+        "integration_points": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {"type": "string"},
+              {
+                "type": "object",
+                "required": ["path"],
+                "additionalProperties": false,
+                "properties": {
+                  "path": {"type": "string"},
+                  "executable_keys": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                  },
+                  "state_value_executable": {"type": "boolean"}
+                }
+              }
+            ]
+          },
+          "minItems": 1
+        },
+        "minimum_integration_count": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "description": "#1307 — minimum number of distinct integration_points that must reference each validator. Default 1 preserves the original 'referenced in at least one place' contract; raise to 2+ to defend against single-file edits silently dereferencing all hard-block validators (e.g., state-registry.json line 11b chaining 2 validators)."
+        }
+      }
+    },
+    "rule_validator_inventory_completeness": {
+      "description": "#1295 PR1 — meta-rule: every disk-discovered validate-*.py must be in some validator_integration_required rule's validators[] OR explicitly exempted via skip_validators or magic-header.",
+      "type": "object",
+      "required": ["id", "type", "severity", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"const": "validator_inventory_completeness"},
+        "severity": {"$ref": "#/definitions/severity"},
+        "description": {"type": "string"},
+        "_comment": {"type": "string"},
+        "_transitional_note": {"type": "string"},
+        "convention_doc": {"type": "string"},
+        "discovery_glob": {
+          "oneOf": [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}, "minItems": 1}
+          ]
+        },
+        "skip_validators": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["category", "justification"],
+            "additionalProperties": false,
+            "properties": {
+              "category": {"enum": ["cli-tool", "build-time", "test-only", "deprecated"]},
+              "justification": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "rule_state_defer_verify_pairing": {
+      "description": "Issue #1339: every state in state-registry.json that opts into defer_verify_when_writer must have a corresponding write-gate-artifact.sh --path <P> invocation in its state file's ACTIONS section.",
+      "required": ["id", "type", "registry_path", "skills_dir"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "state_defer_verify_pairing" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "registry_path": { "type": "string", "description": "Path to state-registry.json relative to repo root." },
+        "skills_dir": { "type": "string", "description": "Path to .claude/skills directory relative to repo root." },
+        "description": { "type": "string" },
+        "_comment": { "type": "string" },
+        "convention_doc": { "type": "string" }
+      }
+    },
+    "rule_branch_checkout_propagation_pairing": {
+      "description": "Issue #1328: any fenced bash block (markdown) or shell-script segment that invokes `git checkout -b` MUST invoke `update-context-branch.sh` in the same chain. Markdown: same fenced block. Shell: 5-line window after the checkout line.",
+      "required": ["id", "type", "scan_globs"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "branch_checkout_propagation_pairing" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "scan_globs": { "type": "array", "items": { "type": "string" }, "description": "Globs (relative to repo root) of files to scan for the pairing. Supports recursive ** patterns." },
+        "exclude_paths": { "type": "array", "items": { "type": "string" }, "description": "Substring exclusions; if any substring matches a candidate path, the path is skipped." },
+        "description": { "type": "string" },
+        "_comment": { "type": "string" },
+        "convention_doc": { "type": "string" }
+      }
+    },
+    "rule_hook_bypass_manifest_completeness": {
+      "description": "#1349 + #1350: every entry in declared bypass manifests must have ALL required_fields populated, with category in valid_categories and non-empty justification.",
+      "type": "object",
+      "required": ["id", "type", "severity", "description", "manifests"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"const": "hook_bypass_manifest_completeness"},
+        "severity": {"$ref": "#/definitions/severity"},
+        "description": {"type": "string"},
+        "_comment": {"type": "string"},
+        "_transitional_note": {"type": "string"},
+        "convention_doc": {"type": "string"},
+        "manifests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["path", "entries_field", "required_fields", "valid_categories"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {"type": "string"},
+              "entries_field": {"type": "string"},
+              "required_fields": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+              "valid_categories": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+            }
+          }
+        }
+      }
+    },
+    "rule_hook_silent_skip_friction_pairing": {
+      "description": "#1349 + #1350: every `exit 0` / `sys.exit(0)` in a PreToolUse hook must be paired with a friction-log call within `lookback_lines` preceding lines, OR carry a `# friction-skip: <reason>` pragma on the same or directly preceding line.",
+      "type": "object",
+      "required": ["id", "type", "severity", "description", "scan_glob", "exit_pattern", "friction_call_pattern", "pragma"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"const": "hook_silent_skip_friction_pairing"},
+        "severity": {"$ref": "#/definitions/severity"},
+        "description": {"type": "string"},
+        "_comment": {"type": "string"},
+        "_transitional_note": {"type": "string"},
+        "convention_doc": {"type": "string"},
+        "scan_glob": {"type": "string"},
+        "exclude_paths": {"type": "array", "items": {"type": "string"}},
+        "exit_pattern": {"type": "string"},
+        "friction_call_pattern": {"type": "string"},
+        "lookback_lines": {"type": "integer", "minimum": 1, "default": 10},
+        "pragma": {"type": "string"}
+      }
+    },
+    "rule_route_resolution_canonical_source": {
+      "description": "#1450 gaps 1-3 — Python scripts that resolve page-name → route-path must source page enumeration from derive_pages.py. Fires when a .py file under scan_corpus contains a glob.glob() pattern referencing both src/app and page.tsx AND does not import from the canonical module. Pragmatic regex-based detection; full AST detection deferred.",
+      "type": "object",
+      "required": ["id", "type", "severity", "scan_corpus", "canonical_module", "trigger_pattern"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"const": "route_resolution_canonical_source"},
+        "severity": {"$ref": "#/definitions/severity"},
+        "description": {"type": "string"},
+        "_comment": {"type": "string"},
+        "_transitional_note": {"type": "string"},
+        "convention_doc": {"type": "string"},
+        "scan_corpus": {"type": "array", "items": {"type": "string"}},
+        "canonical_module": {"type": "string"},
+        "canonical_symbols": {"type": "array", "items": {"type": "string"}},
+        "exempt_paths": {"type": "array", "items": {"type": "string"}},
+        "trigger_pattern": {"type": "string"}
+      }
+    },
+    "rule_gate_verdict_evidence_coverage": {
+      "description": "GECR #1473+#1470 — Structural-shape gate-keeper checks (test -f / test -d / grep -E.*href / grep -c) must be covered by a rule in .claude/patterns/gate-evidence-rules.json OR carry an explicit evidence_check_intentionally_structural annotation in the rules file's annotation registry. Prevents meta-level structural-proxy regression where new gate-keeper checks revert to gameable shape-only enforcement (the very pattern GECR closes).",
+      "type": "object",
+      "required": ["id", "type", "severity", "scan_corpus", "rules_registry", "trigger_pattern"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"const": "gate_verdict_evidence_coverage"},
+        "severity": {"$ref": "#/definitions/severity"},
+        "description": {"type": "string"},
+        "_comment": {"type": "string"},
+        "scan_corpus": {"type": "array", "items": {"type": "string"}},
+        "rules_registry": {"type": "string"},
+        "trigger_pattern": {"type": "string"},
+        "exempt_paths": {"type": "array", "items": {"type": "string"}},
+        "valid_annotations": {"type": "array", "items": {"type": "string"}},
+        "annotation_registry_key": {"type": "string"}
+      }
+    },
+    "rule_lib_helper_stack_knowledge_required": {
+      "description": "#1300 — every public function in lib/*.py with >= caller_threshold production callers must have a Stack Knowledge entry in lib/README.md whose stack_scope is module-precise (scripts/lib/<module>), OR the helper module must declare a not-reusable pragma at the top. Closes the gap left by `lib-readme-stack-knowledge-required` (must_contain_section), which only guards heading presence — not per-helper coverage.",
+      "type": "object",
+      "required": ["id", "type", "severity", "enumeration_glob", "consumption_patterns", "authoritative_source", "pragma"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"const": "lib_helper_stack_knowledge_required"},
+        "severity": {"$ref": "#/definitions/severity"},
+        "description": {"type": "string"},
+        "_comment": {"type": "string"},
+        "_transitional_note": {"type": "string"},
+        "convention_doc": {"type": "string"},
+        "enumeration_glob": {
+          "type": "string",
+          "description": "Glob (relative to repo root) of helper files to enumerate. Typically '.claude/scripts/lib/*.py'."
+        },
+        "excluded_basenames": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Filenames to skip (e.g., '__init__.py', 'README.md')."
+        },
+        "consumption_patterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["pattern_template"],
+            "additionalProperties": false,
+            "properties": {
+              "pattern_template": {
+                "type": "string",
+                "description": "Regex with literal '<module>' placeholder. The linter substitutes each helper's module name (basename minus .py) before compiling."
+              },
+              "excluded_paths": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Glob-like patterns (substring match with '<module>' substitution) excluding files from caller-counting (e.g., 'tests/', the helper file itself)."
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "caller_threshold": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 2,
+          "description": "Minimum distinct caller files required for a helper to need a Stack Knowledge entry. Default 2 matches lib/README.md convention."
+        },
+        "authoritative_source": {
+          "type": "string",
+          "description": "Path to the single Stack Knowledge file authoritative for this rule. Only stack_scope entries from this file count as coverage."
+        },
+        "allowed_extensions": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "File extensions to scan when counting callers. Default '.py'+'.md' avoids false positives from path-string mentions in JSON/SH/etc."
+        },
+        "pragma": {
+          "type": "object",
+          "required": ["comment_template"],
+          "additionalProperties": false,
+          "properties": {
+            "comment_template": {
+              "type": "string",
+              "description": "Regex matching the opt-out pragma at the top of a helper file. Use a capture group to extract the rationale (e.g., '# coherence-allow: not-reusable: (.+)')."
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "required": ["rules"],
+  "properties": {
+    "$comment": { "type": "string" },
+    "rules": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/definitions/rule_field_role_map" },
+          { "$ref": "#/definitions/rule_artifact_lifecycle" },
+          { "$ref": "#/definitions/rule_verdict_vocab_consistency" },
+          { "$ref": "#/definitions/rule_ledger_ownership" },
+          { "$ref": "#/definitions/rule_consumer_coverage" },
+          { "$ref": "#/definitions/rule_frontmatter_artifact_consistency" },
+          { "$ref": "#/definitions/rule_discover_consumers" },
+          { "$ref": "#/definitions/rule_internal_href_validity" },
+          { "$ref": "#/definitions/rule_pages_no_payload_type_exports" },
+          { "$ref": "#/definitions/rule_artifact_transience" },
+          { "$ref": "#/definitions/rule_executor_enforcement" },
+          { "$ref": "#/definitions/rule_gate_artifact_identity" },
+          { "$ref": "#/definitions/rule_boundary_kind_required" },
+          { "$ref": "#/definitions/rule_gate_artifact_discovery" },
+          { "$ref": "#/definitions/rule_bash_hook_write_operator_binding" },
+          { "$ref": "#/definitions/rule_markdown_cross_file_line_reference" },
+          { "$ref": "#/definitions/rule_validator_integration_required" },
+          { "$ref": "#/definitions/rule_validator_inventory_completeness" },
+          { "$ref": "#/definitions/rule_state_defer_verify_pairing" },
+          { "$ref": "#/definitions/rule_branch_checkout_propagation_pairing" },
+          { "$ref": "#/definitions/rule_hook_bypass_manifest_completeness" },
+          { "$ref": "#/definitions/rule_hook_silent_skip_friction_pairing" },
+          { "$ref": "#/definitions/rule_route_resolution_canonical_source" },
+          { "$ref": "#/definitions/rule_gate_verdict_evidence_coverage" },
+          { "$ref": "#/definitions/rule_lib_helper_stack_knowledge_required" },
+          { "$ref": "#/definitions/rule_provenance_aware_runs_read" },
+          { "$ref": "#/definitions/rule_cross_run_channel_exemption_pairing" },
+          { "$ref": "#/definitions/rule_events_yaml_seeded_from_stack_emits_events" }
+        ]
+      }
+    },
+    "rule_provenance_aware_runs_read": {
+      "description": "Detect provenance-blind .runs/ reads in production code (#1437/#1417). Inverted matching: requires positive read-pattern + .runs/ path + no scope marker on the same line. Allowlist suppresses known-pending sites during soak.",
+      "required": ["id", "type", "scan_glob"],
+      "properties": {
+        "id": { "const": "provenance_aware_runs_read" },
+        "type": { "const": "provenance_aware_runs_read" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "scan_glob": { "type": "string" },
+        "allowlist_path": { "type": "string" },
+        "pragma": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_events_yaml_seeded_from_stack_emits_events": {
+      "description": "Issue #1447 Rule D: every event listed in any active stack file's frontmatter `emits_events:` list MUST appear as a top-level key under `events:` in experiment/EVENTS.yaml. Cross-file enum-membership audit. Primary enforcement is /spec state-6 step 9 which seeds these events during EVENTS.yaml assembly. This rule catches drift. No-ops on template repo (no EVENTS.yaml present).",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "events_yaml_seeded_from_stack_emits_events" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "stack_glob": { "type": "string", "description": "Glob for stack files to scan. Default: .claude/stacks/**/*.md" },
+        "events_yaml_path": { "type": "string", "description": "Path to EVENTS.yaml. Default: experiment/EVENTS.yaml" },
+        "exclude_stack_glob": { "type": "array", "items": { "type": "string" }, "description": "fnmatch path patterns for stack files to exclude (e.g., TEMPLATE.md, _archive/**)." },
+        "description": { "type": "string" }
+      }
+    },
+    "rule_cross_run_channel_exemption_pairing": {
+      "description": "For each entry in cross-run-channels.json, assert the path is NOT in lifecycle-init.sh STALE_ARTIFACTS unless the entry sets transient_cross_state: true (per-run cleared, cross-run within one run).",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "const": "cross_run_channel_exemption_pairing" },
+        "type": { "const": "cross_run_channel_exemption_pairing" },
+        "severity": { "$ref": "#/definitions/severity" },
+        "channels_path": { "type": "string" },
+        "lifecycle_path": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

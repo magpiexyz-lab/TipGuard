@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "exemptions": [
+    {
+      "path": ".runs/synthetic-test.json",
+      "justification": "Test fixture entry intentionally missing 'category' field"
+    }
+  ]
+}

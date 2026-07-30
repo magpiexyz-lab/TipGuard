@@ -1,0 +1,11 @@
+name: clean-mvp
+type: web-app
+golden_path:
+  - page: landing
+stack:
+  analytics: posthog
+  services:
+    - name: app
+      runtime: nextjs
+      hosting: vercel
+      testing: playwright

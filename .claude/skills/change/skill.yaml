@@ -1,0 +1,19 @@
+branch: "change/{slug}"
+states: ["0","1","2","3","4","5","6","7","8","9","10","11a","11b","12","99"]
+agents:
+  gate-keeper:
+    after: ["0"]
+  implementer:
+    after: ["9"]
+  visual-implementer:
+    after: ["9"]
+  solve-critic:
+    after: ["2"]
+embed:
+  - at: "11b"
+    skill: verify
+    scope: full
+observation:
+  gate: commit-pr-gate
+  artifacts: [verify-report.md]
+  pr_checks: [frontmatter-validation, trace-completeness, agent-match, postcondition-rerun, gate-verdicts, acceptance-criteria]

@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "id": "fixture-cc-miss",
+      "type": "consumer_coverage",
+      "severity": "block",
+      "canonical_source": ".runs/fix-ledger.jsonl",
+      "consumers": [".claude/agents/stale-consumer.md"]
+    }
+  ]
+}

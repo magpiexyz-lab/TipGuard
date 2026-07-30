@@ -1,0 +1,13 @@
+branch: "fix/resolve-{slug}"
+states: ["0","1","2","3","3b","4","4b","5","5b","5d","6","7","8","8b","9","9a","10","11","99"]
+skip_experiment_validation: true
+agents:
+  resolve-challenger:
+    after: ["5"]
+  solve-critic:
+    after: ["5"]
+  resolve-reviewer:
+    after: ["8"]
+observation:
+  gate: commit-pr-gate
+  artifacts: [observe-result.json]

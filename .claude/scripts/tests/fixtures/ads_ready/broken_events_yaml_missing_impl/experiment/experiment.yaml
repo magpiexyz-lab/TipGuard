@@ -1,0 +1,4 @@
+name: broken-events-yaml-missing-impl
+type: web-app
+stack:
+  analytics: posthog

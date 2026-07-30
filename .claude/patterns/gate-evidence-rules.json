@@ -1,0 +1,113 @@
+{
+  "$comment": "GECR (Gate Evidence Cross-Reference Protocol) — declarative rules consumed by gate_evidence_runner.py via verify-gate-evidence.py CLI. Schema at .claude/patterns/gate-evidence-rule-schema.json (validated at runtime load). Closes #1473 + #1470 root cause: gates enforce structural shape of an artifact as a proxy for the semantic property they were meant to certify. Each rule ties a gate's pass signal to evidence sources external to the validated artifact. Follow-up issues (#1468, #1456) add rules here without code changes. See .claude/scripts/lib/README.md '## Stack Knowledge' for the gate-evidence-citation-protocol pattern entry.",
+  "evidence_check_intentionally_structural": [
+    {"check_id": ".claude/agents/gate-keeper.md:284", "justification": "BG2 check 4 (analytics PROJECT_NAME) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue (Step 13 audit). Triage in subsequent /solve --defect run."},
+    {"check_id": ".claude/agents/gate-keeper.md:287", "justification": "BG2 check 7 (scaffold-setup contract: node_modules non-empty) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:290", "justification": "BG2 check 10 (Process Checklist count) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:292", "justification": "BG2 check 12 (web-app component usage) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:293", "justification": "BG2 check 13 (web-app theme token usage) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:296", "justification": "BG2 check 16 (content quality floor) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:323", "justification": "BG2-WIRE check 3 (cli entrypoint + commands) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:346", "justification": "BG2.5 check 2 (externals-decisions.json presence) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:351", "justification": "BG2.5 check 7 (Fake Door integration) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:369", "justification": "BG3 check 12 (verify-context.json presence) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:370", "justification": "BG3 check 13 (fix-log.md presence) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."},
+    {"check_id": ".claude/agents/gate-keeper.md:371", "justification": "BG3 check 14 (security-merge.json presence) — pre-existing structural-shape check. Migration tracked by GECR follow-up issue."}
+  ],
+  "rules": [
+    {
+      "id": "bg2-wire-nav-reachability",
+      "type": "navigation_reachability",
+      "gate_id": "bg2-wire-check-1",
+      "severity": "warn",
+      "evidence_sources": [
+        {
+          "path_glob": "src/app/**/*.tsx",
+          "reader": "grep_tsx",
+          "always_included_paths": ["src/components/nav-bar.tsx"]
+        }
+      ],
+      "matcher": {
+        "kind": "template_literal_navigation",
+        "params": {"page_classification_via": "derive_dynamic_only_pages"}
+      },
+      "expected_observation": {
+        "artifact_path": "src/components/nav-bar.tsx",
+        "predicate": "exists_with_citation"
+      },
+      "failure_citation_format": "page '{page}' is {classification} — {requirement}. Found: {found}. Expected: {expected}.",
+      "mode_env": "GATE_EVIDENCE_NAV_REACHABILITY_MODE",
+      "schema_cutoff": true,
+      "description": "GECR #1473 — Replaces BG2-WIRE check 1's bare-slug grep with trinary classification. Dynamic-only pages (no src/app/<page>/page.tsx + at least one [*]/page.tsx child) REQUIRE template-literal navigation; bare slug is INSUFFICIENT (would 404). Static pages keep bare-slug requirement. Mixed pages require BOTH. Optional catch-all (`[[...slug]]`) classified as static (bare slug matches). severity warn during soak; flip to block after ≥2 real skill cycles."
+    },
+    {
+      "id": "agent-workaround-pairing",
+      "type": "friction_event_extraction",
+      "gate_id": "check-observation-artifacts",
+      "severity": "warn",
+      "evidence_sources": [
+        {"path_glob": ".runs/agent-traces/*.json", "reader": "json"},
+        {"path_glob": ".runs/verify-recheck.json", "reader": "json"}
+      ],
+      "matcher": {
+        "kind": "friction_event_extraction",
+        "params": {"fields": ["workarounds", "template_gap_observed", "verify_results"]}
+      },
+      "expected_observation": {
+        "artifact_path": ".runs/retrospective-filed-findings.json",
+        "predicate": "matches_friction_count",
+        "params": {"or_suppressed_in": ".runs/retrospective-result.json"}
+      },
+      "failure_citation_format": "friction event '{description}' from {source_path} has no paired observation. {remediation}",
+      "mode_env": "GATE_EVIDENCE_OBSERVATION_PAIRING_MODE",
+      "schema_cutoff": true,
+      "description": "GECR #1470 — Cross-references friction events from agent-traces (workarounds[] + template_gap_observed[]) and verify-recheck.json (verify_results[].passed=false) against .runs/retrospective-filed-findings.json filed[] OR .runs/retrospective-result.json suppressions[]. Unpaired events fail the gate with specific citation + remediation pointing to file-retrospective-finding.py. Note: redundant with enumerate-pending-retrospective-findings.py's new agent-workaround + verify-failure candidate kinds (which feed validate-retrospective-completeness.py); ships warn-only for defense-in-depth observability. severity warn during soak."
+    },
+    {
+      "id": "recovery-path-skip-pairing",
+      "type": "recovery_path_observation",
+      "gate_id": "check-observation-artifacts",
+      "severity": "warn",
+      "evidence_sources": [
+        {"path_glob": ".runs/agent-traces/*.json", "reader": "json"},
+        {"path_glob": ".runs/image-candidates.json", "reader": "json"},
+        {"path_glob": ".runs/page-image-map.json", "reader": "json"}
+      ],
+      "matcher": {
+        "kind": "recovery_skip_extraction",
+        "params": {"target_kinds": ["recovery-path-skip"]}
+      },
+      "expected_observation": {
+        "artifact_path": ".runs/retrospective-filed-findings.json",
+        "predicate": "matches_friction_count",
+        "params": {"or_suppressed_in": ".runs/retrospective-result.json", "target_kinds": ["recovery-path-skip"]}
+      },
+      "failure_citation_format": "OARC violation — recovery-path skip in '{source_path}' (page={page}, reason={degraded_reason}, missing={skipped_check}) lacks paired observation. Run `python3 .claude/scripts/enumerate-pending-retrospective-findings.py` and file or suppress the candidate.",
+      "mode_env": "GATE_EVIDENCE_RECOVERY_SKIP_MODE",
+      "schema_cutoff": true,
+      "description": "GECR #1468 — Observation-Anchored Recovery Contract (OARC, sibling of EARC #1189). Any .runs/agent-traces/*.json with provenance in {self-degraded, recovery, lead-orchestrated} AND partial=true AND a non-sanctioned degraded_reason AND a detectable skipped depth-check (landing: candidates_tried==0 with unused sidecar candidates; non-landing has_images=true: image_issues_for_landing key absent) MUST have a paired observation in retrospective-filed-findings.json OR a suppression in retrospective-result.json. Suppressions list canonical via .claude/scripts/lib/sanctioned_degraded_reasons.py (#1042, #1061, #1196). severity warn during soak — Phase C cutover per .claude/patterns/gecr-cutover-criteria.json."
+    },
+    {
+      "id": "sparse-trace-pairing",
+      "type": "recovery_path_observation",
+      "gate_id": "check-observation-artifacts",
+      "severity": "warn",
+      "evidence_sources": [
+        {"path_glob": ".runs/agent-traces/*.json", "reader": "json"}
+      ],
+      "matcher": {
+        "kind": "recovery_skip_extraction",
+        "params": {"target_kinds": ["sparse-trace"]}
+      },
+      "expected_observation": {
+        "artifact_path": ".runs/retrospective-filed-findings.json",
+        "predicate": "matches_friction_count",
+        "params": {"or_suppressed_in": ".runs/retrospective-result.json", "target_kinds": ["sparse-trace"]}
+      },
+      "failure_citation_format": "OARC violation — sparse trace in '{source_path}' (agent={agent}, shape={shape}) lacks paired observation. Run `python3 .claude/scripts/enumerate-pending-retrospective-findings.py` and file or suppress the candidate.",
+      "mode_env": "GATE_EVIDENCE_SPARSE_TRACE_MODE",
+      "schema_cutoff": true,
+      "description": "GECR #1456 — OARC: detects (a) init-trace.py 4-key stubs that survived past skill completion (status='started' + no verdict field) AND (b) lead-orchestrated traces missing AOC v1.3 required fields (workarounds[] / template_gap_observed[]). Closes the agent-side gap left by AOC v1.2 #1303 (a0e568d) which completed docs only for design-critic.md. severity warn during soak — Phase C cutover per .claude/patterns/gecr-cutover-criteria.json."
+    }
+  ]
+}

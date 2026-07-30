@@ -1,0 +1,4 @@
+name: broken-signup-no-identify
+type: web-app
+stack:
+  analytics: posthog

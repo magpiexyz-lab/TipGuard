@@ -1,0 +1,46 @@
+name: Falsification Tests
+
+# Runs the /solve r3 framework synthetic-regression-injection test
+# (.claude/scripts/synthetic-regression-injection.sh). The test injects 5
+# known contract-drift regressions into a sandbox and asserts each
+# proposed linter handler catches its target. A missed injection means the
+# handler family is over-fitted to specific defect signatures rather than
+# the generalized contract-drift class.
+
+on:
+  pull_request:
+    paths:
+      - '.claude/scripts/synthetic-regression-injection.sh'
+      - '.claude/scripts/lib/linter/**'
+      - '.claude/patterns/template-coherence-rules.json'
+      - '.claude/patterns/agent-registry.json'
+      - '.claude/patterns/state-registry.json'
+      - '.claude/patterns/gate-readable-artifacts-canonical.json'
+      - '.claude/patterns/audit-verb-registry.json'
+      - '.claude/scripts/lib/verify_helpers.py'
+      - '.claude/scripts/derive-graim-manifest.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: falsification-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-regression-injection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run synthetic-regression-injection.sh
+        run: |
+          set +e
+          bash .claude/scripts/synthetic-regression-injection.sh
+          rc=$?
+          set -e
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Falsification test failed — at least one injection missed."
+            exit 1
+          fi
+          echo "All 5 synthetic injections caught + 0 false positives on clean tree."

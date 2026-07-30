@@ -1,0 +1,30 @@
+{
+  "skill": "resolve",
+  "phases": [
+    {
+      "name": "Triage",
+      "state_range": [0, 2],
+      "interactive": true,
+      "gate": {
+        "completed_states": [2]
+      }
+    },
+    {
+      "name": "Diagnose",
+      "state_range": [3, "5d"],
+      "interactive": true,
+      "gate": {
+        "completed_states": ["5d"]
+      }
+    },
+    {
+      "name": "Fix",
+      "state_range": [6, 11],
+      "interactive": true,
+      "max_budget": 80,
+      "gate": {
+        "postconditions": true
+      }
+    }
+  ]
+}

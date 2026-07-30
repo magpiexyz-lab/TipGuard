@@ -1,0 +1,510 @@
+{
+  "$comment": "GRAIM v2 — auto-classified candidates discovered outside state-registry VERIFY blocks. Each entry tagged with classification. hook_read entries should be promoted to canonical via Slice 3 migration. no_reader entries are exempt (telemetry-only). inline_md_read entries need human inclusion/exclusion decision.",
+  "version": "1.0",
+  "generated_at": "2026-05-04T06:51:10Z",
+  "generator": ".claude/scripts/derive-graim-manifest.py",
+  "artifacts": [
+    {
+      "path": ".runs/.verify-results-raw.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/scripts/lifecycle-finalize.sh"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/_extra.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/context-init.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/_iterate-cross-extra.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/scripts/init-context.sh",
+        ".claude/skills/iterate/state-x0-discover-mvps.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/build-info-collector.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/skills/verify/state-2-phase1-parallel.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/observer.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/observation-phase.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/pattern-classifier.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/agents/pattern-classifier.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/resolve-challenger.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/remediation-phase.md",
+        ".claude/scripts/verify-resolve-challenge.py",
+        ".claude/skills/resolve/state-5d-adversarial-challenge.md",
+        ".claude/skills/resolve/state-9-save-patterns.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/review-challenger.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/remediation-phase.md",
+        ".claude/scripts/verify-review-adversarial.py",
+        ".claude/skills/review/state-2c-adversarial-validation.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/scaffold-externals.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/skills/bootstrap/state-11a-lib-spawn.md",
+        ".claude/skills/bootstrap/state-11b-lib-verify.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/scaffold-images.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/skills/bootstrap/state-11a-lib-spawn.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/scaffold-init.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/skills/bootstrap/state-10-design-phase.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/skills/bootstrap/state-10-design-phase.md"
+      ]
+    },
+    {
+      "path": ".runs/agent-traces/scaffold-landing.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/skills/bootstrap/state-11c-page-scaffold.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/skills/bootstrap/state-11c-page-scaffold.md"
+      ]
+    },
+    {
+      "path": ".runs/agent-traces/scaffold-libs.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/skills/bootstrap/state-11a-lib-spawn.md",
+        ".claude/skills/bootstrap/state-11b-lib-verify.md",
+        ".claude/skills/bootstrap/state-11c-page-scaffold.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/scaffold-pages.json",
+      "classification": "hook_read",
+      "writers": [
+        ".claude/hooks/agent-trace-write-guard.sh",
+        ".claude/scripts/merge-scaffold-pages-traces.py"
+      ],
+      "recommendation": "promote to canonical (Slice 3 migration)",
+      "readers_in_hooks": [
+        ".claude/hooks/agent-trace-write-guard.sh"
+      ]
+    },
+    {
+      "path": ".runs/agent-traces/scaffold-setup.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/skills/bootstrap/state-9-setup-phase.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/skills/bootstrap/state-9-setup-phase.md"
+      ]
+    },
+    {
+      "path": ".runs/agent-traces/scaffold-wire.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/skills/bootstrap/state-14-wire-phase.md",
+        ".claude/skills/bootstrap/state-14a-bg2-wire-gate.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/skills/bootstrap/state-14-wire-phase.md"
+      ]
+    },
+    {
+      "path": ".runs/agent-traces/security-attacker.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/agents/gate-keeper.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/agents/gate-keeper.md"
+      ]
+    },
+    {
+      "path": ".runs/agent-traces/solve-critic.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/remediation-phase.md",
+        ".claude/patterns/solve-reasoning.md",
+        ".claude/scripts/verify-resolve-challenge.py",
+        ".claude/skills/resolve/state-5d-adversarial-challenge.md",
+        ".claude/skills/resolve/state-9-save-patterns.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/agent-traces/spec-reviewer.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/agents/gate-keeper.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/audit-manifest.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/skills/audit/state-0-scope-and-baseline.md",
+        ".claude/skills/audit/state-2-prioritize-and-output.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/skills/audit/state-0-scope-and-baseline.md",
+        ".claude/skills/audit/state-2-prioritize-and-output.md"
+      ]
+    },
+    {
+      "path": ".runs/audit-sample-state.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/scripts/audit-sample.py"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/auth-routing.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/agents/scaffold-wire.md",
+        ".claude/scripts/lib/auth_routing.py"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/bootstrap-precheck.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/skills/bootstrap/state-0-branch-setup.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/bootstrap-state14-stack-knowledge-hints.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/skills/bootstrap/state-14-wire-phase.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/change-challenge.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/solve-reasoning.md",
+        ".claude/scripts/verify-change-solve.py",
+        ".claude/skills/change/state-3-solve-reasoning.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/compliance-audit-result.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/patterns/observation-phase.md",
+        ".claude/patterns/state-99-epilogue.md",
+        ".claude/scripts/check-observation-artifacts.sh",
+        ".claude/scripts/compliance-audit.py",
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/patterns/observation-phase.md"
+      ]
+    },
+    {
+      "path": ".runs/deploy-provision-3b.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/scripts/verify-deploy-3b.py",
+        ".claude/skills/deploy/state-3b-provision-host.md",
+        ".claude/skills/deploy/state-3c-deploy-services.md",
+        ".claude/skills/deploy/state-4b-production-validation.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/skills/deploy/state-3c-deploy-services.md"
+      ]
+    },
+    {
+      "path": ".runs/distribute-campaign-evidence.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/skills/distribute/state-6-campaign.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/skills/distribute/state-6-campaign.md"
+      ]
+    },
+    {
+      "path": ".runs/distribute-campaign-readback-tmp.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/skills/distribute/state-6-campaign.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/epilogue-context.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/skill-epilogue.md",
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/externals-decisions.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/skills/bootstrap/state-5-present-plan.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/hook-friction-summary.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/observation-phase.md",
+        ".claude/scripts/aggregate-hook-friction.py",
+        ".claude/scripts/check-observation-artifacts.sh",
+        ".claude/scripts/compliance-audit.py"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/observe-evidence-check.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/observation-phase.md",
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/perf-lighthouse-targets.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/agents/performance-reporter.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/pipeline-phase.json",
+      "classification": "hook_read",
+      "writers": [
+        ".claude/hooks/phase-boundary-gate.sh",
+        ".claude/scripts/derive-graim-manifest.py"
+      ],
+      "recommendation": "promote to canonical (Slice 3 migration)",
+      "readers_in_hooks": [
+        ".claude/hooks/phase-boundary-gate.sh"
+      ]
+    },
+    {
+      "path": ".runs/prod-test-credentials.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/procedures/behavior-verifier.md",
+        ".claude/skills/deploy/state-4b-production-validation.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/refine-analysis.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/scripts/refine-analysis.py",
+        ".claude/skills/resolve/state-0-fetch-issues.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/remediation.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/patterns/remediation-phase.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/patterns/remediation-phase.md"
+      ]
+    },
+    {
+      "path": ".runs/resolve-challenge.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/patterns/solve-reasoning.md",
+        ".claude/scripts/verify-resolve-challenge.py",
+        ".claude/skills/resolve/state-10-post-fix-review.md",
+        ".claude/skills/resolve/state-5d-adversarial-challenge.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/skills/resolve/state-10-post-fix-review.md"
+      ]
+    },
+    {
+      "path": ".runs/retrospective-result.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/observation-phase.md",
+        ".claude/patterns/state-99-epilogue.md",
+        ".claude/scripts/check-artifact-presence.py",
+        ".claude/scripts/check-observation-artifacts.sh",
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/review-adversarial.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/scripts/verify-review-adversarial.py",
+        ".claude/skills/review/state-2c-adversarial-validation.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/slot-intent-migration-suggestions.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/scripts/migrate-slot-intent.py"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/slot-intent.json",
+      "classification": "inline_md_read",
+      "writers": [
+        ".claude/agents/scaffold-images.md",
+        ".claude/agents/scaffold-init.md",
+        ".claude/agents/scaffold-wire.md",
+        ".claude/procedures/design-critic.md",
+        ".claude/procedures/scaffold-images.md",
+        ".claude/procedures/scaffold-init.md",
+        ".claude/procedures/scaffold-landing.md",
+        ".claude/procedures/scaffold-pages.md",
+        ".claude/scripts/check-slot-intent-drift.py",
+        ".claude/scripts/lib/derive_slot_intent.py",
+        ".claude/scripts/lib/slot_intent_schema.py",
+        ".claude/scripts/migrate-slot-intent.py",
+        ".claude/scripts/verify-state-11a-image-count.py",
+        ".claude/skills/verify/state-2b-drift-detection.md"
+      ],
+      "recommendation": "human review needed",
+      "readers_in_md": [
+        ".claude/agents/scaffold-wire.md",
+        ".claude/procedures/scaffold-images.md",
+        ".claude/procedures/scaffold-pages.md"
+      ]
+    },
+    {
+      "path": ".runs/solve-challenge.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/solve-reasoning.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/stack-knowledge-audit-filed.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/scripts/lib/stack_knowledge_audit.py"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/template-coherence-cache.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/observation-phase.md",
+        ".claude/scripts/check-init-context-callers.sh",
+        ".claude/scripts/lifecycle-finalize.sh"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/trace-migration-unresolved.json",
+      "classification": "hook_read",
+      "writers": [
+        ".claude/hooks/verify-report-gate.sh",
+        ".claude/patterns/agent-output-contract.md",
+        ".claude/scripts/migrate-legacy-traces.py"
+      ],
+      "recommendation": "promote to canonical (Slice 3 migration)",
+      "readers_in_hooks": [
+        ".claude/hooks/verify-report-gate.sh"
+      ]
+    },
+    {
+      "path": ".runs/trace-migration.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/patterns/agent-output-contract.md",
+        ".claude/scripts/lifecycle-init.sh",
+        ".claude/scripts/migrate-legacy-traces.py"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    },
+    {
+      "path": ".runs/upgrade-migration-applied.json",
+      "classification": "no_reader",
+      "writers": [
+        ".claude/scripts/migrate-experiment-yaml.py",
+        ".claude/skills/upgrade/state-1-merge-validate.md"
+      ],
+      "recommendation": "exempt (telemetry-only)"
+    }
+  ]
+}

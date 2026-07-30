@@ -1,0 +1,11 @@
+branch: "chore/review-{slug}"
+states: ["0","1","2a","2b","2c","2d","2e","2f","3","4","6","99"]
+skip_experiment_validation: true
+loop: ["2a","2b","2c","2d","2e","2f"]
+agents:
+  review-challenger:
+    after: ["2c"]
+observation:
+  gate: commit-pr-gate
+  artifacts: [review-complete.json, observe-result.json]
+  pr_checks: [review-metrics]

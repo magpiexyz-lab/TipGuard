@@ -1,0 +1,4 @@
+name: broken-raw-capture
+type: web-app
+stack:
+  analytics: posthog

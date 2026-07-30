@@ -1,0 +1,34 @@
+branch: "feat/bootstrap-{slug}"
+states: ["0","1","2","3","3a","3b","4","5","6","7","8","9","10","11","11a","11b","11c","12","13","13a","13b","13c","14","14a","15","16","17","18","19a","19b","99"]
+agents:
+  gate-keeper:
+    after: ["0"]
+  scaffold-externals:
+    after: ["0"]
+  scaffold-setup:
+    after: ["8"]
+    depends_on: [scaffold-init]
+  scaffold-init:
+    after: ["9"]
+  scaffold-libs:
+    after: ["11"]
+    depends_on: [scaffold-setup]
+  scaffold-images:
+    after: ["11"]
+  scaffold-pages:
+    after: ["11b"]
+    depends_on: [scaffold-libs]
+  scaffold-landing:
+    after: ["11b"]
+    depends_on: [scaffold-libs]
+  scaffold-wire:
+    after: ["13c"]
+    depends_on: [scaffold-pages, scaffold-landing]
+embed:
+  - at: "19b"
+    skill: verify
+    scope: full
+observation:
+  gate: commit-pr-gate
+  artifacts: [verify-report.md]
+  pr_checks: [frontmatter-validation, trace-completeness, agent-match]

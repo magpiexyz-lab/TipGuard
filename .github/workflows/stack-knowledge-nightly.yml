@@ -1,0 +1,29 @@
+name: Stack Knowledge Nightly Audit
+
+on:
+  schedule:
+    # 02:00 UTC daily — after most US/EU timezones' work day wraps.
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # HC1: template-only. Downstream forks/clones skip — knowledge-base
+    # hygiene belongs upstream; local runs can use --no-gh for inspection.
+    if: github.repository == 'magpiexyz-lab/mvp-template'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Python dependencies
+        run: pip3 install pyyaml
+
+      - name: Run stack-knowledge audit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .claude/scripts/stack-knowledge-audit.sh

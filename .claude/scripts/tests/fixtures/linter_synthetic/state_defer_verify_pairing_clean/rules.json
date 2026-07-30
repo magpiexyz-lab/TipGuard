@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "id": "fixture-sdv-clean",
+      "type": "state_defer_verify_pairing",
+      "severity": "block",
+      "registry_path": ".claude/patterns/state-registry.json",
+      "skills_dir": ".claude/skills"
+    }
+  ]
+}

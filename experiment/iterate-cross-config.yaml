@@ -1,0 +1,1900 @@
+window_days: 365
+thresholds:
+  visitors_floor: 100
+  conv_rate_go: 0.06
+  signups_go: 6
+mvp_mappings:
+  x-predict:
+    signup_events:
+    - waitlist_signup
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): waitlist_signup'
+    supabase_project_ref: gprmfbskzdqiegvotkob
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:55Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lee
+    owner_note: inferred from xpredict commit history (first+majority, high confidence,
+      2026-07-23)
+  stylica-ai:
+    signup_events:
+    - signup_complete
+    classified_by: operator
+    classified_at: '2026-05-17T03:50:00Z'
+    rationale: "activate (33 uu) \u2229 signup_complete (2 uu) = 0 \u2014 activate\
+      \ fires on image generation, not signup. Locked to signup_complete only after\
+      \ team feedback that Supabase shows 6 signups vs 33 activates."
+    supabase_project_ref: yvccrwkuypltwwnezhjh
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:54Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lew
+    owner_note: inferred from Stylica-ai commit history (majority, medium confidence,
+      2026-07-23)
+  brigent:
+    signup_events:
+    - waitlist_submit
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): waitlist_submit'
+    supabase_project_ref: xargalvhsxskejfyxgfw
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:50Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lee
+    owner_note: inferred from Brigent commit history (majority, medium confidence,
+      2026-07-23)
+  deepstats:
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete'
+    supabase_project_ref: gvkjwsfuurvojwfhxjvj
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:50Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lew
+    owner_note: inferred from DeepStats commit history (first+majority, high confidence,
+      2026-07-23)
+  neuralpost:
+    signup_events:
+    - signup_complete
+    - early_access_signup
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete, early_access_signup'
+    supabase_project_ref: laelnucrwgzeazrmaxdu
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-06-12T00:25:03Z'
+    owner: lego
+  verify:
+    signup_events:
+    - user_signed_up
+    classified_by: operator
+    classified_at: '2026-05-17T03:50:00Z'
+    rationale: "Deploy renamed event from early_access_signup \u2192 user_signed_up.\
+      \ Old name does not exist in current catalog (verified via wide HogQL query\
+      \ 2026-05-17). Real paid signups: 5 via user_signed_up."
+    supabase_project_ref: vjmowkgvjozhmldzywey
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:54Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lego
+    owner_note: inferred from Verify commit history (first+majority, high confidence,
+      2026-07-23)
+  statistica:
+    signup_events:
+    - signup_complete
+    - activate
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete, activate'
+    owner: lew
+    owner_note: inferred from statistica commit history (first+majority, high confidence,
+      2026-07-23)
+  diarly:
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete'
+    supabase_project_ref: qiinzizrdjzlrhasddtw
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-07-18T03:43:59Z'
+    owner: lew
+  smelt:
+    signup_events:
+    - signup_complete
+    - waitlist_signup
+    - activate
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete, waitlist_signup, activate'
+    supabase_project_ref: hwtzliuucbottqttgaxb
+    owner: lego
+    owner_note: inferred from SMELT commit history (first+majority, high confidence,
+      2026-07-23)
+  ghostops:
+    signup_events:
+    - signup_complete
+    - early_access_signup
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete, early_access_signup'
+    supabase_project_ref: sirusqaajtprnnrxmbaw
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: lego
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:51Z'
+      evidence: 'http 400: Resource has been removed'
+  agentburn:
+    signup_events:
+    - activate
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): activate'
+    supabase_project_ref: ururiyivaewwofgyfbme
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: radlin
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:49Z'
+      evidence: 'http 400: Resource has been removed'
+  handpick:
+    signup_events:
+    - form_submitted
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): form_submitted'
+    supabase_project_ref: qpwyuhtgoftbmujbrzmz
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-06-16T15:24:40Z'
+    owner: lew
+  dropship-ops:
+    signup_events:
+    - waitlist_signup
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): waitlist_signup'
+    supabase_project_ref: eakbgyqyugxeqsfmosrw
+    owner: lee
+  lead-sniffer:
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete'
+    supabase_project_ref: zmqjdpfwkavndtewntxu
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: '''all for $49/mo''; Pro plan $49/mo ($800-3K competitor)'
+    monthly_price_usd: 49.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:51Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: radlin
+    owner_note: inferred from LeadSniffer commit history (first+majority, high confidence,
+      2026-07-23)
+  hospitica:
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete'
+    supabase_project_ref: yjnbfxpdwwobhlnhtkhw
+    price_source: none
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-28T15:16:24Z'
+    price_rationale: no repo price snippets and no live URL (Supabase project tombstone-confirmed
+      deleted); nothing to extract
+    owner: lew
+    owner_note: inferred from Hospitica commit history (first+majority, high confidence,
+      2026-07-23)
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-28T15:11:57Z'
+      evidence: 'http 400: Resource has been removed'
+  dropship:
+    signup_events:
+    - waitlist_signup
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): waitlist_signup'
+    owner: lee
+  agent-lens:
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete'
+    supabase_project_ref: jtmpknpqfabpwxfiabui
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: pay $500/mo; Pro plan $500/mo Stripe checkout
+    monthly_price_usd: 500.0
+    owner: radlin
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-21T08:58:47Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:49Z'
+      evidence: 'http 400: Resource has been removed'
+  foundrygraph:
+    signup_events:
+    - signup_complete
+    - early_access_signup
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete, early_access_signup'
+    supabase_project_ref: fxpeaaeauthlasvglykh
+    owner: lego
+    owner_note: inferred from FoundryGraph commit history (first+majority, high confidence,
+      2026-07-23)
+  report-pilot:
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: 'Standard event(s): signup_complete'
+    supabase_project_ref: ykrylrsaojerzthrahni
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:53Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: radlin
+    owner_note: inferred from Report-Pilot commit history (majority, medium confidence,
+      2026-07-23)
+  xpredict:
+    signup_events:
+    - calibration_complete
+    - simulation_complete
+    classified_by: x2-inferred
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: "calibration_complete + simulation_complete are the *_complete pattern\
+      \ conversion events for this prediction tool. Both have only 1 user each \u2014\
+      \ heavy traffic but very low completion."
+    owner: lee
+    owner_note: inferred from xpredict commit history (first+majority, high confidence,
+      2026-07-23)
+  lumen:
+    signup_events: []
+    classified_by: operator
+    classified_at: '2026-05-18T00:00:00Z'
+    rationale: "PostHog (in shared project 321343, \u2713 visible): landing_viewed(566)/cta_clicked(123)/demo_clicked(44\
+      \ interaction)/password_reset_requested(3 retain)/pricing_page_viewed(2)/return_visit(0)\
+      \ \u2014 no paid conversion event captured by PostHog. Supabase (per-MVP, NOT\
+      \ shared): team-confirmed (2026-05-18) signups DO exist in Supabase project\
+      \ hisnpjvwbmrcsutjkfnb, table public.waitlist \u2014 but that project lives\
+      \ in a personal Supabase org, so our shared-org token gets 403. db_unmapped_reason=no_match\
+      \ refers to Supabase only; PostHog data is intact. To cross-check ground truth:\
+      \ project owner must transfer the project to our shared Supabase org OR invite\
+      \ our token's account."
+    supabase_project_ref: glwatnfqalpcumsjppze
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-23T05:23:45Z'
+    owner: parth
+    owner_note: inferred from SEO-optimiser commit history via desc-prefix resolution
+      (first+majority parthmagpie); operator-confirmed 2026-07-23
+    github_repo: SEO-optimiser
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-27T03:29:25Z'
+      evidence: 'http 400: Resource has been removed'
+  splitshare:
+    signup_events:
+    - signup_completed
+    classified_by: operator
+    classified_at: '2026-05-18T00:00:00Z'
+    rationale: "signup_completed is canonical (3 users). Standard SaaS signup. Team-confirmed\
+      \ (2026-05-18) NO Supabase was provisioned during initial deploy \u2014 signups\
+      \ POSTed to placeholder URL and 83 ad clicks captured ZERO emails. Historical\
+      \ ground truth is unrecoverable for the past window. Going forward: team will\
+      \ provision Supabase before re-running ads. Until then, db_signups=null is accurate."
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: bhavin
+    db_backend:
+      status: never_located
+      checked_at: '2026-07-21T14:56:54Z'
+      evidence: no supabase_project_ref or railway_project_id in config
+  flowops:
+    signup_events:
+    - waitlist_submitted
+    classified_by: operator
+    classified_at: '2026-05-18T00:00:00Z'
+    rationale: "waitlist_submitted is canonical waitlist pattern (2 users in shared\
+      \ PostHog 321343, \u2713 visible). Team-confirmed (2026-05-18) this MVP has\
+      \ NO Supabase by design \u2014 PostHog is the canonical truth source (verified\
+      \ via PostHog dashboard 1427792). db_signups=null is expected and accurate;\
+      \ x3/x4 correctly use PH signup count for verdict. db_unmapped_reason=no_match\
+      \ is a misleading label here (refers to Supabase only) but does not affect classification."
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: lee
+    owner_note: operator-confirmed 2026-07-20 (repo history shows only org account)
+    db_backend:
+      status: never_located
+      checked_at: '2026-07-21T14:56:51Z'
+      evidence: no supabase_project_ref or railway_project_id in config
+  mosai:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: 'Top events: landing_view, how_it_works_view, about_view, segment_play_complete(0
+      gclid), pricing_view, subscriber_home_view (post-signup view). No paid conversion
+      event. segment_play_complete is content-consumption, not signup.'
+    supabase_project_ref: kbvhpevktlbnbsjpugef
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:52Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lego
+    owner_note: inferred from MOSAI commit history (first+majority, high confidence,
+      2026-07-23)
+  split-share-neon:
+    signup_events:
+    - signup_completed
+    classified_by: x2-strong
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: Same catalog as splitshare (deploy domain alias). signup_completed
+      canonical (3 users).
+    owner: bhavin
+  downshift-landing:
+    signup_events:
+    - demo_completed
+    classified_by: x2-inferred
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: demo_completed (1) is demo-driven funnel activation per rule 3. No
+      signup events.
+    supabase_project_ref: iwnsrcjngrkoktgjguyj
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-27T03:34:56Z'
+    price_rationale: pricing section lists $8.99/mo, $49/yr, $29/yr Founders (annual,
+      capped 100); lowest paid monthly tier = $8.99/mo
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:50Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: radlin
+    owner_note: 'operator-confirmed: built by radlin (downshift family, 2026-07-23)'
+    github_repo: downshift-app
+    monthly_price_usd: 8.99
+  rubber-duck-api:
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: Only signup_start exists (7 users), no _complete event captured. Loose
+      per rule 5.
+    supabase_project_ref: edvntohudsmxtrlcwfvv
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-28T15:16:24Z'
+    price_rationale: Pro tier CTA leads to a waitlist form; no own price ($1-50K/mo
+      is target-user agent API spend, $14,200/yr is a cost stat)
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: radlin
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:53Z'
+      evidence: 'http 400: Resource has been removed'
+  franchisepulse:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: landing_view(6)/outreach_click(6) + dashboard_first_view(0)/location_connected(0)/cta_click(0).
+      outreach_click is interim, not completion. No conversion event captured.
+    supabase_project_ref: jgmdnlbuccdoekzbexxu
+    price_source: repo:src/app/pricing/page.tsx
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-28T15:16:24Z'
+    price_rationale: pricing page FAQ says paid plans open later in waves, flat per-location
+      rate TBD; waitlist + free seeded demo only, no number
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-21T08:58:47Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:51Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: anurag
+    owner_note: inferred from FranchisePulse commit history (first+majority, high
+      confidence, 2026-07-23)
+  downshift:
+    signup_events:
+    - demo_completed
+    classified_by: x2-inferred
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: Same catalog as downshift-landing. demo_completed (1) inferred conversion.
+    owner: radlin
+    owner_note: 'operator-confirmed: built by radlin (2026-07-23)'
+    github_repo: downshift-app
+  agent-shield:
+    signup_events: []
+    classified_by: operator
+    classified_at: '2026-05-18T00:00:00Z'
+    rationale: "Sanity check flagged 100% playground_scan/landing_visit ratio (15/15)\
+      \ \u2014 playground_scan fires on view, not on completed scan. No real conversion\
+      \ event captured. Demoted to empty. DB ground truth: not in shared Supabase\
+      \ org (5 sibling agent-* projects exist but none called agent-shield); no team\
+      \ response yet to 2026-05-18 inquiry about backend location. RESOLVED 2026-07-21\
+      \ (operator): backend is shared-org Supabase project 'AI Agent - Taran' (zlkyczhnxrghbeoajwir)\
+      \ \u2014 name did not fuzzy-match. One-shot 365d query: auth.users has 3 rows,\
+      \ all team (taran x2, radlin); zero real customer signups \u2014 kill decision\
+      \ confirmed. Project is live; name suggests it may host taran's other work \u2014\
+      \ do NOT tear down without taran's ack."
+    supabase_project_ref: zlkyczhnxrghbeoajwir
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-28T15:12:50Z'
+      evidence: 'http 400: Resource has been removed'
+    backend_keep:
+      reason: "shared Supabase 'AI Agent - Taran' (zlkyczhnxrghbeoajwir) hosts taran's\
+        \ other work \u2014 operator-confirmed 2026-07-21; do not tear down without\
+        \ taran's ack"
+      granted_by: operator
+      granted_at: '2026-07-21T14:56:55Z'
+    owner: taran
+    owner_note: 'operator-confirmed: built by taran (alias of agentshield, 2026-07-23)'
+  expertmint:
+    signup_events:
+    - buyer_signup_complete
+    classified_by: x2-strong
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: buyer_signup_complete (3 users) matches <role>_signup_complete pattern.
+    supabase_project_ref: lldmgqjzylodihnvbext
+    owner: lego
+    owner_note: inferred from ExpertMint commit history (first+majority, high confidence,
+      2026-07-23)
+  pmax-sentinel:
+    signup_events:
+    - signup_started
+    classified_by: x2-loose
+    classified_at: '2026-05-17T03:37:55Z'
+    rationale: "signup_started (4 gclid) is signup_start-shape \u2014 no _complete\
+      \ event. Rule 5 loose. first_audit_rendered (1 gclid) is render not completion.\
+      \ google_ads_oauth_started 0 gclid."
+    supabase_project_ref: hmiesyabwdkooioohobw
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: $19/month per account; Stripe checkout at $19/month (Optmyzr
+      $249 is competitor)
+    monthly_price_usd: 19.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:53Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: karan
+    owner_note: inferred from pmax-sentinel commit history (first+majority, high confidence,
+      2026-07-23)
+  creatorflow:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: "page_view(17) + cta_click(2) + magic_link_sent(0 gclid). Magic-link-sent\
+      \ is the activation shape but had zero paid traffic \u2014 no signal."
+    supabase_project_ref: dqsuzaukhhczvpeunbmu
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    price_source: repo:experiment.yaml+live:404
+    price_classified_by: x0c-medium
+    price_classified_at: '2026-07-28T15:16:24Z'
+    price_rationale: thesis references a paid Operator tier but no number anywhere
+      in repo snippets ($2-5K/mo is target-user creator budget, $1K+/$2.5K+ are competitor
+      prices); live site and /pricing both 404 (deploy torn down)
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:50Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: anurag
+    owner_note: inferred from CreatorFlow commit history (first+majority, high confidence,
+      2026-07-23)
+  agent-cost-monitor:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: Only landing_page_viewed(13 gclid). No conversion event captured.
+    supabase_project_ref: iirfggrnzgsrxjpsoxrd
+    price_source: live:pricing
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-23T04:18:31Z'
+    price_rationale: live pricing page shows 'Pro $19/month' (paid plans behind waitlist
+      but price displayed)
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: alan
+    owner_note: reassigned from priyanshu (departed 2026-07-20)
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-23T04:12:17Z'
+      evidence: 'http 400: Resource has been removed'
+    monthly_price_usd: 19.0
+  sundaykit:
+    signup_events:
+    - sample_downloaded
+    classified_by: x2-inferred
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: sample_downloaded (1) inferred as meaningful first-action for a sample-kit
+      MVP.
+    supabase_project_ref: dszxbcsfgtcyjugtxdii
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:54Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: radlin
+    owner_note: inferred from sundaykit commit history (first+majority, high confidence,
+      2026-07-23)
+  rubberduck:
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: Same as rubber-duck-api. signup_start only, loose.
+    owner: radlin
+  agentcostmonitor:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: Duplicate-naming variant of agent-cost-monitor. Only landing_page_viewed.
+    owner: alan
+    owner_note: inferred priyanshu from agent-cost-monitor commit history (high confidence,
+      2026-07-23); reassigned to alan (departed)
+  cumulus:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: Only landing_visit(25 gclid) in catalog. No conversion event captured.
+    supabase_project_ref: ianpvkdqczdndtnogeqh
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-28T15:16:24Z'
+    price_rationale: private-alpha waitlist landing; only price reference is $30 lifetime
+      proven in adjacent local-AI tools (evidence, not own monthly price)
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-18T03:42:31Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:50Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lego
+    owner_note: inferred from CUMULUS commit history (first+majority, high confidence,
+      2026-07-23)
+  onbrand-ai:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: landing_viewed(4)/ad_clicked(4)/cta_clicked(1). No conversion event
+      captured.
+    supabase_project_ref: shjsgldikqvzqpknihze
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-medium
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: pricing moved to $299-599+Enterprise (current), lowest tier;
+      $49-149 is old/superseded
+    monthly_price_usd: 299.0
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:52Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: radlin
+    owner_note: inferred from OnBrand-ai commit history (first+majority, high confidence,
+      2026-07-23)
+  agent-firewall:
+    signup_events:
+    - install_started
+    classified_by: x2-loose
+    classified_at: '2026-05-17T03:37:55Z'
+    rationale: "install_started (1 gclid) is the only demand-side event beyond landing.\
+      \ Same shape as signup_start (started not completed) \u2192 rule 5 loose."
+    supabase_project_ref: zarodccybfjohgdydsdn
+    price_source: live:root
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-23T04:18:31Z'
+    price_rationale: 'landing plan cards: Solo ''$19/mo'', Team $49/mo, Pro $99/mo;
+      free tier exists so lowest PAID monthly = 19'
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: karan
+    db_backend:
+      status: alive
+      checked_at: '2026-07-21T14:56:49Z'
+      evidence: ref present in org project list
+    monthly_price_usd: 19.0
+  pingback:
+    signup_events:
+    - signup_completed
+    classified_by: operator
+    classified_at: '2026-05-17T03:50:00Z'
+    rationale: signup_completed (3 uu, 0 paid) exists but was below the x1 catalog
+      HAVING threshold (uu>=5 OR gclid>0), so the previous run did not see it. Team-confirmed
+      event name.
+    supabase_project_ref: sepkmjeogvtbfoggcaqe
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: Solo $49/mo (Team $59/seat); Gem/Covey $150 are competitors
+    monthly_price_usd: 49.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:52Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: radlin
+    owner_note: inferred from PingBack commit history (first+majority, high confidence,
+      2026-07-23)
+  agentshield:
+    signup_events: []
+    classified_by: operator
+    classified_at: '2026-05-12T04:43:23Z'
+    rationale: Sanity check flagged 100% playground_scan/landing_visit ratio. Demoted
+      to empty (same reason as agent-shield).
+    owner: taran
+    owner_note: 'operator-confirmed: built by taran (2026-07-23)'
+  __orphan_xpredict__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_lumen__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_brigent__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_stylica-ai__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-14T13:27:07Z'
+    rationale: No events in catalog
+  __orphan_deepstats__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_neuralpost__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_smelt__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_split-share-neon__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: No events in catalog
+  __orphan_hospitica__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: No events in catalog
+  __orphan_flowops__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_lead-sniffer__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_dropship__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: No events in catalog
+  __orphan_downshift__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: No events in catalog
+  __orphan_agent-lens__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_agentburn__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_expertmint__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_pmax-sentinel__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_ghostops__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_report-pilot__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_rubberduck__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-12T12:47:38Z'
+    rationale: No events in catalog
+  __orphan_agentcostmonitor__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_pingback__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_downshift-landing__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-12T12:47:38Z'
+    rationale: No events in catalog
+  __orphan_agentshield__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  __orphan_sundaykit__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-12T12:47:38Z'
+    rationale: No events in catalog
+  __orphan_cumulus__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-12T12:47:38Z'
+    rationale: No events in catalog
+  deploy-guard:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: Only landing_page_viewed(22) + cta_clicked(4). No conversion event
+      captured.
+    supabase_project_ref: hadyolqrlaohrhyqdjlk
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: pricing tiers $19/mo and $49/mo, lowest
+    monthly_price_usd: 19.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-23T05:23:45Z'
+    owner: alan
+    owner_note: inferred priyanshu from DeployGuard commit history (high confidence,
+      2026-07-23); reassigned to alan (departed)
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-27T03:30:39Z'
+      evidence: 'http 400: Resource has been removed'
+  __orphan_creatorflow__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-13T08:13:56Z'
+    rationale: No events in catalog
+  suits:
+    signup_events:
+    - signup_start
+    classified_by: operator
+    classified_at: '2026-05-18T00:00:00Z'
+    rationale: "Only signup_start (3 gclid users) \u2014 no _complete event. Rule\
+      \ 5 loose. Team-confirmed (2026-05-18) Supabase project was paused and not capturing\
+      \ email data; team is re-provisioning on both Supabase and Railway. Re-run /iterate\
+      \ --cross after that lands to recover ground truth. Project (if any) is in personal\
+      \ org, not visible to shared-org token."
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-23T05:23:45Z'
+    owner: parth
+    owner_note: inferred from Suits commit history (first+majority, high confidence,
+      2026-07-23)
+    db_backend:
+      status: never_located
+      checked_at: '2026-07-27T03:29:45Z'
+      evidence: no supabase_project_ref or railway_project_id in config
+  commissioniq:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: No events in catalog
+    supabase_project_ref: xlvsznbythvwkvvdpdlq
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: radlin
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:50Z'
+      evidence: 'http 400: Resource has been removed'
+  sdr-copilot:
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-05-14T10:26:53Z'
+    rationale: 'Standard event(s): signup_complete'
+    supabase_project_ref: wxvmomdmxppmrgbyuyfz
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-28T15:16:24Z'
+    price_rationale: golden path is waitlist signup to leads table; $500-5K/mo is
+      market spend on AI SDR tools (evidence), no own price
+    owner: radlin
+    owner_note: inferred from SDR-Copilot commit history (first+majority, high confidence,
+      2026-07-23)
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-28T15:13:26Z'
+      evidence: 'http 400: Resource has been removed'
+  campaign:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-14T13:27:07Z'
+    rationale: No events in catalog
+    owner: alan
+    owner_note: defaulted to operator (repo_unresolved, 2026-07-23)
+  reset-app:
+    signup_events:
+    - email_submitted
+    classified_by: x2-strong
+    classified_at: '2026-05-17T03:37:55Z'
+    rationale: email_submitted (5 organic users, 0 gclid) is the canonical *_submitted
+      email/form-collection completion shape per rule 1. Zero paid-traffic signups
+      in window is informational.
+    supabase_project_ref: reatvvwyeewhsrgezhsc
+    owner: radlin
+  auditbot:
+    supabase_project_ref: wpomhkfrpolcxurafcff
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: 'signup_start(1 gclid) is the only demand-side event beyond landing(13).
+      Rule 5 loose: no _complete event captured yet.'
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:49Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: bhavin
+    owner_note: inferred from auditbot commit history (majority, medium confidence,
+      2026-07-23)
+  dead-link:
+    supabase_project_ref: zjaghzayvjpmrcqqxwtp
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: landing_visits(6)+cta_clicks(2). No signup-shape event. Likely waitlist/email
+      capture instrumentation missing.
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:50Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: taran
+    owner_note: inferred from DeadLink-Broken-Link-Uptime-Monitor-for-Solopreneurs
+      commit history via name-index resolution (first+majority nukeTK); operator-confirmed
+      2026-07-23
+    github_repo: DeadLink-Broken-Link-Uptime-Monitor-for-Solopreneurs
+  gapsmith:
+    supabase_project_ref: egicwsjhzwvetsvgozhl
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: No events in catalog
+    owner: lee
+  __orphan_auditbot-ten__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: No events in catalog
+  __orphan_deadlink-monitor__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-18T12:31:10Z'
+    rationale: No events in catalog
+  __orphan_momrealm__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-21T08:59:55Z'
+    rationale: No events in catalog
+  kansei:
+    supabase_project_ref: ibcxnmfoeskczdzagtvh
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-05-22T15:04:30Z'
+    rationale: "Catalog has only visit_landing \u2014 landing-page view, not a signup.\
+      \ No conversion event captured in window. (1 gclid visitor 2026-05-22.)"
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    db_backend:
+      status: alive
+      checked_at: '2026-07-21T14:56:51Z'
+      evidence: ref present in org project list
+    owner: chester
+    owner_note: "operator-corrected 2026-07-27: Vercel channel (vercel-deploy-author)\
+      \ \u2014 project kansei links repo Chester0426/kansei, production deploy commit\
+      \ author @Chester0426 (medium confidence)"
+  leasebrief:
+    supabase_project_ref: ukfbxwejmmhdvzlpqvzc
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: Only signup_start (22 gclid users) exists; no _complete event captured.
+      Rule 5 loose. qualified_paid_visit (133) is a reach-stage instrumented visit,
+      not a conversion.
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:51Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: bhavin
+    owner_note: inferred from LeaseBrief commit history (first+majority, high confidence,
+      2026-07-23)
+  dvara:
+    supabase_project_ref: xruzsheucjxizhoeqirb
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: 'Standard event(s): signup_complete'
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:51Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lego
+    owner_note: inferred from Dvara commit history (first+majority, high confidence,
+      2026-07-23)
+  streakly:
+    supabase_project_ref: engdfjsamdbiokbwlzja
+    signup_events:
+    - streak_created
+    classified_by: x2-inferred
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: No signup_complete. For a streak/habit tracker, streak_created (activate
+      stage) is the core committed first action. signup_start (7 gclid) lacks completion;
+      checkin events are downstream usage.
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:54Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lew
+    owner_note: inferred from Streakly commit history (first+majority, high confidence,
+      2026-07-23)
+  perky:
+    supabase_project_ref: tlawmpxoekvgriqzeeok
+    signup_events:
+    - pet_profile_created
+    classified_by: x2-inferred
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: 'No signup_complete/waitlist. AI pet-track tool: pet_profile_created
+      (activate) is the account/profile setup = signup-equivalent. track_generated
+      is the value moment but profile-create is the commitment.'
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-07-19T06:56:20Z'
+    lifecycle_rationale: "Operator-approved Phase-2 shot despite Phase-1 NO_GO (2026-07-19):\
+      \ the 06-29 GO was a counting artifact (pre-flight + team signups in auth.users;\
+      \ true paid conv 2.5-4.9% @ 122 clicks \u2014 borderline sample, not proven-dead).\
+      \ Phase-2 infra already built (PR #29 first-touch pipeline, pay_intent fake-door).\
+      \ Conditions agreed: fix onboarding drop (3/6 auth users never created a profile),\
+      \ pass /ads-ready phase-2 attribution check pre-launch, capped budget, pre-registered\
+      \ kill criteria (pay_intent_rate >= 2% @ 300-visitor floor, CPC <= $2.50) \u2014\
+      \ phase2 verdict is final."
+    owner: lee
+  personalab:
+    supabase_project_ref: tetohakatcymkbmmhnfy
+    signup_events:
+    - signup_started
+    classified_by: x2-loose
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: signup_started (3 gclid) is the signup intent; no _complete. retain_session_started
+      fires for all 52 visitors (auto). source_uploaded (1) is downstream activation.
+      Loose per rule 5.
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: Stripe checkout $29/mo nightly monitoring (LangSmith $39/seat
+      competitor)
+    monthly_price_usd: 29.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:52Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: karan
+    owner_note: inferred from personalab commit history (first+majority, high confidence,
+      2026-07-23)
+  pricewise:
+    supabase_project_ref: qwikdefuscrhkphfzpnp
+    signup_events:
+    - signup_start
+    - signup_initiated
+    classified_by: x2-loose
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: Only start-shape events (signup_start 2 gclid, signup_initiated 1).
+      No _complete captured. Loose per rule 5; both taken to avoid undercount.
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: $29-49/mo subscription, lowest tier (Prisync $500+ competitor)
+    monthly_price_usd: 29.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:53Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: anurag
+    owner_note: inferred from Pricewise commit history (first+majority, high confidence,
+      2026-07-23)
+  paga-calc:
+    supabase_project_ref: omkooetuvvjnjgzkgtgv
+    signup_events:
+    - calculator_start
+    classified_by: x2-inferred
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: Free calculator MVP with no signup. calculator_start (4 gclid, demand)
+      is the core engagement. result_view (the completion) is auto-stripped as a view
+      event, so start is the surviving activation signal.
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-medium
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: free calculator + $49 paid risk-audit upsell (one-time audit
+      price = revenue/conversion)
+    monthly_price_usd: 49.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:52Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: radlin
+    owner_note: inferred from paga-calc commit history (first+majority, high confidence,
+      2026-07-23)
+  flopdrill:
+    supabase_project_ref: rdzynbyragxcaoxtkmzp
+    signup_events:
+    - tutorial_completed
+    classified_by: x2-inferred
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: No signup_complete. tutorial_completed (2 gclid) is the core drill
+      completion = value delivered. signup_start (3) lacks completion; tutorial_started/spot
+      are partial.
+    owner: chester
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-29T08:22:25Z'
+  bayt-labs:
+    supabase_project_ref: gzgbegelodumqenokovb
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: 'Standard event(s): signup_complete'
+    price_source: repo:src/app/pricing/page.tsx
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: Pilot plan $29/mo on pricing page
+    monthly_price_usd: 29.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:49Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lego
+    owner_note: inferred from Bayt-Labs commit history (first+majority, high confidence,
+      2026-07-23)
+  maisinger:
+    supabase_project_ref: zvlnruqzcapudgcixaxt
+    signup_events:
+    - signup_submitted
+    classified_by: x2-strong
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: signup_submitted (8 gclid, demand) matches the *_submitted form-completion
+      pattern. account_confirmed (3) is a subset confirmation; submit is the canonical
+      conversion.
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-07-18T03:43:59Z'
+    owner: lego
+  lien-radar:
+    supabase_project_ref: agiktwmeihklbgmjwuba
+    signup_events:
+    - calculator_started
+    classified_by: x2-inferred
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: Calculator/deadline tool with no signup or completion event. calculator_started
+      (1 gclid, activate) is the only meaningful tool action. Inferred, low confidence.
+    owner: radlin
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-21T08:58:47Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:51Z'
+      evidence: 'http 400: Resource has been removed'
+  x402-wrap:
+    supabase_project_ref: whjupmtszbetrziijfgz
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: Only landing_visited (6 gclid) in catalog. No conversion event captured.
+    owner: taran
+    owner_note: inferred from x402Wrap commit history (first+majority, high confidence,
+      2026-07-23)
+  subshield:
+    supabase_project_ref: wdpncaeknowefvdwyplw
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: Only visit_landing (8 gclid) in catalog. No conversion event captured.
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-27T15:29:07Z'
+    price_rationale: $199/mo plan Stripe checkout
+    monthly_price_usd: 199.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: radlin
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:54Z'
+      evidence: 'http 400: Resource has been removed'
+  permitpack:
+    supabase_project_ref: tuvjoiagupqcrfdgsowc
+    signup_events:
+    - form_start
+    classified_by: x2-loose
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: Only form_start (2 gclid, demand) beyond landing; no form_submitted.
+      Start-shape, rule 5 loose. Low traffic.
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: radlin
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:52Z'
+      evidence: 'http 400: Resource has been removed'
+  lookingeye:
+    supabase_project_ref: oglafnsoqkteoimpvpkv
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: Only view/pricing events (visit_landing, pricing_view, landing_view),
+      all UI. No conversion event captured.
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-06-27T04:27:19Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:51Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lego
+    owner_note: inferred from LookingEye commit history (first+majority, high confidence,
+      2026-07-23)
+  termob:
+    supabase_project_ref: hrffxsbayzcakmkevhnf
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: 'Standard event(s): signup_complete'
+    owner: lego
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-23T05:23:45Z'
+    db_backend:
+      status: alive
+      checked_at: '2026-07-27T03:29:49Z'
+      evidence: ref present in org project list
+  scangap:
+    supabase_project_ref: agarbnjuvkzlctpxmnws
+    signup_events:
+    - audit_reserved
+    classified_by: x2-inferred
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: audit_reserved (monetize stage) is the commit/reservation conversion.
+      0 gclid users (organic-only), so paid signups will be 0, but it names the real
+      conversion event for future runs.
+    owner: radlin
+    owner_note: inferred from scangap commit history (first+majority, high confidence,
+      2026-07-23)
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-27T16:16:14Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-28T15:13:22Z'
+      evidence: 'http 400: Resource has been removed'
+  __orphan_kansei-theta__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-06-08T12:58:08Z'
+    rationale: No events in catalog
+  screenpass:
+    supabase_project_ref: zqkhlalqojwkhspzqirw
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: 'Standard event(s): signup_complete'
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-15T02:19:56Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:54Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: lee
+    owner_note: inferred from screenpass commit history (first+majority, high confidence,
+      2026-07-23)
+  muse-ai:
+    supabase_project_ref: aifafesenfntmccvxpns
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: 'Standard event(s): signup_complete'
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-07-18T03:43:59Z'
+    owner: chester
+  selvedge:
+    supabase_project_ref: fpcoishrbovigqpftlsp
+    signup_events:
+    - signup_completed
+    classified_by: x2-strong
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: Marketplace MVP (browse_started/view_listing/upload_started funnel).
+      signup_completed (7 uu) is the canonical *_completed signup event per rule 1.
+      0 paid users on it in window is informational (all 7 organic).
+    owner: parth
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-23T05:23:45Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-27T03:29:59Z'
+      evidence: 'http 400: Resource has been removed'
+  plantheal:
+    supabase_project_ref: gatiyclqkrdqaomdewyk
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: 'Standard event(s): signup_complete'
+    owner: lee
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-21T08:58:47Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:53Z'
+      evidence: 'http 400: Resource has been removed'
+  fraudshield:
+    supabase_project_ref: golvupqegjprujwrxotb
+    signup_events:
+    - activate
+    classified_by: x2-whitelist
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: 'Standard event(s): activate'
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-28T13:50:09Z'
+    price_rationale: 'experiment.yaml monetize pricing_amount: 49; pricing/page.tsx
+      has Free quota -> upgrade to Pro (real self-serve paid tier, distinct from the
+      ''Get API access'' fake-door waitlist). $50k+ is competitor (Inscribe/Findigs).'
+    monthly_price_usd: 49.0
+    owner: bhavin
+  stylistly:
+    supabase_project_ref: eerbaplfxpwyzzwukwpt
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: "Only signup_start (6 gclid, 11 uu) beyond landing/cta \u2014 no _complete\
+      \ event captured. Rule 5 loose. profile_view is post-signup UI."
+    owner: lew
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-23T05:23:45Z'
+    db_backend:
+      status: alive
+      checked_at: '2026-07-27T03:31:00Z'
+      evidence: ref present in org project list
+  dsar-flow:
+    supabase_project_ref: bfribsnkcrnlizmbjnmr
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: Only signup_start (1 gclid, 9 uu) is signup-shape; landing_viewed/landing_unique_visitors
+      are reach, pricing_viewed is monetize. No _complete. Rule 5 loose.
+    price_source: repo:src/app/pricing/page.tsx
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-23T04:18:31Z'
+    price_rationale: 'tier constants: Free monthlyPrice 0, Pro monthlyPrice 39 (annual
+      31/mo ignored per lowest-monthly rule)'
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: alan
+    owner_note: reassigned from priyanshu (departed 2026-07-20)
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-23T04:12:21Z'
+      evidence: 'http 400: Resource has been removed'
+    monthly_price_usd: 39.0
+  bio-rent:
+    supabase_project_ref: mckstjfpsfdqzammjasn
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: Catalog has only landing_viewed (8 gclid) and retain_return (return
+      visit). No signup or conversion event captured in window.
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    owner: alan
+    owner_note: reassigned from priyanshu (departed 2026-07-20)
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-23T04:12:21Z'
+      evidence: 'http 400: Resource has been removed'
+  botscore:
+    supabase_project_ref: hqielpypuvfqcvzvqmra
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: signup_start (1 gclid, 6 uu) is the signup-intent event and aligns
+      with the 1 db auth.users signup. score_revealed is a value-view not a commit;
+      premium_interest_clicked is monetize-intent. No _complete. Rule 5 loose.
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-07-18T03:43:59Z'
+    owner: radlin
+  openslot:
+    supabase_project_ref: mudbtheeygbmwbokgfac
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: 'Standard event(s): signup_complete'
+    price_source: repo:experiment.yaml
+    price_classified_by: x0c-high
+    price_classified_at: '2026-06-29T02:24:43Z'
+    price_rationale: 'experiment.yaml: ''free early-access (waitlist) - no plan is
+      shown''; payment stripe intentionally omitted.'
+    owner: anurag
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-21T08:58:47Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:52Z'
+      evidence: 'http 400: Resource has been removed'
+  income-flow:
+    supabase_project_ref: yjdekvbxmmkkmslabrwo
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: signup_start (13 uu, 0 gclid) is the only signup-shape event; signup_cta_clicked
+      is demand-side. No _complete captured. Rule 5 loose. Aligns with 3 db auth.users
+      signups.
+    price_source: live:root
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-23T04:18:31Z'
+    price_rationale: 'landing CTA: ''$19/mo after free trial'''
+    monthly_price_usd: 19.0
+    owner: alan
+    owner_note: built by priyanshu; reassigned to alan (departed 2026-07-20); operator-confirmed
+      2026-07-23
+    github_repo: freelancer-income-hub
+  __orphan_museai-app__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: No events in catalog
+  __orphan___:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: No events in catalog
+  __orphan_income-flow-three__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: No events in catalog
+  downshift.draftlabs.org:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-06-27T04:17:58Z'
+    rationale: "project_name is a literal domain (tracking misconfiguration \u2014\
+      \ should be a kebab slug). Catalog has only landing_view (3 gclid). No conversion\
+      \ event captured."
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-19T13:08:51Z'
+    db_backend:
+      status: never_located
+      checked_at: '2026-07-21T14:56:50Z'
+      evidence: no supabase_project_ref or railway_project_id in config
+    owner: radlin
+    owner_note: 'operator-confirmed: built by radlin (downshift family, 2026-07-23)'
+    github_repo: downshift-app
+  askhigher:
+    supabase_project_ref: vntzxfafnnbofgkfbcsq
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: 'Standard event(s): signup_complete'
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-07-18T03:43:59Z'
+    owner: radlin
+  retainly:
+    supabase_project_ref: onlcrhtyvfsaivylcous
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: 'Standard event(s): signup_complete'
+    owner: lee
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-21T08:58:47Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:53Z'
+      evidence: 'http 400: Resource has been removed'
+  shiftpool:
+    supabase_project_ref: kpziyevphwynwdyubsbd
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: 'Standard event(s): signup_complete'
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-07-18T03:43:59Z'
+    owner: anurag
+  mooncub:
+    supabase_project_ref: zsymiawueimwyxnsnrab
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: 'Standard event(s): signup_complete'
+    owner: lee
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-24T05:12:37Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-27T03:29:59Z'
+      evidence: 'http 400: Resource has been removed'
+  stablecompare:
+    supabase_project_ref: drxztwangladzcrlfyet
+    signup_events:
+    - email_signup_submitted
+    - email_signup_confirmed
+    classified_by: x2-strong
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: "email_signup_submitted (9 uu) matches *_submitted email-collection\
+      \ completion; email_signup_confirmed (26 uu) is its confirmed completion with\
+      \ larger reach (tracking coverage differs) \u2014 union avoids undercount. compare_submit\
+      \ is tool usage, not signup."
+    owner: taran
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-23T05:23:45Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-28T15:11:57Z'
+      evidence: 'http 400: Resource has been removed'
+  voicepulse:
+    supabase_project_ref: unblomygevcnlvbpyeic
+    price_source: live:root
+    price_classified_by: x0c-high
+    price_classified_at: '2026-07-23T04:18:31Z'
+    price_rationale: 'landing pricing section: founder tier ''$49 per month'' (also
+      $79 standard, $99 Pet Pro); $99 deposit is one-time, ignored'
+    signup_events:
+    - deposit_completed
+    classified_by: x2-inferred
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: 'Paid-waitlist MVP: deposit_completed (7 uu) is the committed $99-deposit
+      conversion named in the thesis (deposit_completed/demo_call_completed). checkout_started
+      is start-shape; demo_call_started is demand.'
+    owner: karan
+    monthly_price_usd: 49.0
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-23T05:23:45Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-27T03:30:25Z'
+      evidence: 'http 400: Resource has been removed'
+  squattershield:
+    supabase_project_ref: bfssiioowencmellzlqk
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: 'Standard event(s): signup_complete'
+    owner: bhavin
+  tifa:
+    supabase_project_ref: flshejoobgdyirbzlypz
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: 'Standard event(s): signup_complete'
+    owner: chester
+    owner_note: 'operator-confirmed: built by chester (2026-07-23)'
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-27T16:16:14Z'
+    db_backend:
+      status: alive
+      checked_at: '2026-07-28T15:11:56Z'
+      evidence: ref present in org project list
+  pagoo:
+    supabase_project_ref: esumziglbsmyiehfkykh
+    signup_events:
+    - email_submitted
+    classified_by: x2-strong
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: email_submitted (12 uu, 11 gclid) is the canonical *_submitted email/form-collection
+      completion. photo_uploaded/page_generated are activation usage, not signup.
+    db_signup_table: public.leads
+    db_signup_table_rationale: 'x0b auto-discovery missed public.leads (18 rows, 17
+      unique consumer emails, zero team/test) because "leads" was absent from SIGNUP_TABLE_PATTERNS
+      and fell back to auth.users (1 pre-launch test row) -> false db_real_zero suppressed
+      11 PostHog-verified paid signups (30.6% conv on 36 clicks). Verified 2026-07-19:
+      leads rows align 1:1 with paid email_submitted persons/gclids.'
+    owner: lee
+    lifecycle_status: promoted
+    lifecycle_status_at: '2026-07-23T05:23:45Z'
+  museai-studio:
+    supabase_project_ref: rymvydsikglnzvfnklis
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: Only signup_start (13 uu, 8 gclid) is signup-shape; no _complete captured.
+      pay_intent/pro_locked_click are monetize intent. Rule 5 loose.
+    owner: chester
+  skyvault:
+    supabase_project_ref: iwdtdlrvoxhxpqeowgcr
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: Only signup_start (4 uu, 3 gclid) beyond landing/cta. No _complete
+      captured. Rule 5 loose.
+    owner: lego
+    owner_note: inferred from skyvault commit history (first+majority, high confidence,
+      2026-07-23)
+  reportready:
+    supabase_project_ref: ejcqkorvsijkgqynkkcw
+    signup_events:
+    - waitlist_started
+    classified_by: x2-loose
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: "waitlist_started (2 uu) is the only deliberate signup-shape event.\
+      \ waitlist_qualified (38 uu) and legacy_tool_reported (32 uu) fire at >= landing_viewed\
+      \ rate (33 uu) \u2014 auto-fire pattern, not commits. No waitlist_submit/_complete."
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-21T08:58:47Z'
+    db_backend:
+      status: deleted_verified
+      checked_at: '2026-07-21T14:56:53Z'
+      evidence: 'http 400: Resource has been removed'
+    owner: radlin
+    owner_note: inferred from reportready commit history (first+majority, high confidence,
+      2026-07-23)
+  vernis:
+    supabase_project_ref: nykpslmpgljhwarujjvf
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: Catalog has only landing_viewed (21 uu). No conversion event captured
+      in window.
+    owner: chester
+    owner_note: 'operator-corrected 2026-07-27: inferred from vernis commit history
+      (first+majority Chester0426, high confidence; repo became org-resolvable after
+      07-23 fallback)'
+  underbilled:
+    supabase_project_ref: unvufpvtouqvrmgcpgvu
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: Catalog has only visit_landing (23 uu). No conversion event captured
+      in window.
+    owner: radlin
+    owner_note: inferred from underbilled commit history (first+majority, high confidence,
+      2026-07-23)
+  overscope:
+    supabase_project_ref: shmeuxvxvlasvbyfjvhv
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: Catalog has only visit_landing (88 uu). No conversion event captured
+      in window.
+    owner: lego
+    owner_note: inferred from Overscope commit history (first+majority, high confidence,
+      2026-07-23)
+  __orphan_tifa-xi__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: No events in catalog
+  __orphan_museai__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: No events in catalog
+  __orphan_vernis-v1__:
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-07-18T03:02:34Z'
+    rationale: No events in catalog
+  follow-through:
+    supabase_project_ref: twusqbthdbuejrrwomtr
+    signup_events:
+    - signup_start
+    classified_by: x2-loose
+    classified_at: '2026-07-23T04:22:28Z'
+    rationale: Only signup_start exists (13 uu, 2 gclid) with no _complete counterpart;
+      landing_viewed and cta_clicked are UI events. Loose last-resort per rule 5.
+    owner: taran
+    owner_note: inferred from FollowThrough commit history (first+majority, high confidence,
+      2026-07-23)
+  shelfcurve:
+    supabase_project_ref: mmgburenzheqdiiexudn
+    signup_events:
+    - signup_complete
+    classified_by: x2-whitelist
+    classified_at: '2026-07-23T04:22:28Z'
+    rationale: 'Standard event(s): signup_complete'
+    owner: anurag
+    owner_note: inferred from ShelfCurve commit history (first+majority, high confidence,
+      2026-07-23)
+    lifecycle_status: killed
+    lifecycle_status_at: '2026-07-29T08:22:25Z'
+    db_backend:
+      status: alive
+      checked_at: '2026-07-28T12:46:18Z'
+      evidence: 'rebuilt 2026-07-24T08:03Z: old ref yrygupbaeyugcbawqtkg tombstoned
+        (http 400 Resource has been removed); exact-name live project ShelfCurve rematched,
+        operator-confirmed 2026-07-28'
+  tripcraft:
+    supabase_project_ref: xvbobuwdweurwinckjex
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-07-23T04:22:28Z'
+    rationale: Catalog has only visit_landing (page view, 3 uu). No signup/waitlist/activation
+      event qualifies; brand-new deploy first seen 07-22.
+    owner: chester
+    owner_note: 'operator-corrected 2026-07-27: inferred from tripcraft commit history
+      (first+majority Chester0426, high confidence; repo became org-resolvable after
+      07-23 fallback)'
+  smart-miss:
+    supabase_project_ref: rjglkigzjnhgszitgdxy
+    signup_events:
+    - round_complete
+    classified_by: x2-inferred
+    classified_at: '2026-07-27T03:37:16Z'
+    rationale: 'No signup_*/waitlist_* in catalog. Game/scenario funnel: round_start
+      (demand) -> scenario_score -> round_complete (activate). round_complete is the
+      completed meaningful first action; scenario_score fires per-scenario mid-round
+      (UI-adjacent).'
+    owner: radlin
+    owner_note: inferred from smartmiss commit history (first+majority, high confidence,
+      2026-07-27)
+  morrow:
+    supabase_project_ref: kiwcddzeoiqyayqejotq
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-07-27T03:37:16Z'
+    rationale: Catalog has only visit_landing (reach page view). No conversion-shaped
+      event exists.
+    owner: lego
+    owner_note: inferred from Morrow commit history (first+majority, high confidence,
+      2026-07-27)
+  echo:
+    owner: alan
+    owner_note: inferred parth from Echo commit history (high confidence, 2026-07-28);
+      reassigned to alan (departed)
+  cardstage-zero:
+    supabase_project_ref: ctqtkfmxinevljfenmam
+    signup_events: []
+    classified_by: x2-empty
+    classified_at: '2026-07-28T15:19:49Z'
+    rationale: Catalog contains only landing_page_viewed (UI/page event, hard-excluded);
+      no signup/waitlist/activation event exists. 0 gclid_users on the only event.
+    owner: lego
+    owner_note: inferred from CardStage commit history (first+majority, high confidence,
+      2026-07-28)
+mvp_aliases:
+  hospitica:
+  - statistica
+  splitshare:
+  - split-share-neon
+  agent-shield:
+  - agentshield
+  agent-cost-monitor:
+  - agentcostmonitor
+  rubber-duck-api:
+  - rubberduck
+  dropship-ops:
+  - dropship
+  x-predict:
+  - xpredict
+  muse-ai:
+  - museai-studio
+ga_campaign_aliases:
+  staylicaai: stylica-ai
+  staylicaailew: stylica-ai
+  pubcheck: verify
+  pubchecksearchvalidationv1: verify
+  autodropship: dropship-ops
+  museai: museai-studio
+email_filter:
+  classified_by: operator
+  classified_at: '2026-05-18T14:07:32Z'
+  rules:
+    test_tlds:
+    - .test
+    - .example
+    - .invalid
+    - .localhost
+    - .local
+    test_domains:
+    - example.com
+    - example.org
+    - example.net
+    - test.com
+    - email.com
+    - verify.com
+    - fivejm.com
+    test_suffixes:
+    - .internal
+    team_domains:
+    - magpiexyz.io
+    - draftlabs.org
+  team_emails:
+  - oculusmetaverse21@gmail.com
+  - radlinabbott@gmail.com
+  - radlinabbott14@gmail.com
+  - steemerturk@gmail.com
+  - anuragiitjee@gmail.com
+  - karanduua@gmail.com
+  - demorlizer@gmail.com
+  - ghostopsorg@proton.me
+  - lee.koksiong@gmail.com
+  - anurag.3garg@gmail.com
+  - ue203054.karan.cse@gmail.com
+  - balflearlee83@gmail.com
+  - cl59821201@gmail.com
+  - tarandeepsingh1809@gmail.com
+  plus_alias_team_prefixes:
+  - oculusmetaverse21
+  test_emails:
+  - test@agencytest.com
+  - livetest@checkflow.com
+  - test-flow2@agentlens.dev
+  - test-ad-launch@agentlens.dev
+  - yomama@gmail.com
+team_roster:
+  _meta:
+    classified_by: operator
+    classified_at: '2026-07-20T00:00:00Z'
+    note: TG handles supplied by operator 2026-07-20; github/email attribution from
+      magpiexyz-lab commit history. Used for per-owner action items in /iterate --cross
+      reports and TG messages.
+  radlin:
+    tg: '@Radlin_BD'
+    github: Radz112
+    email: radlin@magpiexyz.io
+  anurag:
+    tg: '@TempHttp'
+    github: anuraggarg3
+    email: anurag@magpiexyz.io
+  lee:
+    tg: '@Kol520'
+    github: balflee
+    email: lee@magpiexyz.io
+    github_aliases:
+    - balflee
+    - balflearlee
+  lew:
+    tg: '@MrAshby'
+    github: Lew-Ashby
+    email: steemerturk@magpiexyz.io
+  lego:
+    tg: '@LEGO_BP'
+    github: LCODES25
+    email: lego@magpiexyz.io
+  chester:
+    tg: Lin
+    github: Chester0426
+    email: chester@magpiexyz.io
+    tg_note: "display name only \u2014 no @username provided"
+  karan:
+    tg: '@karan101010'
+    github: Karanmagpie
+    email: karan.dua@magpiexyz.io
+  bhavin:
+    tg: '@BhavinLathiya0'
+    github: lathiyaMagpiexyz
+    email: lathiya@magpiexyz.io
+  taran:
+    tg: '@nukeTk1809'
+    github: nukeTK
+    email: tarandeepsingh1809@gmail.com
+  priyanshu:
+    tg: null
+    github: pcentric
+    email: null
+    tg_note: TG handle not provided yet
+    status: departed
+    departed_note: Left the team (operator-confirmed 2026-07-20); MVPs reassigned
+      to alan
+  parth:
+    tg: null
+    github: parthmagpie
+    email: parthgera@magpiexyz.io
+    tg_note: TG handle not provided yet
+    status: departed
+    departed_note: Left the team (operator-confirmed 2026-07-28); new unowned items
+      inherit to alan (existing owner fields untouched)
+  alan:
+    tg: null
+    github: alanmagpie
+    email: alan@magpiexyz.io
+    note: operator; inherits departed members' cleanup items

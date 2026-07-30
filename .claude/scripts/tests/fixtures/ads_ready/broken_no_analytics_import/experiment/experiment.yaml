@@ -1,0 +1,4 @@
+name: broken-no-analytics-import
+type: web-app
+stack:
+  analytics: posthog

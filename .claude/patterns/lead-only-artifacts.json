@@ -1,0 +1,21 @@
+{
+  "$comment": "Manifest of artifacts that may only be produced by the lead conversation, never as a deliverable to a spawned Agent. Closes #1152. Enforced at three layers: (1) PreToolUse Agent matcher hook lead-deliverable-gate.sh denies any Agent prompt mentioning these paths; (2) PreToolUse Write/Edit hook retrospective-content-gate.sh requires the declared executor field on file content; (3) compliance-audit.py post-write block. Recurrence-prevented by the executor_enforcement coherence rule (three-way mapping: hook coverage + schema field + negative-deliverable scan).",
+  "_doc_inclusion_criterion": "An artifact belongs in this manifest iff producing it requires the lead's in-memory execution context (hook-friction events, deviation reasoning, workarounds absorbed) that cannot be reconstructed from artifacts alone. Pure bookkeeping artifacts (e.g., q-dimensions.json) do NOT belong here even if they happen to be lead-written today.",
+  "artifacts": [
+    {
+      "path": ".runs/retrospective-result.json",
+      "executor_field": "step_5a_executor",
+      "schema_source": ".claude/patterns/observation-phase.md",
+      "writers": ["lead"],
+      "rationale": "Step 5a Q1/Q2/Q3 retrospective requires lead's in-memory hook-friction context. Observer-written retrospective is structurally weaker (cannot see deviations that didn't enter fix-log). Reported in #1152 — Q1 reported clean while 4+ blocking events occurred."
+    }
+  ],
+  "_audit_notes": {
+    "solve-trace.json": "Has lead-only semantics by structural necessity (synthesizes lead's reasoning across 6 phases) but no executor field in current schema. Adding it requires (a) extending solve-reasoning.md trace schema, (b) updating state-1-execute.md python writer to emit it. Deferred to follow-up PR to keep this scope focused on the three target issues.",
+    "q-dimensions.json": "Lead-written by convention in state-2-output.md per skill, but the schema {skill, scope, dims, run_id, timestamp} is deterministically derivable from artifacts — does not require in-memory context. Excluded from manifest. If a future case shows q-dimensions corruption from delegation, reconsider.",
+    "retro-issue-result.json": "Per /retro spec; no documented case of delegation harm. Excluded pending evidence. Audit when /retro skill has its own observed issue or when its schema is updated to include reflection-style fields."
+  },
+  "_enforcement_versions": {
+    "lead-deliverable-gate.sh": "WARN mode (initial). Pre-flight audit script greps every skill state-*.md and agent .md for false positives. Flip to MODE=deny in follow-up commit only after audit confirms zero legitimate denials. Pattern: agent-trace-write-gate.sh PR4."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "skill": "rollback",
+  "phases": [
+    {
+      "name": "Plan",
+      "state_range": [0, 2],
+      "interactive": true,
+      "gate": {
+        "completed_states": [2]
+      }
+    },
+    {
+      "name": "Implement",
+      "state_range": [3, 4],
+      "interactive": false,
+      "max_budget": 30,
+      "gate": {
+        "completed_states": [4]
+      }
+    }
+  ]
+}

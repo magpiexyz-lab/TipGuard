@@ -1,0 +1,11 @@
+{
+  "skill": "solve",
+  "phases": [
+    {
+      "name": "Execute",
+      "state_range": [0, 3],
+      "interactive": true,
+      "gate": null
+    }
+  ]
+}

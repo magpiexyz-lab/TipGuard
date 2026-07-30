@@ -1,0 +1,5 @@
+states: ["0", "1", "2","99"]
+skip_experiment_validation: true
+agents:
+  solve-critic:
+    after: ["0"]

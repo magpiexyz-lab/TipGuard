@@ -1,0 +1,25 @@
+{
+  "skill": "change",
+  "phases": [
+    {
+      "name": "Plan",
+      "state_range": [0, 7],
+      "interactive": true,
+      "gate": {
+        "completed_states": [7],
+        "files_exist": [".runs/current-plan.md"],
+        "plan_fields": ["checkpoint"]
+      }
+    },
+    {
+      "name": "Implement",
+      "state_range": [8, 12],
+      "interactive": false,
+      "max_budget": 80,
+      "gate": {
+        "postconditions": true,
+        "q_score_min": 0.5
+      }
+    }
+  ]
+}

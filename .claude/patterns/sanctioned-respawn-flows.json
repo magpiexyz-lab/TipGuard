@@ -1,0 +1,130 @@
+{
+  "$comment": "#1335 — manifest of sanctioned multi-spawn agent flows. detect-trace-overwrites.py reads this when deciding whether 2+ spawns of the same agent within a single run_id should be treated as a workaround candidate for the retrospective enumerator. Adding a new sanctioned flow → update this file ONLY (do not hardcode in detect-trace-overwrites.py). Per round-2 critic concern 8c063c718af7: hardcoded 5-entry allowlist missed 6+ legitimate respawn flows in /verify and /bootstrap; manifest extraction makes this single-source-of-truth.",
+  "version": "1.1",
+  "schema_notes": "Each entry: {agent, sanctioned_callers, [precondition_artifact, precondition_field, precondition_value], rationale}. spawn-log records SPAWN events with fields {agent, attributed_to, head_sha, hook, run_id, skill, spawn_index, timestamp} and has NO source_state field (round-2 concern 58c839632d84) — sanctioning is by agent identity + optional precondition_artifact check (e.g., solve-critic round-2 is sanctioned ONLY when the round-1 sidecar exists with round=1, proving the orchestrator followed the archival contract from solve-reasoning.md Phase 5). The special string 'lead-orchestrator' may appear in sanctioned_callers for cases where the lead invokes the agent directly without a state-file delegation (built-in subagents like Explore/Plan/general-purpose, and lead-merge writers). Each non-'lead-orchestrator' caller path MUST point at an existing file that mentions the agent name — drift is detectable via the consistency check in lib/sanctioned_flows_validator.py (future hardening).",
+  "flows": [
+    {
+      "agent": "solve-critic",
+      "sanctioned_callers": [
+        ".claude/patterns/solve-reasoning.md",
+        ".claude/skills/resolve/state-5d-adversarial-challenge.md",
+        ".claude/skills/solve/state-1-execute.md"
+      ],
+      "precondition_artifact": ".runs/solve-critic-round1.json",
+      "precondition_field": "round",
+      "precondition_value": 1,
+      "rationale": "Round-2 critic loop. Sanctioned ONLY when round-1 sidecar archive exists with round=1 — proves the orchestrator followed the archival contract from solve-reasoning.md Phase 5 (#1331). When the precondition fails, the candidate IS emitted because that means round 2 ran without round-1 archival = vector 5 input source missing. Note: /change spawns solve-critic indirectly via solve-reasoning.md Phase 5 (state-3-solve-reasoning.md does not mention solve-critic by name, only delegates to solve-reasoning.md); the canonical caller is therefore solve-reasoning.md."
+    },
+    {
+      "agent": "scaffold-images",
+      "sanctioned_callers": [
+        ".claude/procedures/design-critic.md"
+      ],
+      "rationale": "design-critic Step 5.5 Priority 2: respawn for slot regeneration when generated images don't match brief. Per scaffold-images.md self-degradation handler — 'If this agent is respawned from design-critic Step 5.5 Priority 2 to regenerate a specific slot, the resulting change IS a fix'. The actual respawn instruction lives in the procedure file, not the agent definition."
+    },
+    {
+      "agent": "scaffold-libs",
+      "sanctioned_callers": [
+        ".claude/skills/bootstrap/state-11b-lib-verify.md"
+      ],
+      "rationale": "Bootstrap state-11b 1-budget retry: if manifest incomplete after initial 11a spawn, re-spawn ONCE (cumulative_spawn_count limits to 2 total)."
+    },
+    {
+      "agent": "design-critic",
+      "sanctioned_callers": [
+        ".claude/skills/verify/state-3a-design-agents.md",
+        ".claude/skills/verify/state-3c-ux-merge.md"
+      ],
+      "rationale": "verify Stage 1b per-page re-spawn (#1274) after shared-component fixes. Also verify state-3c ux-merge re-spawn after ux-journeyer fixes touch UI files. Epoch-numbered traces."
+    },
+    {
+      "agent": "implementer",
+      "sanctioned_callers": [
+        ".claude/skills/bootstrap/state-16-unit-test-generation.md"
+      ],
+      "rationale": "Bootstrap state-16: re-spawn for commit-only or lint-cleanup retry (1-budget per missing module / per lint error)."
+    },
+    {
+      "agent": "merge-design-critic-traces",
+      "sanctioned_callers": ["lead-orchestrator"],
+      "rationale": "Sanctioned merge writer per AOC v1.1 — see write-guard allow-list. Lead invokes after all per-page design-critic spawns complete."
+    },
+    {
+      "agent": "merge-design-consistency-checker-traces",
+      "sanctioned_callers": ["lead-orchestrator"],
+      "rationale": "Sanctioned merge writer per AOC v1.1 (#1257). Lead invokes after all batch design-consistency-checker spawns complete."
+    },
+    {
+      "agent": "merge-scaffold-pages-traces",
+      "sanctioned_callers": ["lead-orchestrator"],
+      "rationale": "Sanctioned merge writer per AOC v1.1. Lead invokes after all per-page scaffold-pages spawns complete."
+    },
+    {
+      "agent": "resolve-challenger",
+      "sanctioned_callers": [".claude/skills/resolve/state-5d-adversarial-challenge.md"],
+      "rationale": "Light-mode adversarial challenge; separate from solve-critic full-mode. Both can appear in same resolve run (different roles, not multi-spawn of the same agent)."
+    },
+    {
+      "agent": "Explore",
+      "sanctioned_callers": ["lead-orchestrator"],
+      "rationale": "Built-in claude-code subagent for codebase exploration. Multi-spawn is canonical: lead invokes 3 parallel Explore agents during solve-reasoning Phase 1 (the spawning is in the lead's narrative execution, not a state-file directive). Explore does NOT write to .runs/agent-traces/ (no init-trace.py invocation), so 'multi-spawn = trace overwrite' is a false-positive class for this agent."
+    },
+    {
+      "agent": "Plan",
+      "sanctioned_callers": ["lead-orchestrator"],
+      "rationale": "Built-in claude-code subagent for implementation planning. May be multi-spawned (up to 3) in /solve Phase 2 / native plan mode. Does NOT write to .runs/agent-traces/. Spawned via the lead's narrative execution, not a state-file directive."
+    },
+    {
+      "agent": "general-purpose",
+      "sanctioned_callers": ["lead-orchestrator"],
+      "rationale": "Built-in claude-code subagent for ad-hoc multi-step research. Multi-spawn is normal. Does NOT write to .runs/agent-traces/."
+    },
+    {
+      "agent": "design-consistency-checker",
+      "sanctioned_callers": [
+        ".claude/skills/verify/state-3a-design-agents.md",
+        ".claude/skills/verify/state-3b-quality-gate.md",
+        ".claude/skills/verify/state-3d-quality-fix.md"
+      ],
+      "rationale": "verify per-batch checker. Multi-spawn legitimate when checking large page sets in batches across stages 3a/3b/3d; lead invokes merge-design-consistency-checker-traces.py after."
+    },
+    {
+      "agent": "ux-journeyer",
+      "sanctioned_callers": [
+        ".claude/skills/verify/state-2-phase1-parallel.md",
+        ".claude/skills/verify/state-3a-design-agents.md"
+      ],
+      "rationale": "verify per-page UX journey checker. Multi-spawn per page; results merged into aggregate ux-journeyer.json."
+    },
+    {
+      "agent": "behavior-verifier",
+      "sanctioned_callers": [
+        ".claude/skills/verify/state-2-phase1-parallel.md"
+      ],
+      "rationale": "verify Phase 1 parallel behavior verifier. Multi-spawn per page; results merged."
+    },
+    {
+      "agent": "accessibility-scanner",
+      "sanctioned_callers": [
+        ".claude/skills/verify/state-2-phase1-parallel.md"
+      ],
+      "rationale": "verify Phase 1 parallel accessibility scanner. Multi-spawn per page; results merged."
+    },
+    {
+      "agent": "security-fixer",
+      "sanctioned_callers": [
+        ".claude/skills/verify/state-2-phase1-parallel.md",
+        ".claude/skills/verify/state-3c-ux-merge.md",
+        ".claude/skills/verify/state-4-security-merge-fix.md"
+      ],
+      "rationale": "Fix-rebuild-recheck cycle in /verify may re-spawn for additional fix passes across stages 2/3c/4."
+    },
+    {
+      "agent": "quality-fixer",
+      "sanctioned_callers": [
+        ".claude/skills/verify/state-3d-quality-fix.md"
+      ],
+      "rationale": "Fix-rebuild-recheck cycle in /verify state-3d may re-spawn for additional fix passes."
+    }
+  ]
+}

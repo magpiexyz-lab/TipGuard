@@ -1,0 +1,22 @@
+{
+  "skill": "teardown",
+  "phases": [
+    {
+      "name": "Plan",
+      "state_range": [0, 1],
+      "interactive": true,
+      "gate": {
+        "completed_states": [1]
+      }
+    },
+    {
+      "name": "Implement",
+      "state_range": [2, 5],
+      "interactive": false,
+      "max_budget": 30,
+      "gate": {
+        "completed_states": [5]
+      }
+    }
+  ]
+}

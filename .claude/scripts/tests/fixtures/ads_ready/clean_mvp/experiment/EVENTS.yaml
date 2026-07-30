@@ -1,0 +1,7 @@
+events:
+  landing_viewed:
+    funnel_stage: landing
+    archetypes: [web-app]
+  signup_complete:
+    funnel_stage: activation
+    archetypes: [web-app]

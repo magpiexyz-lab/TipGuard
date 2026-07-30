@@ -1,0 +1,21 @@
+{
+  "_comment": "Files known to read .runs/ artifacts via raw open()/json.load() without going through runs_reader.* helpers. The coherence rule `provenance_aware_runs_read` suppresses findings on these files during the soak period. Each entry should be migrated in a follow-up PR; when this list is empty, promote the rule's severity from `warn` to `block` and set is_strict_aoc=True in the HANDLERS entry. See `.claude/patterns/delegated-drifting-spring.md` follow-up plan.",
+  "allowed": [
+    ".claude/hooks/adversarial-merge-gate.sh",
+    ".claude/hooks/lib-gate-verdicts.sh",
+    ".claude/scripts/append-hook-friction.py",
+    ".claude/scripts/detect-trace-overwrites.py",
+    ".claude/scripts/enumerate-pending-retrospective-findings.py",
+    ".claude/scripts/lifecycle-finalize.sh",
+    ".claude/scripts/merge-design-consistency-checker-traces.py",
+    ".claude/scripts/merge-design-critic-traces.py",
+    ".claude/scripts/migrate-experiment-yaml.py",
+    ".claude/scripts/refine-analysis.py",
+    ".claude/scripts/synthetic-regression-injection.sh",
+    ".claude/scripts/verify-change-solve.py",
+    ".claude/scripts/verify-deploy-3b.py",
+    ".claude/scripts/verify-resolve-challenge.py",
+    ".claude/scripts/verify-review-adversarial.py",
+    ".claude/scripts/write-q-score.py"
+  ]
+}

@@ -1,0 +1,30 @@
+name: Stack Knowledge Graduation Atomicity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      # Only run when stack files are touched — fast no-op on other PRs.
+      - '.claude/stacks/**/*.md'
+
+jobs:
+  check-graduation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    # HC1: template-only. Same reason as nightly audit workflow.
+    if: github.repository == 'magpiexyz-lab/mvp-template'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so `git show base:path` and `git diff base...head` work.
+          fetch-depth: 0
+
+      - name: Install Python dependencies
+        run: pip3 install pyyaml
+
+      - name: Check graduation atomicity
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 scripts/ci-check-graduation-atomicity.py --base "$BASE_SHA" --head "$HEAD_SHA"

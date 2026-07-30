@@ -1,0 +1,8 @@
+{
+  "flip_rate_threshold": 0.05,
+  "min_sample_size": 10,
+  "window_size": 30,
+  "consecutive_over_threshold_required": 2,
+  "oscillation_halt_threshold": 2,
+  "causal_analysis_timeout_seconds": 30
+}

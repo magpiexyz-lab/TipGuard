@@ -1,0 +1,75 @@
+# Dependencies
+node_modules/
+
+# Claude Code transient state
+.claude/worktrees/
+.claude/scheduled_tasks.lock
+
+# Next.js (update if you change stack.framework)
+.next/
+out/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Sensitive file patterns (defense in depth)
+*.key
+*.pem
+credentials*
+*.secret
+*.token
+service-account*.json
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Vercel (update if you change stack.hosting)
+.vercel/
+
+# Skill run artifacts (ephemeral execution state)
+.runs/
+.venv-docx/
+externals-decisions.json
+
+# TypeScript
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+
+# Debug logs
+*.log
+
+# Playwright (update if you change stack.testing)
+/test-results/
+/playwright-report/
+/blob-report/
+/e2e/.auth.json
+
+# Lock files from other package managers (this project uses npm)
+pnpm-lock.yaml
+yarn.lock
+
+# Codex CLI experiments (per-operator parallel deployment of project config).
+# These are a Codex-flavored mirror of .claude/ (.codex/hooks.json contains
+# hardcoded absolute paths under $HOME — not team-portable as-is). If/when the
+# Codex side is parameterized to use $CLAUDE_PROJECT_DIR and team-shared,
+# remove these entries and check the files in.
+.codex/
+.agents/
+AGENTS.md

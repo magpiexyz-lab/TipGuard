@@ -1,0 +1,60 @@
+# Synthetic experiment.yaml reproducing the three failure modes from #1387.
+# Used by test_behavior_contract_auditor.py + manual smoke tests.
+#
+# FM1: /spec-builder must call /api/spec-builder/turn (multi-turn AI surface)
+# FM2: /portfolio/[slug] must enumerate fixture slugs in sitemap
+# FM3: scaffold-pages traces must include self_check_score
+#
+# A passing implementation produces .runs/behavior-implementation-audit.json
+# with uncovered_count == 0. The DraftLabs failure produced uncovered_count > 0
+# at FM1 (no fetch reachable) + FM2 (no slug iteration in sitemap.ts).
+name: issue-1387-repro
+owner: template-tests
+type: web-app
+
+stack:
+  services:
+    - runtime: nextjs
+      hosting: vercel
+      ui: shadcn
+      testing: playwright
+  auth: supabase
+  analytics: posthog
+
+golden_path:
+  - step: "1"
+    page: landing
+  - step: "2"
+    page: spec-builder
+  - step: "3"
+    page: portfolio
+
+behaviors:
+  - id: b-03
+    hypothesis_id: h-02
+    given: visitor lands on the homepage
+    when: clicks the "Try spec builder" CTA
+    then: engages in a multi-turn AI conversation that emits a structured brief
+    tests:
+      - "[audit:api-fetch=/api/spec-builder/turn] AI asks 5 progressive questions"
+      - "[audit:ai-conversation] multi-turn conversation surface"
+      - "[audit:event=spec_builder_started] tracked on first turn"
+    level: 2
+    actor: user
+    pages: [spec-builder]
+    anonymous_allowed: true
+
+  - id: b-13
+    hypothesis_id: h-04
+    given: anonymous visitor looking at case studies
+    when: clicks any portfolio thumbnail
+    then: sees the case study at /portfolio/<slug>, indexable by crawlers
+    tests:
+      - "[audit:sitemap-instance=portfolio/slug] each fixture slug indexed"
+      - "[audit:render] page renders for any known slug"
+    level: 1
+    actor: user
+    pages: [portfolio-detail]
+    anonymous_allowed: true
+    dynamic_segments:
+      slug: [harborline-internal-orders, northwind-tutoring-marketplace, tinroof-photo-orders-refunded]

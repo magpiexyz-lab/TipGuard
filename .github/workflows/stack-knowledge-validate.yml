@@ -1,0 +1,46 @@
+name: Stack Knowledge Validate
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    # HC1: this workflow is a no-op on downstream forks so the migration lint
+    # and cross-file hash uniqueness check only fire against the template repo.
+    if: github.repository == 'magpiexyz-lab/mvp-template'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Python dependencies
+        run: pip3 install pyyaml pytest
+
+      - name: Parser tests
+        run: python3 -m pytest scripts/test_stack_knowledge_parser.py -v --tb=short
+
+      - name: Per-file validate (schema + forbidden-heading lint + within-file uniqueness)
+        shell: bash
+        run: |
+          # Single source of truth for scan paths:
+          # scripts/lib/stack_knowledge_parser.STACK_KNOWLEDGE_SCAN_PATHS via
+          # iter_stack_knowledge_files() (already excludes TEMPLATE.md / *.archive.md).
+          mapfile -t files < <(python3 scripts/print-stack-knowledge-files.py)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No live stack-knowledge files found — skipping."
+            exit 0
+          fi
+          python3 scripts/validate-stack-knowledge.py "${files[@]}"
+
+      - name: Cross-file uniqueness
+        run: python3 scripts/ci-check-stack-knowledge.py
+
+      - name: Convergence config validate
+        run: python3 scripts/validate-convergence-config.py
+
+      - name: Install shellcheck
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+
+      - name: Lint verification_snippet fields (M3 — issue #1397 retro)
+        run: python3 scripts/lint-verification-snippets.py

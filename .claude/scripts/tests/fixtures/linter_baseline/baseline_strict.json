@@ -1,0 +1,14 @@
+{
+  "uncovered": [],
+  "diverged": [],
+  "unjustified_true": [],
+  "drift_declared": [],
+  "cross_file_contradiction": [],
+  "summary": {
+    "uncovered": 0,
+    "diverged": 0,
+    "unjustified_true": 0,
+    "drift_declared": 0,
+    "cross_file_contradiction": 0
+  }
+}

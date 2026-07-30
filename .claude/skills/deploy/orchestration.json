@@ -1,0 +1,22 @@
+{
+  "skill": "deploy",
+  "phases": [
+    {
+      "name": "Plan",
+      "state_range": [0, 2],
+      "interactive": true,
+      "gate": {
+        "completed_states": [2]
+      }
+    },
+    {
+      "name": "Implement",
+      "state_range": ["3a", 6],
+      "interactive": false,
+      "max_budget": 50,
+      "gate": {
+        "completed_states": [6]
+      }
+    }
+  ]
+}

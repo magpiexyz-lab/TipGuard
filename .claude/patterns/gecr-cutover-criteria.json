@@ -1,0 +1,36 @@
+{
+  "$comment": "Phase C cutover criteria for GECR rules in soak mode (#1276/#1291 convention). Each rule's soak_window + deny_flip_trigger codifies when the warn→deny mode flip is required. Closes the a72d712 (#1415) / caef8ab (#1437) meta-recurrence pattern: 'rule ships warn-only → soak window passes without follow-up → advisory-only carve-out becomes permanent → enforcement gap silently re-introduced'. The verify-linter rule `gecr-cutover-overdue` (template-coherence-rules.json) flags any entry whose soak_window elapsed AND flip_pr_required is still true. soak_window_min_real_cycles is informational — evaluated by the human filing the flip PR, not by the linter (a clean checkout has no cycle-count data source).",
+  "schema_version": 1,
+  "rules": {
+    "recovery-path-skip-pairing": {
+      "$comment": "Soak extended 30→120d by the #1855 remediation PR: the first 71 days were VACUOUS — verify-gate-evidence.py had no runtime call site, so zero candidates were structurally possible and this trigger could never be met. The same PR wires the call site (check-observation-artifacts.sh gate-evidence step, warn mode, statuses recorded in observation-enforcement.json.gate_evidence), so the clock is honest from its merge. Unlock = the deny_flip_trigger observed via that channel; flip PR sets severity 'block' in gate-evidence-rules.json + flip_pr_required false here. Deadline 2026-09-15; if still unmet, retire or fix the matcher — do not blind-extend again. Tracker issue #2013.",
+      "soak_window_min_days": 120,
+      "soak_window_min_real_cycles": 2,
+      "deny_flip_trigger": "At least 1 candidate of kind=recovery-path-skip emitted AND correctly filed-or-suppressed in a real /verify or /change run",
+      "first_merged_at": "2026-05-18T21:22:53+08:00",
+      "flip_pr_required": true,
+      "tracker": "#2013-gecr-real-soak",
+      "mode_env": "GATE_EVIDENCE_RECOVERY_SKIP_MODE"
+    },
+    "sparse-trace-pairing": {
+      "$comment": "Soak extended 30→120d by the #1855 remediation PR — same vacuous-soak rationale and same newly-wired call site as recovery-path-skip-pairing above. Unlock = the deny_flip_trigger observed via observation-enforcement.json.gate_evidence; flip PR sets severity 'block' in gate-evidence-rules.json + flip_pr_required false. Deadline 2026-09-15. Tracker issue #2013.",
+      "soak_window_min_days": 120,
+      "soak_window_min_real_cycles": 2,
+      "deny_flip_trigger": "At least 1 sparse-trace candidate (init-stub-survived OR lead-orchestrated-missing-aoc-v1.3) detected AND paired with an observation in a real run",
+      "first_merged_at": "2026-05-18T21:22:53+08:00",
+      "flip_pr_required": true,
+      "tracker": "#2013-gecr-real-soak",
+      "mode_env": "GATE_EVIDENCE_SPARSE_TRACE_MODE"
+    },
+    "prior-failure-consultation-gate": {
+      "$comment": "Step 14c gate in verify-recurrence-guard.py — enforces prior_failure_consultation[] for dossier entries with designer_consultation_attestation_required=true. Tracked alongside the two GECR rules above so the same gecr-cutover-overdue linter rule (template-coherence-rules.json) flags it when overdue, even though it is a verifier-side gate rather than a declarative GECR rule. Soak extended 30→120d by the #1855 remediation PR: this gate IS live but its trigger path was never exercised end-to-end in 71 days, and the historical linter message suggested CONSULTATION_DENY=deny while the code tested =='1' (the remediation makes both spellings work). Unlock = a real /solve --defect run emitting the consultation (VERIFY WARN line); flip PR defaults CONSULTATION_DENY on + flip_pr_required false. Deadline 2026-09-15. Tracker issue #2013.",
+      "soak_window_min_days": 120,
+      "soak_window_min_real_cycles": 2,
+      "deny_flip_trigger": "At least 1 /solve --defect run with semantic-match dossier entry AND consultation correctly emitted",
+      "first_merged_at": "2026-05-18T21:22:53+08:00",
+      "flip_pr_required": true,
+      "tracker": "#2013-gecr-real-soak",
+      "mode_env": "CONSULTATION_DENY"
+    }
+  }
+}

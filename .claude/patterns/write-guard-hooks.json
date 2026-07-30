@@ -1,0 +1,30 @@
+{
+  "$comment": "Manifest of Bash-matcher PreToolUse hooks that protect a path via shell-redirect detection. Every entry must contain a bound-target match() in its hook source for the protected_path_regex, and must handle every write_operator. Enforced by the bash_hook_write_operator_binding rule (.claude/patterns/template-coherence-rules.json) and the test_bash_hook_write_operator_binding.py suite. Adding a new write-guard hook of this class requires a manifest entry; the rule will flag any unregistered .sh that contains the historical anti-pattern shape. See .claude/patterns/bound-target-write-guard.md for the canonical pattern. Class scope: Bash-matcher PreToolUse hooks only — Write/Edit-matcher hooks (e.g., gate-artifact-write-gate.sh) do not see shell redirects and are not in scope.",
+  "write_guards": [
+    {
+      "hook": ".claude/hooks/agent-trace-write-guard.sh",
+      "protected_path_regex": "agent-traces\\/",
+      "write_operators": [">", ">>", "&?>", "tee", "cp", "mv", "dd"]
+    },
+    {
+      "hook": ".claude/hooks/trace-write-guard.sh",
+      "protected_path_regex": "agent-spawn-log\\.jsonl",
+      "write_operators": [">", ">>", "&?>", "tee", "cp", "mv", "dd"]
+    },
+    {
+      "hook": ".claude/hooks/fix-ledger-write-guard.sh",
+      "protected_path_regex": "\\.runs\\/(fix-ledger\\.jsonl|fix-log\\.md)",
+      "write_operators": [">", ">>", "&?>", "tee", "cp", "mv", "dd"]
+    },
+    {
+      "hook": ".claude/hooks/bootstrap-phase-a-write-guard.sh",
+      "protected_path_regex": "src/app/(layout\\.tsx|not-found\\.tsx|error\\.tsx|globals\\.css)",
+      "write_operators": [">", ">>", "&?>", "tee", "cp", "mv", "dd"]
+    },
+    {
+      "hook": ".claude/hooks/gate-artifact-bash-write-guard.sh",
+      "protected_path_regex": "\\.runs\\/[^\\s\"']+\\.json",
+      "write_operators": [">", ">>", "&?>", "tee", "cp", "mv", "dd"]
+    }
+  ]
+}

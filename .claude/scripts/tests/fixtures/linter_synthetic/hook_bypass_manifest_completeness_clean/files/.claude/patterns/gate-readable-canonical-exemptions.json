@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "exemptions": [
+    {
+      "path": ".runs/synthetic-test.json",
+      "category": "structural-bootstrap",
+      "justification": "Test fixture entry with all required fields populated"
+    }
+  ]
+}

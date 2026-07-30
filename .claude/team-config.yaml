@@ -1,0 +1,46 @@
+# Team identity (publishable values — safe to commit).
+#
+# Used by /ads-ready to verify that an MVP's PostHog / Supabase / Railway /
+# Vercel / Stripe configuration targets the team's accounts rather than a
+# personal-org account that happens to also be accessible by the operator's
+# CLI auth. /ads-ready performs STRICT match against the lists below, not
+# "any project the operator's token can see".
+#
+# All values below are non-secret identifiers:
+#   - PostHog `phc_` api_token: publishable client-side key (write-only, same
+#     class as Stripe `pk_test_`); safe to commit.
+#   - Org IDs / project IDs / team IDs / account IDs: identifiers, not credentials.
+#
+# Update procedure:
+#   1. Run `bash .claude/scripts/lib/discover-team-config.sh` (queries each
+#      CLI's API for the operator's current scope; operator manually picks
+#      which entries are real team accounts vs personal/sandbox).
+#   2. Update this file and commit.
+#   3. Every MVP forked from the template inherits this list at bootstrap.
+
+team:
+  posthog:
+    organization_ids:
+      - "019c8a5f-b87f-0000-709b-934cc664d034"
+    project_ids:
+      - 321343
+    # Publishable phc_ tokens (write-only, embedded in MVP client code).
+    # MVP's NEXT_PUBLIC_POSTHOG_KEY must match one of these exactly.
+    project_api_tokens:
+      - "phc_9pSomMlHylLB9GXolTGMZ9jZJnITRwNaJacJLkKA8rY"
+
+  supabase:
+    organization_ids:
+      - "obuaxwsgbeldselmkspr"
+
+  railway:
+    workspace_ids:
+      - "3a026845-c577-49f8-9069-e00635166813"  # magpiexyz's Projects
+
+  vercel:
+    team_ids:
+      - "team_dqG4d1BFUM1D1vEBjX35nlhK"  # Magpiexyz Ltd
+
+  stripe:
+    account_ids:
+      - "acct_1T7vHa2UrEpIG9lr"  # Draftlabs (covers both test_mode and live_mode API keys)

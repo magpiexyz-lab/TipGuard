@@ -1,0 +1,23 @@
+{
+  "skill": "bootstrap",
+  "phases": [
+    {
+      "name": "Plan",
+      "state_range": [0, 7],
+      "interactive": true,
+      "gate": {
+        "completed_states": [7],
+        "files_exist": [".runs/current-plan.md"]
+      }
+    },
+    {
+      "name": "Implement",
+      "state_range": [8, 15],
+      "interactive": false,
+      "max_budget": 100,
+      "gate": {
+        "postconditions": true
+      }
+    }
+  ]
+}

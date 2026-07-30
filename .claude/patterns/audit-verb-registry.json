@@ -1,0 +1,37 @@
+{
+  "$comment": "#1393 r3 Item 3 — closed registry of human-authored audit-tag verbs accepted in experiment.yaml as `[audit:<verb>=<value>]`. Producer = human (the user authoring the spec); consumer = lead + AST scanner. Skeleton for #1387 (forthcoming). Adding a verb: open a PR appending an entry here; the linter handler `audit_tag_verb_recognized` accepts the new verb on next run.",
+  "$contract": "Each verb declares value_type (path | free-text | event-key | enum) and consumer (lead | ast-scanner). value_type=path values are interpreted as repo-relative URLs/routes for AST scanning. consumer=ast-scanner verbs are validated by audit_tag_claim_matches_ast handler.",
+  "schema_version": 1,
+  "verbs": {
+    "api-fetch": {
+      "value_type": "path",
+      "consumer": "ast-scanner",
+      "description": "Page declares it fetches this API path at runtime. AST scanner asserts the generated page source contains a matching fetch('<path>') call. Example: [audit:api-fetch=/api/portfolio]"
+    },
+    "seo": {
+      "value_type": "free-text",
+      "consumer": "lead",
+      "description": "SEO claim attached to a page or behavior. Read by the lead during review; no AST enforcement. Example: [audit:seo=High-intent keyword]"
+    },
+    "event": {
+      "value_type": "event-key",
+      "consumer": "ast-scanner",
+      "description": "Page or behavior declares it fires this analytics event. AST scanner asserts a matching trackEvent('<key>') or equivalent call exists in source. Example: [audit:event=signup_started]"
+    },
+    "sitemap-instance": {
+      "value_type": "path",
+      "consumer": "ast-scanner",
+      "description": "#1387: page declares dynamic-segment URL instances must appear in sitemap.ts. Value format: '<route-prefix>/<segment-name>' (e.g., portfolio/slug). AST scanner asserts src/app/sitemap.ts iterates over <segment-name>. Behavior-verifier B7 in /verify additionally validates each declared dynamic_segments[<segment>][...] value appears in /sitemap.xml. Example: [audit:sitemap-instance=portfolio/slug]"
+    },
+    "ai-conversation": {
+      "value_type": "none",
+      "consumer": "ast-scanner",
+      "description": "#1387: page declares a multi-turn AI conversation surface. AST scanner asserts the page contains BOTH a fetch('/api/...') call (any internal API route) AND useState/useReducer/useChat for turn state. Behavior-verifier B7 validates the API route receives real POSTs with non-stub bodies at runtime. Example: [audit:ai-conversation]"
+    },
+    "render": {
+      "value_type": "none",
+      "consumer": "lead",
+      "description": "#1387: trivial 'page must render' claim. AST scanner skips (page existence is already checked at state-11c). Reserved for human-readable test prose. Example: [audit:render] page renders for known slug"
+    }
+  }
+}

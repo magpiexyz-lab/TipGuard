@@ -1,0 +1,224 @@
+# iterate-cross-config.yaml — Operator config for /iterate --cross (PostHog-only)
+#
+# Lives at the operator's repository root. Consumed by every state in /iterate --cross.
+# Copy this file to `experiment/iterate-cross-config.yaml` and adjust as needed.
+# Missing files fall back to the inline defaults shown here.
+#
+# Schema is loose — unknown keys are ignored.
+
+# How far back to query PostHog. Default 90 days catches most Phase 1 campaigns
+# (which run for 7 days each). Increase for retrospective batch evaluations.
+window_days: 90
+
+# Require DB ground-truth (Supabase or Railway). Default true.
+# DB is the ONLY path that filters test/team accounts out of signup counts
+# (via the email_filter below). When true and NO DB auth is present at all
+# (no `supabase login`, no `railway login`), state-x0b (and --phase2 x5) HALT
+# with login instructions instead of silently producing PostHog-only verdicts
+# that include test/team signups. Set to false ONLY if you knowingly accept
+# unfiltered PostHog signup counts (e.g. a portfolio with no databases).
+require_db_ground_truth: true
+
+# Optional override. If unset, x0 auto-discovers via PostHog /api/projects/.
+# Set this when your PostHog account has multiple projects and the wrong one
+# is auto-picked.
+# posthog_project_id: 12345
+
+# Phase filter. Controls which MVPs are surfaced for evaluation.
+phase_filter:
+  # Glob/LIKE pattern for utm_campaign. Empty string = no filter (show all gclid
+  # traffic). Use "%-search-v%" to filter to Phase 1 Manual CPC convention.
+  utm_campaign_like: ""
+  # When utm_campaign_like is set: still include MVPs WITHOUT the matching UTM
+  # if they have other gclid traffic (covers MVPs whose final URL didn't include
+  # explicit utm tagging). Set to false for strict matching.
+  fallback_all_gclid: true
+
+# Phase 2 filter. Used by `/iterate --cross --phase2` (include-scope) AND by
+# Phase 1's x0a merge (exclude-split: the same pattern removes phase2 campaign
+# clicks from the Phase-1 signup-conversion denominator, so the two phases
+# partition paid clicks instead of double-counting the phase2 slice).
+# This is intentionally separate from Phase 1's `phase_filter` because Phase 2
+# must fail closed and must never fall back to all gclid traffic.
+phase2:
+  # LIKE pattern applied symmetrically to PostHog `properties.utm_campaign`
+  # (pay_intent numerator) and Google Ads campaign names (click denominator).
+  # The DB numerator also uses this filter, applies the same email_filter as
+  # Phase 1 DB signups, and trusts only the paid-gclid subset for the verdict.
+  # Default when omitted: "%phase2%".
+  utm_campaign_like: "%phase2%"
+  # Escape hatch for the Phase-1 exclude-split ONLY: campaigns listed here
+  # (exact name match) are never treated as phase2 even when their name matches
+  # utm_campaign_like — for the rare legit Phase-1 campaign whose name contains
+  # the phase2 token. Does NOT affect x5's include-scope. Default: empty.
+  exclude_exempt_campaigns: []
+
+# Per-MVP overrides. Auto-populated by /iterate --cross x2 with LLM-derived
+# signup classifications. Operator can also set `owner` and `deploy_domain`
+# to enable owner grouping and improve URL fallback queries.
+#
+# After x2 runs SILENTLY (no per-MVP confirmation), every MVP gets a
+# signup_events array (possibly empty) plus `classified_by` and `classified_at`
+# audit fields. To override an LLM choice: edit the events list AND set
+# `classified_by: operator` — that flag tells x2 to never overwrite your
+# override on subsequent runs.
+#
+# x2 prints a classification summary to stdout (counts + suspect MVPs where
+# signups/visitors > 50%, suggesting misclassification). Review the summary
+# before trusting the verdicts in x3/x4.
+mvp_mappings:
+  # Phase 2 DB pay_intent ground truth reuses this same per-MVP
+  # `supabase_project_ref`; there is no separate Phase 2 database key.
+  #
+  # Auto-populated examples (DO NOT copy — x2 writes these for you):
+  # diarly:
+  #   signup_events: [signup_complete]
+  #   owner: lego
+  #   deploy_domain: diarly.draftlabs.org
+  #   classified_by: llm-x2-strong       # strong: standard signup_complete match
+  #   classified_at: 2026-05-11T00:00:00Z
+  # smelt:
+  #   signup_events: [waitlist_signup, signup_complete]
+  #   classified_by: llm-x2-strong
+  # stylica-ai:
+  #   signup_events: [signup_complete, activate]
+  #   classified_by: llm-x2-inferred     # inferred: activate isn't standard but catalog suggests it's the conversion
+  # rubber-duck-api:
+  #   signup_events: [signup_start]
+  #   classified_by: llm-x2-loose        # loose: no _complete event in catalog — review carefully
+  # mosai:
+  #   signup_events: []                  # empty = no detectable signup event
+  #   classified_by: x2-empty
+  #
+  # Operator override example (forces x2 to leave this alone on subsequent runs):
+  # foundrygraph:
+  #   signup_events: [discovery_call_booked]   # operator picked this manually
+  #   classified_by: operator                  # x2 will NEVER overwrite this
+
+# Legacy duplicate-key dedup. Merges multiple PostHog project_name values
+# into a single canonical MVP record BEFORE x1 catalogs events. Use this only
+# for historical data — new MVPs should be named correctly at bootstrap time
+# (kebab-case enforced by /bootstrap state-3, see validate_experiment_yaml.py).
+#
+# Format: <canonical_key>: [<alias_1>, <alias_2>, ...]
+#
+# Merge semantics (per canonical):
+# - gclid_visitors = sum of canonical + aliases
+# - first_seen = min, last_seen = max
+# - sample_utm_campaign = picked from the row with the highest gclid_visitors
+# - All other fields kept from canonical
+#
+# Idempotent: re-running iterate-cross with the same aliases is a no-op after
+# the first merge. Conflicting aliases (same alias listed under two canonicals)
+# raise an error.
+mvp_aliases: {}
+  # Example (legacy duplicates from before kebab-case enforcement):
+  # splitshare: [split-share-neon]
+  # agent-shield: [agentshield]
+  # rubber-duck-api: [rubberduck]
+
+# Fallback whitelist used by x1a (auto_default_match flag) and x2 (auto-classify
+# branch). MVPs whose catalog contains any of these events skip the LLM and use
+# the matching events directly. Add new event names as your MVPs evolve.
+signup_whitelist:
+  - signup_complete
+  - signup_completed
+  - waitlist_signup
+  - waitlist_submit
+  - waitlist_submitted
+  - early_access_signup
+  - early_access_submitted
+  - email_submitted
+  - form_submitted
+  - register_complete
+  - account_created
+  - activate
+
+# Phase 1 thresholds. Current decision rule:
+#   visitors < visitors_floor -> INSUFFICIENT_DATA
+#   visitors >= visitors_floor AND conv >= conv_rate_go -> GO
+#   visitors >= visitors_floor AND conv < conv_rate_go -> NO_GO
+#
+# Conversion uses DB-first effective signups divided by visitors. When state-x0a
+# loaded Google Ads clicks, `visitors` resolves to `ga_clicks`; otherwise it
+# falls back to PostHog `gclid_visitors`.
+thresholds:
+  visitors_floor: 100  # Minimum paid visitors before GO/NO_GO is evaluable
+  conv_rate_go: 0.06   # GO when effective_signups / visitors is >= this
+  pay_intent_visitors_floor: 300  # Phase 2 click floor (~6 expected pay-intents at theta2; = 6/pay_intent_rate_go). Phase 1 keeps visitors_floor.
+  pay_intent_rate_go: 0.02  # Phase 2 theta2 gate; GO MVPs rank by revenue_intent_per_click from pay_intent.price_cents
+  pay_intent_wiring_high_clicks: 150  # pay_intent_wiring_unproven severity boundary: >=150 zero-intent clicks -> high (P(0|theta2)=0.98^150~4.8%), below -> info
+  signups_go: 6        # Derived visitors_floor * conv_rate_go; kept for back-compat
+  # Stalled-campaign triage (state-x3 annotate_stalled → state-x4 STALLED
+  # worklist). Detects INSUF rows whose click FLOW is ~zero (bid-capped
+  # shortfall). Defaults live in DEFAULT_CONFIG (iterate_cross_verdicts.py);
+  # listed here for operator tunability.
+  stalled_escalate_days: 14       # min days since stalled_since before escalation (kill fold-in) can fire
+  stalled_eta_max_days: 45        # lifetime ETA to visitors_floor above this -> stalled_slow
+  stalled_impr_per_day_floor: 10  # lifetime impressions/day below this -> cause zero_serve (losing auctions)
+  stalled_weak_demand_min_impr: 1000  # min lifetime impressions before weak_demand may be diagnosed
+  stalled_weak_demand_ctr: 0.01   # CTR below this (with impressions >= min) -> weak_demand (real negative signal)
+  relaunch_protection_days: 30    # kill-proposal + stalled suppression window after phase1_relaunch_at
+
+# Google Ads campaign-name → MVP-name overrides used by state-x0a when the
+# automatic bucket logic in iterate_cross_ga.py can't map a campaign to its
+# canonical MVP (typo, abbreviation, or completely different naming). The
+# substring-match-on-match_key default handles most cases (xpredict → x-predict,
+# Lumen-Parth → lumen). Manual overrides are only needed for:
+#   - typos (StaylicaAi-Lew → stylica-ai — campaign mis-typed)
+#   - re-namings (PubCheck_Search_Validation_V1 → verify)
+#   - prefix differences (autodropship-search-v1 → dropship-ops)
+#
+# Key format: lowercase alphanumeric only (use match_key normalization).
+# Value: the canonical MVP key (matches experiment.yaml.name on that deploy).
+ga_campaign_aliases: {}
+  # Example overrides — uncomment as needed:
+  # staylicaai: stylica-ai
+  # pubcheck: verify
+  # autodropship: dropship-ops
+
+# Campaigns allowed to send paid traffic to a DIFFERENT MVP's site without a
+# foreign_campaign_traffic flag (x5 Step 5.6) — intentional cross-promo only.
+# Entries are match_key-normalized and compared against the utm_campaign
+# string, the paying MVP name, and the receiving MVP name.
+cross_campaign_whitelist: []
+  # - handpick-search-phase2-v1
+
+# Orphan-merge threshold shared by state-x0 and state-x5 Step 3b: an
+# __orphan_<host>__ row is absorbed into its match_key-matching canonical MVP
+# when gclid-intersection / min(canonical, orphan) >= this value (same deploy
+# with partial page tracking); below it the orphan stays a separate
+# MISSING_PROJECT_NAME row.
+orphan_merge_overlap_threshold: 0.70
+
+# PostHog query tuning for /iterate --cross (state-x0/x0c/x1/x2/x5). Defaults
+# below are the call-site defaults — the empirical ceilings for a 365-day
+# window (2026-07 runs); you only need this block to deviate from them.
+# - union_batch_size_catalog: state-x1 event-catalog UNION ALL batch size.
+#   20 hits HogQL max-execution-time on the first batch at 365d; 5 passes.
+# - union_batch_size_signup: state-x2 signup-count UNION ALL batch size
+#   (lighter queries; 10 passes where 20 fails).
+# - max_time_seconds: curl --max-time for every /iterate --cross HogQL call.
+# - overlap_*: state-x0/x5 per-pair gclid-overlap cooldown-resume. PostHog
+#   applies a server-side circuit breaker after repeated identical failures
+#   ("can run again in about 4 minutes"), so failed pairs sleep
+#   overlap_failure_sleep_seconds in-pass and remaining failures retry in up
+#   to overlap_max_passes passes separated by overlap_cooldown_seconds.
+posthog_query:
+  union_batch_size_catalog: 5
+  union_batch_size_signup: 10
+  max_time_seconds: 120
+  overlap_cooldown_seconds: 300
+  overlap_failure_sleep_seconds: 20
+  overlap_max_passes: 3
+
+# Note: state-x0a (Chrome MCP path) discovers sub-accounts every run by
+# scraping https://ads.google.com/aw/accounts and then visits each sub-account's
+# campaigns page individually (avoids MCC parent table virtualization that hides
+# rows beyond the viewport). There is no sub-account cache — fresh discovery
+# (~3s) ensures new sub-accounts surface automatically. Sub-account ocids are
+# NOT stored in this file.
+#
+# Date window comes from `window_days` above; x0a computes &dr=YYYYMMDD~YYYYMMDD
+# and injects it directly into each per-account URL (bypassing the date picker
+# UI which has a known UiCustomizationService hang failure mode on MCP tabs).

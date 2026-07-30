@@ -1,0 +1,583 @@
+{
+  "$comment": "Inventory of write-blocking gates classified for EARC (Evidence-Anchored Repair Channel) applicability. Gates that may deny a write — hooks under .claude/hooks/*.sh and skill convention gates under .claude/skills/*/gates/*.sh.",
+  "_doc_inclusion_criterion": "A gate is in scope if it can DENY (exit 2 + stderr) under any condition. Pure pass-through dispatchers and read-only diagnostics are out of scope.",
+  "_classification_legend": {
+    "kind": ["hook", "skill-convention"],
+    "deny_class": [
+      "state-binary",
+      "input-schema",
+      "verdict-pass-through",
+      "policy-allowlist",
+      "other"
+    ],
+    "earc_subpattern": [
+      "gate-side",
+      "writer-side",
+      "not-applicable",
+      "out-of-scope"
+    ],
+    "tool_surface": ["Bash", "Edit", "Write", "Agent"]
+  },
+  "_filed_issues": ["#1182", "#1189"],
+  "_authors_note": "Classification reasoning: state-binary gates that deny based on a phase/state with NO documented escape are EARC candidates. input-schema gates (artifact-integrity-gate) reject malformed payloads — the payload itself is the bug, no repair path is meaningful. verdict-pass-through gates (most skill convention gates) check whether a prerequisite verdict file exists — the verdict IS the evidence channel. policy-allowlist gates have a documented allowlist (lead-deliverable-gate's manifest, agent-trace-write-gate's authorized writers).",
+  "gates": [
+    {
+      "path": ".claude/skills/bootstrap/gates/write.sh",
+      "kind": "skill-convention",
+      "deny_class": "state-binary",
+      "tool_surface": ["Edit", "Write"],
+      "shell_bypass_possible": true,
+      "existing_escape": "ALSO-ALLOW on .runs/phase-a-repair-attestations/<file>.json with evidence_validated:true (slice 3)",
+      "earc_subpattern": "gate-side",
+      "covered_in_slice": 3,
+      "covered_in_pr": "#1205",
+      "bash_guard": ".claude/hooks/bootstrap-phase-a-write-guard.sh (WARN mode in slice 3; flips to deny in slice 4 after one-week soak)",
+      "rationale": "Reported in #1182. Protected files: layout.tsx, not-found.tsx, error.tsx, globals.css. Phase B time-window deny with no repair channel; lead bypassed via python -c shell write. Closed by EARC slice 3: write-phase-a-repair.sh validates evidence + stamps lead-fix; gate ALSO-ALLOWs on fresh attestation; bootstrap-phase-a-write-guard.sh closes the shell-bypass surface."
+    },
+    {
+      "path": ".claude/scripts/write-recovery-trace.sh",
+      "kind": "writer",
+      "deny_class": "state-binary",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "--fixes-json + --evidence-source paired flags (slice 1); validate-recovery.sh stamps recovery_validated:true via validate_evidence library when lead_evidence_source validates",
+      "earc_subpattern": "writer-side",
+      "covered_in_slice": 1,
+      "covered_in_pr": "#1203",
+      "rationale": "Reported in #1189. Lacks --fixes-json acceptance; fixer-class agents that crash mid-flight cannot record evidence-anchored fixes; lead misclassifies as self-degraded losing abandoned status fidelity. Closed by EARC slice 1: writer accepts --fixes-json + --evidence-source; trace gains lead_evidence_source + per-entry lead_transcribed:true; validator delegates to shared validate_build_evidence."
+    },
+    {
+      "path": ".claude/hooks/agent-trace-write-gate.sh",
+      "kind": "hook",
+      "deny_class": "policy-allowlist",
+      "tool_surface": ["Edit", "Write"],
+      "shell_bypass_possible": true,
+      "existing_escape": "authorized writers via canonical-writer policy + agent-trace-write-guard.sh dual-layer",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Already covered by canonical-writer migration (PR3/PR4). Bash bypass closed by agent-trace-write-guard.sh."
+    },
+    {
+      "path": ".claude/hooks/agent-trace-write-guard.sh",
+      "kind": "hook",
+      "deny_class": "policy-allowlist",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "authorized writers leading-anchor allowlist (write-agent-trace.sh, write-recovery-trace.sh, write-degraded-trace.py, etc.)",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Already a canonical Bash guard. Allowlist IS the evidence channel."
+    },
+    {
+      "path": ".claude/hooks/artifact-integrity-gate.sh",
+      "kind": "hook",
+      "deny_class": "input-schema",
+      "tool_surface": ["Edit", "Write"],
+      "shell_bypass_possible": false,
+      "existing_escape": "fail-open on parse errors (line 50-54)",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Schema validation — payload itself is the bug. No 'legitimate fix path' is meaningful."
+    },
+    {
+      "path": ".claude/hooks/fix-ledger-write-guard.sh",
+      "kind": "hook",
+      "deny_class": "policy-allowlist",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "write-fix-ledger.py canonical writer + benign known-residual STATE 0 allowlist",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Already a canonical Bash guard with allowlist as evidence channel."
+    },
+    {
+      "path": ".claude/hooks/lead-deliverable-gate.sh",
+      "kind": "hook",
+      "deny_class": "policy-allowlist",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "lead-only-artifacts.json manifest (writers must be 'lead')",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Manifest-based; lead writes the artifact directly with executor_field attestation. The attestation IS the evidence."
+    },
+    {
+      "path": ".claude/hooks/observe-commit-gate.sh",
+      "kind": "hook",
+      "deny_class": "policy-allowlist",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "observe-result.json verdict gates the commit",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict file IS the evidence channel."
+    },
+    {
+      "path": ".claude/hooks/phase-boundary-gate.sh",
+      "kind": "hook",
+      "deny_class": "state-binary",
+      "tool_surface": ["Edit", "Write", "Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "fail-open when pipeline-phase.json missing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Soft enforcement; fail-open is the escape. Direct /skill use bypasses naturally."
+    },
+    {
+      "path": ".claude/hooks/retrospective-content-gate.sh",
+      "kind": "hook",
+      "deny_class": "input-schema",
+      "tool_surface": ["Edit", "Write"],
+      "shell_bypass_possible": true,
+      "existing_escape": "step_5a_executor:lead attestation field",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Schema check — content must include attestation field. The field IS the evidence."
+    },
+    {
+      "path": ".claude/hooks/state-completion-gate.sh",
+      "kind": "hook",
+      "deny_class": "state-binary",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "VERIFY commands in state-registry.json — lead can fix the artifact and re-run",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "VERIFY commands themselves are the evidence channel; lead can repair the artifact and the gate re-evaluates. No escape needed."
+    },
+    {
+      "path": ".claude/hooks/trace-write-guard.sh",
+      "kind": "hook",
+      "deny_class": "policy-allowlist",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "skill-agent-gate.sh as the only authorized writer",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Allowlist-based. Spawn-log writes are tightly scoped."
+    },
+    {
+      "path": ".claude/hooks/verify-pr-gate.sh",
+      "kind": "hook",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "verify-recheck.json verdict",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict file IS the evidence channel."
+    },
+    {
+      "path": ".claude/hooks/verify-report-gate.sh",
+      "kind": "hook",
+      "deny_class": "state-binary",
+      "tool_surface": ["Edit", "Write"],
+      "shell_bypass_possible": true,
+      "existing_escape": "self-heals via legacy trace migration + fix-ledger consolidation; hard_gate_failure carve-out",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Already self-heals. The hard_gate_failure carve-out is the evidence escape — when verify hard-gates fail, the gate steps aside."
+    },
+    {
+      "path": ".claude/hooks/patterns-saved-gate.sh",
+      "kind": "hook",
+      "deny_class": "input-schema",
+      "tool_surface": ["Edit", "Write"],
+      "shell_bypass_possible": true,
+      "existing_escape": "fix-ledger.jsonl invariant truth source",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Schema invariant check; payload is the bug. Underlying truth source is the evidence."
+    },
+    {
+      "path": ".claude/skills/bootstrap/gates/_scaffold-common.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "BG1.json verdict file presence + PASS",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based; the BG1.json IS the evidence channel."
+    },
+    {
+      "path": ".claude/skills/bootstrap/gates/scaffold-init.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "shared with _scaffold-common.sh",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based; same pattern as _scaffold-common."
+    },
+    {
+      "path": ".claude/skills/bootstrap/gates/scaffold-setup.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "shared with _scaffold-common.sh",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based."
+    },
+    {
+      "path": ".claude/skills/bootstrap/gates/scaffold-libs.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "shared with _scaffold-common.sh",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based."
+    },
+    {
+      "path": ".claude/skills/bootstrap/gates/scaffold-images.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "shared with _scaffold-common.sh",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based."
+    },
+    {
+      "path": ".claude/skills/bootstrap/gates/scaffold-landing.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "BG1 verdict + Phase A files presence + scaffold-libs completion",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Multi-layer verdict + presence checks; presence checks are the evidence channel."
+    },
+    {
+      "path": ".claude/skills/bootstrap/gates/scaffold-pages.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "BG1 verdict + Phase A files presence + scaffold-libs completion",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Multi-layer verdict + presence checks."
+    },
+    {
+      "path": ".claude/skills/bootstrap/gates/scaffold-wire.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "BG1 + BG2 verdicts",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based; #1189's writer-side fix is the EARC for the recovery flow downstream from this gate."
+    },
+    {
+      "path": ".claude/skills/bootstrap/gates/commit.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "BG1/BG2/BG2.5/BG4 verdicts + checklist stamps",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict + checklist gating."
+    },
+    {
+      "path": ".claude/skills/change/gates/implementer.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "G3 verdict",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based."
+    },
+    {
+      "path": ".claude/skills/change/gates/visual-implementer.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "G3 verdict",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based."
+    },
+    {
+      "path": ".claude/skills/change/gates/solve-critic.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "change context + prior /solve preconditions",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Precondition-based."
+    },
+    {
+      "path": ".claude/skills/change/gates/commit.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "G3/G4/G5/G6 verdicts + checklist stamps",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict + checklist."
+    },
+    {
+      "path": ".claude/skills/distribute/gates/commit.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "verdict files",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based."
+    },
+    {
+      "path": ".claude/skills/resolve/gates/commit.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "epilogue carve-out for observe-result.json",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict + explicit epilogue carve-out."
+    },
+    {
+      "path": ".claude/skills/resolve/gates/resolve-challenger.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "resolve preconditions",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Precondition-based."
+    },
+    {
+      "path": ".claude/skills/resolve/gates/solve-critic.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "resolve context preconditions",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Precondition-based."
+    },
+    {
+      "path": ".claude/skills/review/gates/commit.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Bash"],
+      "shell_bypass_possible": false,
+      "existing_escape": "review verdicts",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based."
+    },
+    {
+      "path": ".claude/skills/review/gates/review-challenger.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "review preconditions",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Precondition-based."
+    },
+    {
+      "path": ".claude/skills/solve/gates/solve-critic.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "solve preconditions",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Precondition-based."
+    },
+    {
+      "path": ".claude/skills/verify/gates/_phase1.sh",
+      "kind": "skill-convention",
+      "deny_class": "state-binary",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "STATE 0 postconditions + build-result.json artifact checks",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Postcondition + artifact checks ARE the evidence channel."
+    },
+    {
+      "path": ".claude/skills/verify/gates/observer.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared _phase1 logic."
+    },
+    {
+      "path": ".claude/skills/verify/gates/design-critic.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared."
+    },
+    {
+      "path": ".claude/skills/verify/gates/behavior-verifier.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared."
+    },
+    {
+      "path": ".claude/skills/verify/gates/accessibility-scanner.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared."
+    },
+    {
+      "path": ".claude/skills/verify/gates/build-info-collector.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared."
+    },
+    {
+      "path": ".claude/skills/verify/gates/design-consistency-checker.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "verdicts + archetype + scope checks",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Verdict-based."
+    },
+    {
+      "path": ".claude/skills/verify/gates/quality-fixer.sh",
+      "kind": "skill-convention",
+      "deny_class": "state-binary",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "hard_gate_failure carve-out (skip to STATE 7 on fail)",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Already has explicit hard-gate carve-out."
+    },
+    {
+      "path": ".claude/skills/verify/gates/security-fixer.sh",
+      "kind": "skill-convention",
+      "deny_class": "state-binary",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "hard_gate_failure carve-out similar to quality-fixer",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Already has hard-gate carve-out."
+    },
+    {
+      "path": ".claude/skills/verify/gates/security-defender.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared."
+    },
+    {
+      "path": ".claude/skills/verify/gates/security-attacker.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared."
+    },
+    {
+      "path": ".claude/skills/verify/gates/performance-reporter.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared."
+    },
+    {
+      "path": ".claude/skills/verify/gates/spec-reviewer.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared."
+    },
+    {
+      "path": ".claude/skills/verify/gates/ux-journeyer.sh",
+      "kind": "skill-convention",
+      "deny_class": "verdict-pass-through",
+      "tool_surface": ["Agent"],
+      "shell_bypass_possible": false,
+      "existing_escape": "_phase1.sh sharing",
+      "earc_subpattern": "not-applicable",
+      "covered_in_slice": null,
+      "rationale": "Shared."
+    }
+  ],
+  "_summary": {
+    "total_gates": 49,
+    "earc_candidates": 2,
+    "earc_candidate_paths": [
+      ".claude/skills/bootstrap/gates/write.sh",
+      ".claude/scripts/write-recovery-trace.sh"
+    ],
+    "not_applicable": 47,
+    "rationale_for_narrow_scope": "Most gates are verdict-pass-through (the verdict file itself is the evidence channel) or input-schema (the payload IS the bug — no repair path). Only the two reported instances exhibit the binary-contract-no-evidence-escape pathology in the EARC sense. Slice 4 generalisation flips the WARN linter rule to DENY but does NOT migrate additional gates, because the inventory shows the pathology is genuinely confined to the two reported instances + their structural siblings (handled in Slice 3's bootstrap-phase-a-write-guard.sh)."
+  },
+  "_enforcement_versions": {
+    "schema_version": "1.1",
+    "last_audited": "2026-04-30",
+    "audit_owner": "EARC implementation (closes #1182, #1189)",
+    "_v1_1_changes": "Slice 4 (chore/earc-generalisation): updated covered_in_slice + covered_in_pr fields on the two reported instances after slices 1 + 3 shipped. existing_escape rewritten to reflect the now-shipped EARC channels. Bash-guard reference added for #1182. The earc-gate-evidence-escape coherence linter rule (template-coherence-rules.json) now reports zero findings against this inventory."
+  }
+}

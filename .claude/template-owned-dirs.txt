@@ -1,0 +1,29 @@
+# Directories
+.claude/stacks
+.claude/commands
+.claude/patterns
+.claude/archetypes
+.claude/hooks
+.claude/scripts
+.claude/agents
+.claude/procedures
+.claude/orchestration
+.claude/skills
+scripts
+docs
+.github
+# Individual files in .claude/
+.claude/settings.json
+.claude/agent-prompt-footer.md
+.claude/template-owned-dirs.txt
+# Root files
+Makefile
+CLAUDE.md
+.gitleaks.toml
+LICENSE
+README.md
+run-skill.sh
+# Experiment examples
+experiment/experiment.example.yaml
+experiment/ads.example.yaml
+experiment/retro-template.md

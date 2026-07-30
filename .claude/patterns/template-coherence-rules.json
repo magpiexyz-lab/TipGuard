@@ -1,0 +1,754 @@
+{
+  "$comment": "Declarative cross-file coherence rules consumed by .claude/scripts/verify-linter.sh. Each rule is a static-analysis assertion across template files. Findings are reported as CROSS_FILE_CONTRADICTION category and folded into observation-phase Step 5b-coherence. Rule types: field_role_map, artifact_lifecycle, verdict_vocab_consistency (AOC v1 R1), ledger_ownership (AOC v1 R2), consumer_coverage (AOC v1 R3), internal_href_validity (#1069 cross-agent fixture contract). See .claude/patterns/coherence-rule-schema.json for per-type shape.",
+  "rules": [
+    {
+      "id": "golden-path-role-map",
+      "type": "field_role_map",
+      "severity": "block",
+      "field": "golden_path",
+      "canonical_function": "derive_scope_pages",
+      "description": "SCOPE consumers (count-based / set-based access) must call derive_scope_pages() rather than reading golden_path directly. FUNNEL consumers (sequence/order-based access) declare a coherence-allow pragma. Count-based regex (len(golden_path), set(golden_path)) is forbidden unconditionally — pragma cannot whitelist these. See #1024.",
+      "consumers": [
+        ".claude/skills/bootstrap/state-11c-page-scaffold.md",
+        ".claude/skills/change/state-11a-verify-prep.md",
+        ".claude/agents/gate-keeper.md",
+        ".claude/agents/spec-reviewer.md",
+        ".claude/agents/scaffold-pages.md",
+        ".claude/agents/performance-reporter.md",
+        ".claude/procedures/scaffold-pages.md",
+        ".claude/procedures/accessibility-scanner.md",
+        ".claude/skills/verify/state-0-read-context.md",
+        ".claude/stacks/auth/supabase.md",
+        ".claude/procedures/wire.md",
+        ".claude/procedures/ux-journeyer.md",
+        ".claude/procedures/behavior-verifier.md",
+        ".claude/agents/behavior-verifier.md",
+        ".claude/agents/ux-journeyer.md",
+        ".claude/agents/accessibility-scanner.md",
+        ".claude/stacks/testing/playwright.md",
+        ".claude/stacks/distribution/google-ads.md"
+      ]
+    },
+    {
+      "id": "golden-path-consumer-discovery",
+      "type": "discover_consumers",
+      "severity": "warn",
+      "field": "golden_path",
+      "against_rule": "golden-path-role-map",
+      "description": "Grep-discovers files mentioning golden_path in a consumption context; WARNs on drift between grep-found set and golden-path-role-map consumers list. Non-blocking — real violations are caught by golden-path-role-map. See #1024 follow-up.",
+      "path_excludes": [
+        ".claude/templates/",
+        ".claude/patterns/template-coherence-rules.json",
+        ".claude/patterns/fix-log/",
+        ".claude/patterns/solve-reasoning.md",
+        ".claude/patterns/observation-phase.md",
+        ".claude/patterns/verdict-ledger-rules.md",
+        ".claude/patterns/tdd.md",
+        ".claude/patterns/verify.md",
+        ".claude/patterns/state-registry.json",
+        ".claude/patterns/agent-trace-protocol.md",
+        ".claude/scripts/lib/derive_pages.py",
+        ".claude/scripts/migrate-experiment-yaml.py",
+        ".claude/scripts/validate-behavior-pages.py",
+        ".claude/scripts/verify-linter.sh",
+        ".claude/scripts/tests/",
+        ".claude/skills/solve/",
+        ".claude/skills/change/state-2-read-context.md",
+        ".claude/skills/spec/state-4-golden-path.md",
+        ".claude/skills/spec/state-6-stack-funnel.md",
+        ".claude/skills/bootstrap/state-5-present-plan.md",
+        ".claude/skills/bootstrap/state-15-scan-and-classify.md",
+        ".claude/skills/distribute/state-3-implement.md",
+        ".claude/skills/distribute/state-4-generate.md",
+        ".claude/archetypes/web-app.md",
+        ".claude/agent-prompt-footer.md",
+        ".claude/worktrees/",
+        ".runs/",
+        "memory/"
+      ],
+      "consumption_patterns": [
+        "\\.get\\(['\"]golden_path",
+        "yaml\\.safe_load[^\\n]{0,200}golden_path",
+        "experiment\\.golden_path",
+        "experiment\\[['\"]golden_path['\"]\\]",
+        "for\\s+\\w+\\s+in\\s+[^\\n]{0,100}golden_path",
+        "\\bgolden_path\\s*\\[",
+        "from\\s+experiment\\.yaml[^\\n]{0,100}golden_path",
+        "experiment\\.yaml[^\\n]{0,200}\\bgolden_path\\b",
+        "reads?\\s+[^\\n]{0,100}golden_path",
+        "\\bgolden_path\\s+page\\b",
+        "golden_path\\s+step",
+        "each\\s+[^\\n]{0,50}golden_path"
+      ]
+    },
+    {
+      "id": "aoc-verdict-vocab-consistency",
+      "type": "verdict_vocab_consistency",
+      "severity": "block",
+      "registry_path": ".claude/patterns/agent-registry.json",
+      "agent_files_glob": ".claude/agents/*.md",
+      "predicate_file": ".claude/scripts/evaluate-hard-gate-predicates.py",
+      "description": "AOC v1 R1: per-agent verdict declarations in .claude/agents/*.md must use only values from verdict_agents_schema.<agent>.allowed_verdicts (lowercase: pass/fail/blocked/unresolved). result qualifiers must come from allowed_results. evaluate-hard-gate-predicates.py functions must reference only verdict values declared in the registry. Catches drift like #1044 (agent emits 'all fixed' while gate keys on 'pass')."
+    },
+    {
+      "id": "aoc-fix-ledger-ownership",
+      "type": "ledger_ownership",
+      "severity": "block",
+      "allowed_writers": [
+        ".claude/scripts/write-fix-ledger.py",
+        ".claude/scripts/render-fix-log.py",
+        ".claude/skills/verify/state-0-read-context.md",
+        ".claude/skills/verify/state-5-e2e-tests.md"
+      ],
+      "_transitional_note": "state-0 (init with empty header) and state-5 (inline e2e/spec fix entries) are allowed during the AOC v1 transition period. Follow-up observation to migrate state-5 e2e/spec fix writes through a proper agent trace so the renderer can own fix-log.md outright.",
+      "gated_paths": [
+        ".runs/fix-ledger.jsonl",
+        ".runs/fix-log.md"
+      ],
+      "description": "AOC v1 R2: fix-ledger.jsonl and fix-log.md may only be written by the canonical writers. Catches any template file or script that writes directly to either path (e.g., echo >> .runs/fix-log.md, open('.runs/fix-log.md','a')). Complemented at runtime by .claude/hooks/fix-ledger-write-guard.sh."
+    },
+    {
+      "id": "gate-artifact-writer-enforcement",
+      "type": "gate_artifact_writer_enforcement",
+      "severity": "warn",
+      "manifest_path": ".claude/patterns/gate-readable-artifacts-canonical.json",
+      "allowed_writers": [".claude/scripts/init-context.sh"],
+      "scan_corpus": [".claude/skills", ".claude/agents", ".claude/patterns", ".claude/procedures", ".claude/scripts"],
+      "convention_doc": ".claude/patterns/agent-output-contract.md",
+      "_transitional_note": "Severity=warn during soak window. Flipped to block in chore/canonical-writer-migration-deny PR after the soak window confirms zero new-code-path entries in .runs/hook-friction.jsonl from gate-artifact-bash-write-guard.sh.",
+      "description": "Issue #1299: writes to gate-readable manifest paths (declared in gate-readable-artifacts-canonical.json) must go through .claude/scripts/lib/write-gate-artifact.sh so {skill,run_id,written_at} stamping is automatic. Scans state-files, agent docs, patterns, procedures, and helper scripts (.sh/.py) for write-syntax tokens (with open(path,'w'|'a'), json.dump-with-open, > path, tee path, cat <<EOF > path). Read-syntax (open(...,'r'), json.load, os.path.exists, [-f path], [-e path]) is allowlisted at line level to avoid the ~455-instance false-positive baseline (solve-critic R2-C1). Complemented at runtime by .claude/hooks/gate-artifact-bash-write-guard.sh. ALLOWED_WRITERS: .claude/scripts/init-context.sh is the co-canonical writer for .runs/<skill>-context.json (issue #1459) — it CREATES the run_id that write-gate-artifact.sh reads to stamp identity on every other gate-readable artifact. Chicken-and-egg with the canonical writer (whose identity-lookup requires the context to already exist). The fresh-create branches in init-context.sh (lines 117 bash heredoc, 122-145 python) explicitly include all 3 GRAIM v2 C1 fields (skill, run_id, written_at) in the base schema, preserving the identity invariant. The merge-existing branch (line 87) routes through write-gate-artifact.sh normally."
+    },
+    {
+      "id": "aoc-consumer-coverage",
+      "type": "consumer_coverage",
+      "severity": "block",
+      "canonical_source": ".runs/fix-ledger.jsonl",
+      "consumers": [
+        ".claude/agents/pattern-classifier.md",
+        ".claude/scripts/write-q-score.py",
+        ".claude/scripts/check-artifact-presence.py",
+        ".claude/scripts/check-cross-artifact-consistency.py",
+        ".claude/hooks/verify-report-gate.sh",
+        ".claude/patterns/state-registry.json",
+        ".claude/hooks/lib-verdict-consistency.sh",
+        ".claude/hooks/lib-artifacts.sh",
+        ".claude/scripts/compliance-audit.py",
+        ".claude/hooks/patterns-saved-gate.sh",
+        ".claude/hooks/skill-agent-gate.sh",
+        ".claude/scripts/check-observation-artifacts.sh"
+      ],
+      "description": "AOC v1 R3: every fix-count consumer must reference fix-ledger.jsonl as canonical source (closes #1048). Consumers that regex fix-log.md without also referencing the ledger are flagged as stale."
+    },
+    {
+      "id": "aoc-frontmatter-artifact-consistency",
+      "type": "frontmatter_artifact_consistency",
+      "severity": "block",
+      "schema_path": ".claude/patterns/verify-report-frontmatter.json",
+      "writer": ".claude/skills/verify/state-7a-write-report.md",
+      "consumers": [
+        ".claude/scripts/write-q-score.py",
+        ".claude/scripts/check-cross-artifact-consistency.py",
+        ".claude/scripts/lifecycle-finalize.sh",
+        ".claude/scripts/check-observation-artifacts.sh",
+        ".claude/scripts/validate-recovery.sh",
+        ".claude/hooks/verify-pr-gate.sh",
+        ".claude/patterns/state-registry.json",
+        ".claude/patterns/q-score.md",
+        ".claude/patterns/observation-phase.md"
+      ],
+      "description": "AOC v1.1 R4 (closes #1056): the verify-report.md frontmatter schema declares 13 fields. The writer (state-7a-write-report.md) must emit every declared field, and every consumer must reference only declared field names. Catches the producer-vs-consumer drift class for frontmatter — analogous to R3 for ledger. Also detects stale consumer field-name typos via edit-distance heuristic (e.g., build_attempt vs build_attempts, fix_log_count vs fix_log_entries)."
+    },
+    {
+      "id": "internal-href-validity",
+      "type": "internal_href_validity",
+      "severity": "warn",
+      "scaffold_glob": "src/app/**/*.tsx,src/app/**/*.ts,src/components/**/*.tsx",
+      "route_owner_hints": [
+        {"route_prefix": "/portfolio/", "fixture_candidates": ["src/app/portfolio/cases.ts", "src/app/portfolio/cases.tsx"]},
+        {"route_prefix": "/projects/", "fixture_candidates": ["src/app/projects/projects.ts"]},
+        {"route_prefix": "/catalog/", "fixture_candidates": ["src/app/catalog/items.ts"]},
+        {"route_prefix": "/invoices/", "fixture_candidates": ["src/app/invoices/invoices.ts"]},
+        {"route_prefix": "/quotes/", "fixture_candidates": ["src/app/quotes/quotes.ts"]}
+      ],
+      "description": "#1069 cross-agent fixture contract: walks scaffold-emitted files for href=\"/<route>/<slug-or-id>\" patterns; for each route matching a configured prefix, parses the canonical fixture file and verifies every referenced identifier appears as a literal string. Emits cross_file_contradiction findings for fabricated IDs that do not match the owning agent's canonical fixture. WARN severity — primary fix is the Key Constraints in scaffold-landing.md + scaffold-pages.md; this rule is defense-in-depth. Route-owner hints are a canonical but non-exhaustive mapping; projects with novel list-type pages extend this list or rely on the agent-level contract alone."
+    },
+    {
+      "id": "pages-no-payload-type-exports",
+      "type": "pages_no_payload_type_exports",
+      "severity": "warn",
+      "_transitional_note": "Severity is intentionally `warn` for the introduction phase (see #1161 fix PR). Existing bootstrapped projects may have pre-existing payload-shape type declarations in pages; ship as warn to surface findings without blocking /change for projects mid-flight. Tighten to `block` in a follow-up PR after a quiet period when grep across known projects shows zero pre-existing violations.",
+      "scope_glob": "src/app/**/*.tsx",
+      "path_excludes": [
+        "src/app/api/**",
+        "**/__tests__/**"
+      ],
+      "filename_excludes": [
+        "layout.tsx",
+        "loading.tsx",
+        "error.tsx",
+        "not-found.tsx",
+        "default.tsx",
+        "template.tsx",
+        "*.test.tsx",
+        "*.stories.tsx"
+      ],
+      "types_source_path": "src/lib/types.ts",
+      "description": "#1161 (b) defense-in-depth: pages must not declare payload-shape types (suffix Payload/Response/Request/Schema, exported or local) or types whose names collide with src/lib/types.ts exports. Pages must import from @/lib/types (canonical project-types file produced by scaffold-libs initial via supabase stack files: list and augmented by scaffold-wire per wire.md Step 6). The rule fires at bootstrap finalize and /change PR coherence pass. Currently `warn` severity for safe rollout — tighten to `block` once existing-project migration is complete."
+    },
+    {
+      "id": "artifact-transience-bootstrap",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "bootstrap",
+      "description": "Validate transient lifecycle declarations in registry[bootstrap] entries against actual deletion sources. Closes #1162 recurrence."
+    },
+    {
+      "id": "artifact-transience-verify",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "verify"
+    },
+    {
+      "id": "artifact-transience-change",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "change"
+    },
+    {
+      "id": "artifact-transience-review",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "review"
+    },
+    {
+      "id": "artifact-transience-resolve",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "resolve"
+    },
+    {
+      "id": "artifact-transience-distribute",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "distribute"
+    },
+    {
+      "id": "artifact-transience-iterate-check",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "iterate-check"
+    },
+    {
+      "id": "artifact-transience-solve",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "solve"
+    },
+    {
+      "id": "artifact-transience-observe",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "observe"
+    },
+    {
+      "id": "artifact-transience-upgrade",
+      "type": "artifact_transience",
+      "severity": "block",
+      "skill": "upgrade"
+    },
+    {
+      "id": "executor-enforcement",
+      "type": "executor_enforcement",
+      "severity": "block",
+      "manifest_path": ".claude/patterns/lead-only-artifacts.json",
+      "description": "Three-way mapping check for lead-only artifacts (closes #1152): hook coverage + schema field declared + no agent .md lists artifact as deliverable."
+    },
+    {
+      "id": "earc-gate-evidence-escape",
+      "type": "gate_evidence_escape",
+      "severity": "block",
+      "inventory_path": ".claude/patterns/gate-inventory.json",
+      "registry_path": ".claude/patterns/state-registry.json",
+      "description": "EARC (closes #1182, #1189 recurrence): every gate listed in gate-inventory.json with earc_subpattern in {gate-side, writer-side} must offer a documented evidence-escape branch (inline reference to attestation/EARC/lead_evidence_source) or be declared in state-registry.repair_evidence.",
+      "_comment": "Slice 1 (#1203): shipped in WARN. Slice 4b: flipped to BLOCK once gate-inventory.json showed zero unhandled findings — the two reported instances are wired via slices 1 + 3, and any new gate added with earc_subpattern in {gate-side, writer-side} but lacking an escape will now fail the linter."
+    },
+    {
+      "id": "graim-gate-artifact-identity",
+      "type": "gate_artifact_identity",
+      "severity": "warn",
+      "manifest_path": ".claude/patterns/gate-readable-artifacts-canonical.json",
+      "enforced_artifacts": [
+        ".runs/iterate-check-context.json",
+        ".runs/review-context.json",
+        ".runs/spec-context.json",
+        ".runs/upgrade-context.json",
+        ".runs/verify-lifecycle.json",
+        ".runs/agent-traces/scaffold-pages.json",
+        ".runs/pipeline-phase.json",
+        ".runs/trace-migration-unresolved.json"
+      ],
+      "description": "GRAIM v2 C1+C2 — warn when a VERIFY reading an enforced gate-readable artifact lacks identity assertion. enforced_artifacts grows in Slice 3. Slice 3.1 added 5 init-context-style artifacts. Slice 3.2 added 3 non-context artifacts; .runs/deploy-provision-3b.json is enrolled in the canonical manifest (writer migrated) but held back from this allowlist because its consumer is verify-deploy-3b.py (a wrapper script, not an inline VERIFY string), so identity enforcement would emit a structural false-positive without a state-registry.json edit."
+    },
+    {
+      "id": "graim-boundary-kind-required",
+      "type": "boundary_kind_required",
+      "severity": "warn",
+      "enforced_artifacts": [".runs/agent-traces/design-critic-*.json"],
+      "description": "GRAIM v2 C3 — warn when a fast-path branch emits a boundary-emitting artifact without gating on boundary_kind == diff."
+    },
+    {
+      "id": "graim-gate-artifact-discovery",
+      "type": "gate_artifact_discovery",
+      "severity": "warn",
+      "manifest_path": ".claude/patterns/gate-readable-artifacts-canonical.json",
+      "description": "GRAIM v2 — permanent warn-only auto-discovery: flag .runs/*.json paths that are gate-read but not in the canonical manifest (promotion regression catch)."
+    },
+    {
+      "id": "stack-files-env-gated-must-have-production-observability",
+      "type": "must_contain_section",
+      "severity": "block",
+      "applies_to_glob": ".claude/stacks/**/*.md",
+      "required_section": "## Production Observability",
+      "trigger_pattern_any": [
+        "\\?\\?\\s*[\"']phc_TEAM_KEY[\"']",
+        "\\|\\|\\s*[\"']placeholder-stripe-publishable[\"']",
+        "\\|\\|\\s*[\"']placeholder-anon-key[\"']",
+        "\\|\\|\\s*[\"']https://placeholder\\.supabase\\.co[\"']"
+      ],
+      "exclude_glob": [
+        ".claude/stacks/TEMPLATE.md",
+        ".claude/stacks/_archive/**"
+      ],
+      "description": "Issue #1170 lineage: stack files prescribing env-gated source code with literal placeholder fallbacks (e.g. ?? \"phc_TEAM_KEY\", || \"placeholder-stripe-publishable\") MUST include a `## Production Observability` section documenting the fail-loud contract. Without it the silent-fallback antipattern recurs. See .claude/stacks/TEMPLATE.md for the section requirements."
+    },
+    {
+      "id": "seg-auth-page-must-declare-force-dynamic",
+      "type": "must_contain_section",
+      "severity": "block",
+      "applies_to_glob": "src/app/**/[[]*[]]/**/page.tsx",
+      "required_section": "'force-dynamic'",
+      "trigger_pattern_any": [
+        "from\\s+['\"]@/lib/(auth|supabase-auth|supabase-auth-server)['\"]",
+        "from\\s+['\"]@supabase/ssr['\"]",
+        "\\b(requireRole|getCurrentUser|getSession)\\("
+      ],
+      "description": "Issue #1447 gap 1: pages whose path has ANY [seg] ancestor under src/app/ AND import auth helpers (requireRole, getCurrentUser, getSession, @/lib/supabase-auth*, @supabase/ssr) MUST declare `export const dynamic = 'force-dynamic'` at the top. Covers immediate-parent [seg] (src/app/items/[id]/page.tsx), deeper descendants (src/app/items/[id]/edit/page.tsx), and grandparent [seg] (src/app/[orgId]/projects/page.tsx). Without this, Next.js build prerender executes the loader for every slug returned by generateStaticParams(), captures the auth-redirect response, and bakes it into .next/ output as a static 404. The rule uses must_contain_section's literal-substring semantic (runner.py:2537) to match the code literal 'force-dynamic' (with single quotes, since this is the canonical Next.js syntax). The bracket-escaped glob `[[]*[]]` matches literal [seg] dirs; `**` on both sides catches the segment anywhere in the path. See nextjs.md Stack Knowledge entry 'When a [seg] page route does an auth lookup that may redirect' for the canonical pattern. Test fixture at .claude/scripts/tests/test_aoc_coherence_rules.py::TestMustContainSectionSourceCodeLiteral pins the source-code-literal use of must_contain_section across multiple [seg] depth scenarios."
+    },
+    {
+      "id": "events-yaml-seeded-from-stack-emits-events",
+      "type": "events_yaml_seeded_from_stack_emits_events",
+      "severity": "block",
+      "stack_glob": ".claude/stacks/**/*.md",
+      "events_yaml_path": "experiment/EVENTS.yaml",
+      "exclude_stack_glob": [".claude/stacks/TEMPLATE.md", ".claude/stacks/_archive/**"],
+      "description": "Issue #1447 gap 4 defense-in-depth: every event listed in any active stack frontmatter `emits_events:` MUST appear as a top-level key under `events:` in experiment/EVENTS.yaml. Primary enforcement is /spec state-6-stack-funnel.md Section 8 step 9 which seeds these events during spec assembly; this rule catches drift (e.g., a contributor adds `emits_events:` to a stack but forgets to update step 9 logic, or a user manually deletes a seeded event from EVENTS.yaml). The rule no-ops on the template repo itself (no experiment/EVENTS.yaml present) — it activates inside bootstrapped projects."
+    },
+    {
+      "id": "lib-readme-stack-knowledge-required",
+      "type": "must_contain_section",
+      "severity": "block",
+      "applies_to_glob": ".claude/scripts/lib/README.md",
+      "required_section": "## Stack Knowledge",
+      "trigger_pattern_any": ["^#\\s+.*\\.claude/scripts/lib/"],
+      "description": "Issue #1285 lineage: lib/README.md is the canonical discovery surface for reusable helpers in .claude/scripts/lib/. Removing the `## Stack Knowledge` section silently degrades cross-fix discovery for every consumer that calls iter_stack_knowledge_files() — solve-reasoning Phase 1 Agent 2, change/state-2-read-context.md hints writer, ci-check-stack-knowledge.py, validate-stack-knowledge workflow, recurrence-detector, resolve-causal-analyzer, stack_knowledge_audit, bootstrap state-12 + state-14. Trigger anchors on the stable path-prefix in the README's H1 (`# .claude/scripts/lib/ — ...`) rather than the human-readable suffix, so renaming the suffix (e.g. 'Reusable helpers' → 'Helper utilities') cannot silently disable the rule. When the section is absent the rule blocks PR merge."
+    },
+    {
+      "id": "lib-helper-stack-knowledge-required",
+      "type": "lib_helper_stack_knowledge_required",
+      "severity": "block",
+      "enumeration_glob": ".claude/scripts/lib/*.py",
+      "excluded_basenames": ["__init__.py", "test_*.py", "*_test.py"],
+      "consumption_patterns": [
+        {
+          "pattern_template": "from\\s+(?:\\.?(?:lib|scripts\\.lib)\\.)?<module>\\s+import\\b",
+          "excluded_paths": ["**/tests/**", "**/test_*.py", "**/*_test.py", ".claude/worktrees/**", ".claude/scripts/lib/<module>.py"]
+        },
+        {
+          "pattern_template": "<module>\\.[a-zA-Z_][\\w_]*\\(",
+          "excluded_paths": ["**/tests/**", "**/test_*.py", "**/*_test.py", ".claude/worktrees/**", ".claude/scripts/lib/<module>.py"]
+        }
+      ],
+      "caller_threshold": 2,
+      "authoritative_source": ".claude/scripts/lib/README.md",
+      "allowed_extensions": [".py", ".md"],
+      "pragma": {
+        "comment_template": "# coherence-allow: not-reusable: (.+)"
+      },
+      "description": "#1300 — every public function in lib/*.py with >=caller_threshold production callers (counted via narrow consumption_patterns excluding tests/ and worktrees/) MUST have a Stack Knowledge entry in .claude/scripts/lib/README.md whose stack_scope is module-precise (`scripts/lib/<module>`), OR the helper module MUST declare `# coherence-allow: not-reusable: <reason>` at module top. Closes the gap left by lib-readme-stack-knowledge-required (must_contain_section guards heading presence only — not per-helper drift). Round-2 critic 3bf11d4b38d7 — directory-level `stack_scope: scripts/lib` entries explicitly do NOT grandfather (the linter only recognizes module-precise scope), preventing the 3 pre-existing directory-level entries (image-evidence-provenance-phash, schema-version-run-id-binding, canonical-writer-policy-pattern) from nullifying per-helper coverage on day 1. Round-2 critic 36b36a5501aa — is_strict_aoc=True so severity=block findings actually block lifecycle-finalize.sh:289 under --warn-only --strict-aoc. Round-2 critic ee3bf527cea5 — pragma scanner is a new Python-comment regex helper (_check_python_pragma) anchored to top-of-file (max 50 lines), distinct from _parse_pragmas (HTML-comment template) and _pragma_in_window (substring-only). Round-2 critic b3b4d7037be5 — allowed_extensions=[.py, .md] filters out path-string false positives in .json/.sh files; consumption_pattern 2 is anchored with `\\(` to require call syntax."
+    },
+    {
+      "id": "bash-hook-write-operator-binding",
+      "type": "bash_hook_write_operator_binding",
+      "severity": "block",
+      "manifest_path": ".claude/patterns/write-guard-hooks.json",
+      "scan_glob": ".claude/hooks/*.sh,.claude/scripts/**/*.sh",
+      "pragma": "# coherence-allow: unbound-fastpath",
+      "convention_doc": ".claude/patterns/bound-target-write-guard.md",
+      "description": "Issue #1236 — class-level prevention for the unbound-co-occurrence regex anti-pattern that has recurred 7 times (#1023, #1045, #1064, #1123, #1185, #1223, #1230). Phase 1 verifies every entry in write-guard-hooks.json points at an existing hook whose source contains the protected_path_regex literal (proving it is referenced inside a bound-target match()) and references every declared write_operator. Phase 2 scans .claude/hooks/*.sh and .claude/scripts/**/*.sh for the historical anti-pattern shapes (`grep -qE '<op>.*<path>'` and `awk '/path/ && /(op)/'`) and flags any match in an unregistered hook as 'must register'."
+    },
+    {
+      "id": "markdown-cross-file-line-reference",
+      "type": "markdown_cross_file_line_reference",
+      "severity": "block",
+      "target_glob": ".claude/{stacks,skills,agents,patterns,templates}/**/*.md",
+      "pragma": "<!-- coherence-allow: line-number-cross-reference -->",
+      "convention_doc": ".claude/patterns/cross-reference-style.md",
+      "description": "Issue #1238 — flags stale line-number cross-references in template markdown. Branch 1 (cross-file) emits when a line-number qualifier (`(line N)`, `lines N-M`, `L\\d+-\\d+`, `on line N`) co-occurs within a 3-line window with a path-mention to a template-eligible file (extensions: md, yaml, yml, json, py, sh; src/-prefixed paths excluded since src/ is scaffold-emitted). Branch 2 (same-file) emits when the qualifier appears with no path-mention in the 3-line window — covers self-references that rot when the same file is edited. Pragma <!-- coherence-allow: line-number-cross-reference --> on the same or adjacent line suppresses both branches."
+    },
+    {
+      "id": "aoc-v12-lead-orchestrated-eligibility",
+      "type": "lead_orchestrated_eligibility_complete",
+      "severity": "block",
+      "registry_path": ".claude/patterns/agent-registry.json",
+      "description": "AOC v1.2 F7 — every agent in (verdict_agents - recovery_forbidden - lead_orchestrated_forbidden) that has a hard_gates entry MUST include `pass_lead_orchestrated` in allow_predicates; agents in `lead_orchestrated_forbidden` MUST NOT have it whitelisted. Closes design caveat C5: per-agent eligibility derives mechanically from existing registry fields (verdict_agents, recovery_forbidden, lead_orchestrated_forbidden) rather than being hand-curated."
+    },
+    {
+      "id": "aoc-v12-aggregate-ok-doc-impl-coherence",
+      "type": "aggregate_ok_predicate_doc_matches_impl",
+      "severity": "block",
+      "registry_path": ".claude/patterns/agent-registry.json",
+      "impl_path": ".claude/scripts/evaluate-hard-gate-predicates.py",
+      "description": "AOC v1.2 F8 — agent-registry.json's `_aggregate_ok_accepted_predicates` structured array MUST exactly match the predicate-name set called inside evaluate-hard-gate-predicates.py's aggregate_ok function. AST-based check using a deterministic name-pattern selector (^(pass_|validated_|legacy_|aggregate_)); no prose parsing, no line-number anchoring (closes round-3 critic concerns #6 + #2). Asserts EXACTLY ONE matching BoolOp(Or) chain in the function body — multiple chains is a refactor signal that the structured array can no longer represent the predicate set."
+    },
+    {
+      "id": "post-completion-respawn-doc-required",
+      "type": "post_completion_respawn_doc_present",
+      "severity": "warn",
+      "registry_path": ".claude/patterns/agent-registry.json",
+      "agents_dir": ".claude/agents",
+      "required_section": "## Post-completion re-spawn",
+      "description": "#1275 / Group A — every agent with `pass_lead_orchestrated` in its hard_gates `allow_predicates` MUST contain a `## Post-completion re-spawn` section in its .md describing how the lead orchestrates the re-spawn (SOURCE_RUN_ID/SOURCE_SKILL env-var contract, write-agent-trace.sh invocation, expected verdict). Enumerated from hard_gates (single source of truth) so adding a new lead-orchestrated agent automatically triggers the doc requirement. Severity=warn — informational catch for future drift."
+    },
+    {
+      "id": "gecr-cutover-overdue",
+      "type": "gecr_cutover_overdue",
+      "severity": "warn",
+      "criteria_path": ".claude/patterns/gecr-cutover-criteria.json",
+      "description": "OARC #1468/#1456 meta-defense — when a GECR rule's soak_window has elapsed AND flip_pr_required is still true (no follow-up deny-flip PR landed), emit a warning citing the tracker and the env_mode var to flip. Closes the a72d712 (#1415) / caef8ab (#1437) meta-recurrence pattern where soak-mode advisory-only carve-outs were forgotten and permanently weakened enforcement. Resolves `first_merged_at` from criteria entry (manual fill) OR git log first-add of the criteria file. Severity=warn — observability only; deny-flip is a follow-up PR."
+    },
+    {
+      "id": "hard-block-validators-integration-required",
+      "type": "validator_integration_required",
+      "severity": "block",
+      "minimum_integration_count": 2,
+      "validators": [
+        ".claude/scripts/validate-retrospective-completeness.py",
+        ".claude/scripts/validate-step55-evidence.py",
+        ".claude/scripts/validate-image-spec-compliance.py",
+        ".claude/scripts/validate-scaffold-recommendations-schema.py",
+        ".claude/scripts/validate-observer-evidence-coverage.py",
+        ".claude/scripts/validate-self-check-score-schema.py"
+      ],
+      "integration_points": [
+        {
+          "path": ".claude/patterns/state-registry.json",
+          "executable_keys": ["verify"],
+          "state_value_executable": true
+        },
+        ".claude/patterns/observation-phase.md",
+        ".claude/scripts/check-observation-artifacts.sh",
+        ".claude/scripts/lifecycle-finalize.sh",
+        ".claude/patterns/step55-evidence-rollout.md",
+        ".claude/skills/bootstrap/state-11b-lib-verify.md",
+        ".claude/patterns/agent-output-contract.md",
+        ".claude/agents/observer.md"
+      ],
+      "description": "#1295 PR1 — each hard-block validator MUST be referenced by basename in EXECUTABLE CONTEXT in at least one declared integration_point. JSON: only inside declared executable_keys (verify) OR bare-string state values whose parent_key matches state-name regex ^(?=.*\\d)[a-z0-9]+$ (HC-PR1-1 disambiguation: state-registry has 111 such bare-string entries; description/rationale strings do NOT count). .sh: non-comment lines only. .md: fenced code blocks only. Adding a new validator: add to validators[] AND wire it into ≥minimum_integration_count integration points' executable contexts in the same PR. #1307 — minimum_integration_count: 2 forces distinct-file cardinality so a single state-registry.json line edit cannot silently dereference multiple validators (the original failure mode in state 11b chaining 2 validators on one line). Backfill landed alongside the threshold flip: each previously single-integration validator now has a fenced bash invocation in its semantically-relevant domain-owner file (step55-evidence-rollout.md, state-11b-lib-verify.md, agent-output-contract.md, observer.md). #1272 follow-up: validator entries can be either bare strings (legacy) OR objects {path, required_env_prefix} (new — enforces an env-var prefix immediately before the invocation). The required_env_prefix sub-check is dormant infra in this PR; it activates when the deny-mode flip PR adds a rule entry with required_env_prefix populated for validate-step55-evidence.py — see .claude/patterns/step55-evidence-rollout.md for the rollout sequence."
+    },
+    {
+      "id": "hard-block-validator-inventory-completeness",
+      "type": "validator_inventory_completeness",
+      "severity": "block",
+      "discovery_glob": [
+        ".claude/scripts/validate-*.py",
+        "scripts/validate-*.py"
+      ],
+      "skip_validators": {
+        ".claude/scripts/validate-behavior-pages.py": {
+          "category": "cli-tool",
+          "justification": "Standalone CLI for behavior-page enumeration; not invoked by lifecycle-finalize. Use case: developers run manually to debug behavior coverage."
+        },
+        "scripts/validate-stack-knowledge.py": {
+          "category": "build-time",
+          "justification": "Run by /upgrade skill during template sync; not part of skill lifecycle gates."
+        },
+        "scripts/validate-experiment.py": {
+          "category": "build-time",
+          "justification": "Run by /spec skill at experiment.yaml authoring time; not part of skill lifecycle gates."
+        },
+        "scripts/validate-events.py": {
+          "category": "build-time",
+          "justification": "Run by /spec at experiment.yaml authoring; events.yaml validation is pre-execution."
+        },
+        "scripts/validate-semantics.py": {
+          "category": "build-time",
+          "justification": "Run by /spec at experiment.yaml authoring; semantic checks pre-execution."
+        },
+        "scripts/validate-frontmatter.py": {
+          "category": "build-time",
+          "justification": "Run by lifecycle-init for stack-file frontmatter validation; pre-skill-execution check, not part of finalize gates."
+        },
+        "scripts/validate-convergence-config.py": {
+          "category": "build-time",
+          "justification": "Run by /iterate at convergence-config authoring; pre-execution validation."
+        }
+      },
+      "description": "#1295 PR1 — every disk-discovered validate-*.py MUST be in some `validator_integration_required` rule's validators[] OR in skip_validators (with category in {cli-tool, build-time, test-only, deprecated} AND non-empty justification, HC-PR1-3) OR have `# validator-class: <category>` magic header at start of line 1-5 (no docstring nesting). Closes manifest-relocation gap. The justification requirement prevents silent-skip degradation."
+    },
+    {
+      "id": "state-defer-verify-pairing",
+      "type": "state_defer_verify_pairing",
+      "severity": "block",
+      "registry_path": ".claude/patterns/state-registry.json",
+      "skills_dir": ".claude/skills",
+      "description": "#1339 — every state declaring defer_verify_when_writer in state-registry.json MUST have its state file's ACTIONS section invoke `bash .claude/scripts/lib/write-gate-artifact.sh --path <P>` for at least one P in the declared list. Without that invocation, the chain-aware gate skip would never have a sibling writer to defer to and the opt-in becomes a silent no-op."
+    },
+    {
+      "id": "branch-checkout-propagation-pairing",
+      "type": "branch_checkout_propagation_pairing",
+      "severity": "block",
+      "scan_globs": [
+        ".claude/patterns/**/*.md",
+        ".claude/scripts/**/*.sh",
+        ".claude/skills/**/*.md"
+      ],
+      "exclude_paths": [
+        ".claude/worktrees/",
+        "branch-checkout-propagation-gate.sh"
+      ],
+      "description": "#1328 — every `git checkout -b` (markdown fenced bash block or shell-script segment) MUST be paired with `update-context-branch.sh` in the same chain. Without same-turn propagation, .runs/*-context.json's `branch` field stays stale and resolve_active_identity filters out the active context. The runtime hook branch-checkout-propagation-gate.sh enforces this at PreToolUse; this lint catches new template authoring before merge."
+    },
+    {
+      "id": "coherence-rule-claim-must-cite-rule-id-md",
+      "type": "claim_must_cite_existing_rule_id",
+      "severity": "warn",
+      "scan_globs": [".claude/**/*.md"],
+      "claim_patterns": [
+        "coherence (linter )?rule (pins|binds)\\b"
+      ],
+      "citation_pattern": "`([a-z][a-z0-9-]+)`|rule_id:\\s*([a-z][a-z0-9-]+)",
+      "window_chars": 200,
+      "allowed_rule_ids_source": ".claude/patterns/template-coherence-rules.json#rules[*].id",
+      "exclude_globs": [
+        ".claude/patterns/template-coherence-rules.json"
+      ],
+      "description": "#1261 — Catches false claims that a coherence-rule is pinning multiple files together. Scans .claude/**/*.md for trigger phrases (see claim_patterns) and requires a co-occurring backtick-quoted rule id (or rule_id label) within window_chars that resolves to a real entry in rules[*].id. Severity warn during rollout; promote to block after 1-2 cycles confirm zero false positives. The single regex pattern matches both 'pins them' and 'pins all three' via the (pins|binds) alternation + \\b word boundary, addressing round-1 critic concern 6b7984313ed1. The rule's own definition file is excluded via exclude_globs to prevent self-matching on the claim_patterns array."
+    },
+    {
+      "id": "coherence-rule-claim-must-cite-rule-id-json",
+      "type": "claim_must_cite_existing_rule_id",
+      "severity": "warn",
+      "scan_globs": [".claude/**/*.json"],
+      "claim_patterns": [
+        "coherence (linter )?rule (pins|binds)\\b"
+      ],
+      "citation_pattern": "`([a-z][a-z0-9-]+)`|rule_id:\\s*([a-z][a-z0-9-]+)",
+      "window_chars": 200,
+      "allowed_rule_ids_source": ".claude/patterns/template-coherence-rules.json#rules[*].id",
+      "exclude_globs": [
+        ".claude/patterns/template-coherence-rules.json"
+      ],
+      "description": "#1261 — JSON variant of the .md rule. Same scan logic but for .claude/**/*.json files. Split into two entries because Python glob.glob does not support brace expansion (.{md,json} matches zero files), so the rule type is registered twice with single-extension globs. The rule's own definition file is excluded via exclude_globs to prevent self-matching."
+    },
+    {
+      "id": "hook-bypass-manifest-completeness",
+      "type": "hook_bypass_manifest_completeness",
+      "severity": "block",
+      "manifests": [
+        {
+          "path": ".claude/patterns/gate-readable-canonical-exemptions.json",
+          "entries_field": "exemptions",
+          "required_fields": ["path", "category", "justification"],
+          "valid_categories": ["structural-bootstrap", "derive-pending", "legacy-migration"]
+        },
+        {
+          "path": ".claude/patterns/adversarial-merge-trace-skip.json",
+          "entries_field": "skip_entries",
+          "required_fields": ["category", "solve_depth_value", "justification"],
+          "valid_categories": ["light_mode_skip", "recovery_skip", "audit_only_skip"]
+        }
+      ],
+      "description": "#1349 + #1350 — every entry in the bypass-manifests must declare both a category (from the per-manifest valid_categories enum) AND a non-empty justification. Closes the silent-fail-open class where a manifest entry without provenance metadata legitimizes any drift. Sibling rule hook-silent-skip-friction-pairing checks the runtime side (every silent exit must friction-log or pragma)."
+    },
+    {
+      "id": "hook-silent-skip-friction-pairing",
+      "type": "hook_silent_skip_friction_pairing",
+      "severity": "block",
+      "scan_glob": ".claude/hooks/*.sh",
+      "exclude_paths": [".claude/hooks/lib-core.sh"],
+      "exit_pattern": "(^[\\t ]*exit[\\t ]+0\\b)|((?:&&|\\|\\|)[\\t ]*exit[\\t ]+0\\b)|(\\bsys\\.exit\\(0\\))",
+      "friction_call_pattern": "(_write_hook_friction|deny[\\t ]|deny_errors[\\t ]|handle_validation[\\t ])",
+      "lookback_lines": 10,
+      "pragma": "# friction-skip:",
+      "description": "#1349 + #1350 — every `exit 0` / `sys.exit(0)` in a PreToolUse hook must EITHER (a) be preceded within 10 lines by a friction-log call (_write_hook_friction / deny / deny_errors / handle_validation) OR (b) carry a `# friction-skip: <reason>` pragma on the same line or the directly preceding line. Closes Issues #1349 + #1350 silent-bypass class. Regex covers all forms: bare `exit 0`, `[[ ... ]] && exit 0`, `... || exit 0`, and Python `sys.exit(0)`. lib-core.sh excluded because handle_validation:170 IS the canonical fail-open implementation (PARSE_ERROR → exit 0)."
+    },
+    {
+      "id": "route-resolution-canonical-source",
+      "type": "route_resolution_canonical_source",
+      "severity": "block",
+      "scan_corpus": [".claude/scripts/**/*.py"],
+      "canonical_module": "derive_pages",
+      "canonical_symbols": ["derive_page_set_for_design_critic", "_path_to_page_info", "derive_scope_pages", "dynamic_public_pages"],
+      "exempt_paths": [".claude/scripts/lib/derive_pages.py", ".claude/scripts/tests/**"],
+      "trigger_pattern": "glob\\.glob\\([^)]*src/app[^)]*page\\.tsx",
+      "description": "#1450 gaps 1-3 — Python scripts that resolve page-name → route-path must source page enumeration from derive_pages.py. Detects reimplementations of route-shape resolution that drift from the canonical helper. Fires when a .py file under .claude/scripts/**/*.py contains a glob.glob() pattern referencing both src/app and page.tsx AND does not import from derive_pages. Pragmatic regex-based detection — pure AST detection deferred."
+    },
+    {
+      "id": "gate-verdict-evidence-coverage",
+      "type": "gate_verdict_evidence_coverage",
+      "severity": "warn",
+      "scan_corpus": [".claude/agents/gate-keeper.md", ".claude/scripts/check-observation-artifacts.sh"],
+      "rules_registry": ".claude/patterns/gate-evidence-rules.json",
+      "trigger_pattern": "test -f|test -d|grep -E.*href|grep -c ",
+      "exempt_paths": [],
+      "valid_annotations": ["evidence_check_intentionally_structural"],
+      "annotation_registry_key": "evidence_check_intentionally_structural",
+      "description": "GECR #1473+#1470 — Structural-shape gate-keeper checks (test -f / test -d / grep -E.*href / grep -c) must be covered by a rule in gate-evidence-rules.json (matching by gate_id appearing in the check's line text) OR carry an explicit evidence_check_intentionally_structural list entry in the rules registry with the check identifier (<rel-path>:<lineno>) and a rationale. Prevents meta-level structural-proxy regression: a new structural-shape check added to gate-keeper.md silently passes lint today; this rule flips that to warn (soak) then block. Severity warn during soak per #1291 convention; flip to block after ≥2 real skill cycles with zero false positives."
+    },
+    {
+      "id": "design-agents-hard-gate-parity",
+      "type": "agent_registry_predicate_parity",
+      "severity": "block",
+      "family_prefix": "design-",
+      "baseline_agent": "design-critic",
+      "description": "#1381 D1 — every agent in .claude/patterns/agent-registry.json hard_gates whose name starts with 'design-' must have allow_predicates ⊇ design-critic's. Catches the next sibling drift: when a new design-* agent is added to hard_gates and forgets to mirror design-critic's predicate set (e.g., design-consistency-checker missed pass_lead_synthesized during state-3a Stage 0 lead-synthesized aggregate rollout)."
+    },
+    {
+      "id": "audit-tag-verb-recognized",
+      "type": "audit_tag_verb_recognized",
+      "severity": "warn",
+      "registry_path": ".claude/patterns/audit-verb-registry.json",
+      "scan_globs": ["experiment/experiment.yaml", ".claude/templates/experiment-yaml.md"],
+      "description": "#1393 r3 Item 3 — every [audit:<verb>=<value>] tag in experiment.yaml (or the template doc) must use a verb declared in audit-verb-registry.json. Producer = human; consumer = lead + AST scanner. New verbs added by PR to the registry. Severity=warn during soak — #1387 forthcoming, expect verb additions."
+    },
+    {
+      "id": "derive-graim-manifest-carveout-pin",
+      "type": "derive_graim_manifest_carveout_pin",
+      "severity": "block",
+      "description": "#1393 r3 Item 2 — pin the .jsonl carve-out at derive-graim-manifest.py. Asserts (a) the module docstring declares the carve-out AND (b) RE_RUNS_JSON regex still uses the negative lookahead `(?![a-zA-Z0-9])` that excludes .jsonl. Either change alone is a regression vector for hook-friction.jsonl + consistency-soak-telemetry.jsonl + every future .jsonl telemetry that depends on the carve-out."
+    },
+    {
+      "id": "hook-friction-action-type-markers",
+      "type": "hook_friction_action_type_classify",
+      "severity": "warn",
+      "scan_globs": [".claude/patterns/*.md", ".claude/skills/**/state-*.md"],
+      "description": "#1393 r3 Item 1 — scan procedure docs for <!-- sanctioned-manual-write: <path> --> markers. Validates each marker references a real .runs/*.json path and the host file actually contains write instructions for it (no stale markers). The classifier set seeded here drives future hooks/writers to classify Write tool calls as manual-write-sanctioned vs manual-write-deviation (default). Severity=warn during soak — new mechanism, classifier consumers will land incrementally."
+    },
+    {
+      "id": "derive-pages-consumer-reconciliation",
+      "type": "consumer_coverage",
+      "severity": "block",
+      "canonical_source": ".claude/scripts/lib/derive_pages.py",
+      "consumers": [
+        ".claude/agents/spec-reviewer.md"
+      ],
+      "description": "#1379 G3 — consumers of derive_pages.py that perform page-existence checks must reference design_critic_pages (the disambiguation-aware subcommand) NOT raw scope (which returns disambiguated names not mapping to literal directories for dynamic routes). consumer_coverage matches by content presence; ensures the consumer file mentions derive_pages.py + design_critic_pages."
+    },
+    {
+      "id": "verify-d-values-against-stamped-artifact",
+      "type": "verify_d_values_against_stamped_artifact",
+      "severity": "warn",
+      "registry_path": ".claude/patterns/state-registry.json",
+      "manifest_path": ".claude/patterns/gate-readable-artifacts-canonical.json",
+      "description": "#1379 G1 — state-registry.json VERIFY blocks must not iterate raw d.values() against gate-stamped artifacts. The 3+ identity stamps ({skill, run_id, written_at}) leak into the iteration and break assertions. Use unstamped_values(d) from .claude/scripts/lib/verify_helpers.py instead. Severity=warn during soak — STAMPED_FIELDS union may need adjustment after observing the next lifecycle-finalize cycle."
+    },
+    {
+      "id": "stage-0-detectors-mode-aware",
+      "type": "stage_0_detector_mode_aware",
+      "severity": "block",
+      "scan_glob": ".claude/skills/**/state-3a-*.md",
+      "trigger_pattern": "Stage 0:.*all-pages-fast-path|ALL_PAGES_FAST_PATH",
+      "mode_check_pattern": "bootstrap-verify",
+      "description": "#1381 D3 — any state file containing a Stage 0 all-pages-fast-path detector MUST also contain a bootstrap-verify mode skip predicate. Otherwise, during /bootstrap pre-commit, state-16 implementer commits create BOUNDARY_KIND=diff with PR_RELEVANT=0 (test commits don't touch UI), inappropriately firing the fast-path and zero-reviewing the entire scaffolded UI surface."
+    },
+    {
+      "id": "self-check-score-schema-coherence",
+      "type": "consumer_coverage",
+      "severity": "warn",
+      "canonical_source": ".claude/scripts/validate-self-check-score-schema.py",
+      "consumers": [
+        ".claude/agents/scaffold-pages.md",
+        ".claude/procedures/scaffold-pages.md"
+      ],
+      "description": "#1387: the self_check_score field (typed sub-object + explicit_none escape with reason enum) must be documented in scaffold-pages.md agent prompt AND procedure file when the validator exists. Both must coexist or both be absent; drift signals incomplete rollout of AOC v1.2 schema. Severity=warn during rollout (warn-default mode); flips to block after the validator hits fail-mode."
+    },
+    {
+      "id": "provenance_aware_runs_read",
+      "type": "provenance_aware_runs_read",
+      "severity": "warn",
+      "scan_glob": ".claude/scripts/**/*.py,.claude/scripts/**/*.sh,.claude/hooks/**/*.sh",
+      "allowlist_path": ".claude/patterns/provenance-blind-allowlist.json",
+      "pragma": "# coherence-allow: provenance-blind-read",
+      "description": "#1437/#1417 — detect READ-pattern .runs/ accesses in production code that lack runs_reader.* call or a scope marker. Tests are excluded (legitimately exercise .runs/ I/O). Allowlist suppresses 16 known production sites pending follow-up migration. After allowlist empties, promote severity to 'block' and set is_strict_aoc=True in the HANDLERS entry."
+    },
+    {
+      "id": "cross_run_channel_exemption_pairing",
+      "type": "cross_run_channel_exemption_pairing",
+      "severity": "warn",
+      "channels_path": ".claude/patterns/cross-run-channels.json",
+      "lifecycle_path": ".claude/scripts/lifecycle-init.sh",
+      "description": "#1437/#1417 — each cross-run-channels.json entry's path must not appear in lifecycle-init.sh STALE_ARTIFACTS unless the entry sets transient_cross_state: true. Prevents silent deletion of cross-run-by-design artifacts on next skill entry."
+    },
+    {
+      "id": "prose-gate-annotation",
+      "type": "prose_gate_annotation",
+      "severity": "warn",
+      "description": "#1434 — state files and prose patterns containing caps imperatives (DO NOT|MUST|REQUIRED|BLOCKING|MUST NOT) within 8 lines of a toolchain reference (write-agent-trace.sh|advance-state.sh|Agent invocation) must carry a `<!-- prose-gate:<gate_id> -->` annotation that matches an entry in prose-gates.json, OR a sanctioned `<!-- prose-only-OK: ≥80 chars rationale -->` waiver. Phase A is warn-mode; Phase C flips to block. The annotation codemod `.claude/scripts/lib/add-prose-gate-anchor.py` generates a worksheet for human review.",
+      "registry_path": ".claude/patterns/prose-gates.json",
+      "scan_globs": [
+        ".claude/skills/**/state-*.md",
+        ".claude/patterns/observation-phase.md",
+        ".claude/patterns/state-99-epilogue.md"
+      ],
+      "imperative_pattern": "\\b(DO NOT|MUST|REQUIRED|BLOCKING|MUST NOT)\\b",
+      "toolchain_pattern": "(write-agent-trace\\.sh|advance-state\\.sh)",
+      "proximity_lines": 8,
+      "annotation_pattern": "<!--\\s*prose-gate:[a-z][a-z0-9_-]+\\s*-->",
+      "waiver_pattern": "<!--\\s*prose-only-OK:.{80,}\\s*-->"
+    },
+    {
+      "id": "prose-gates-align-with-state-registry",
+      "type": "prose_gates_align_with_state_registry",
+      "severity": "warn",
+      "description": "#1434 — every prose-gates.json entry's scope.skill+scope.state_id must resolve to an existing state-registry.json state (or use scope.skill='*'/scope.state_id='*' for cross-skill gates). Catches the round-1 critic correction class where a gate names a state that does not exist (e.g., bootstrap.3a vs verify.3a for Stage 0).",
+      "registry_path": ".claude/patterns/prose-gates.json",
+      "state_registry_path": ".claude/patterns/state-registry.json"
+    },
+    {
+      "id": "scaffold-pages-export-constraint-present",
+      "type": "must_contain_section",
+      "severity": "warn",
+      "applies_to_glob": ".claude/procedures/scaffold-pages.md",
+      "required_section": "### Page.tsx export constraint",
+      "trigger_pattern_any": ["page\\.tsx"],
+      "description": "Issue #1474 — scaffold-pages procedure must document Next.js's page.tsx export constraint (only `default`, `generateStaticParams`, `generateMetadata`, `metadata`, `dynamic`, `dynamicParams`, `revalidate`, `fetchCache`, `runtime`, `preferredRegion`, `maxDuration` are valid named exports). Without this entry, agents emit `export const SAMPLE_TOKENS = [...]` and trigger Next.js build error 71002 downstream."
+    },
+    {
+      "id": "scaffold-landing-rendered-self-audit-present",
+      "type": "must_contain_section",
+      "severity": "warn",
+      "applies_to_glob": ".claude/procedures/scaffold-landing.md",
+      "required_section": "Rendered self-audit",
+      "trigger_pattern_any": ["scaffold-landing"],
+      "description": "Issue #1469 — scaffold-landing procedure must require a render-time self-audit (screenshot at desktop/mobile viewports + entity/baseline self-check) before the agent claims verdict=clean. Without this step, JSX-vs-string-literal HTML entities (e.g., `don&apos;t` rendering literally) and baseline-misalignment defects reach downstream undetected."
+    },
+    {
+      "id": "playwright-cta-data-attribute-sk-entry",
+      "type": "must_contain_section",
+      "severity": "warn",
+      "applies_to_glob": ".claude/stacks/testing/playwright.md",
+      "required_section": "### When writing e2e selectors for CTA buttons",
+      "trigger_pattern_any": ["## Stack Knowledge"],
+      "description": "Issue #1452 — playwright Stack Knowledge must document the data-attribute CTA selector pattern (data-testid / data-preview-cta) over text-content selectors (getByText). Text-content selectors break on every CTA copy change (A/B variant rewrites, marketing iteration), causing cascading e2e failures."
+    },
+    {
+      "id": "nextjs-conditional-role-alert-sk-entry",
+      "type": "must_contain_section",
+      "severity": "warn",
+      "applies_to_glob": ".claude/stacks/framework/nextjs.md",
+      "required_section": "### When a form or status message uses a conditionally-mounted role=alert element",
+      "trigger_pattern_any": ["## Stack Knowledge"],
+      "description": "Issue #1451 — nextjs Stack Knowledge must document the unconditional-mount + sr-only + aria-live=assertive + aria-atomic=true pattern for live regions. Conditionally-mounted role=alert elements silently drop announcements in VoiceOver/Safari and NVDA/Firefox (WCAG 4.1.3 Status Messages High in axe scans)."
+    }
+  ]
+}

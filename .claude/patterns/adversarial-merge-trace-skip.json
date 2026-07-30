@@ -1,0 +1,18 @@
+{
+  "$comment": "Issue #1350 Mechanism A skip-manifest for adversarial-merge-gate.sh. The hook fail-CLOSED denies trace validation skips unless an entry here matches. Pre-populated with the legitimate light-mode skip (when SOLVE_DEPTH=light, solve-critic.json is not produced and trace validation has nothing to compare against). Adding new entries requires (a) category in {light_mode_skip, recovery_skip, audit_only_skip}, (b) non-empty justification. Schema enforced by hook_bypass_manifest_completeness coherence rule.",
+  "version": "1.0",
+  "schema": {
+    "skip_entries[].category": "One of: light_mode_skip, recovery_skip, audit_only_skip.",
+    "skip_entries[].solve_depth_value": "The exact SOLVE_DEPTH value that triggers this skip (e.g., 'light').",
+    "skip_entries[].justification": "Why this skip is structurally legitimate. Required, non-empty.",
+    "skip_entries[].issue": "GitHub issue link or null."
+  },
+  "skip_entries": [
+    {
+      "category": "light_mode_skip",
+      "solve_depth_value": "light",
+      "justification": "Light-mode /solve produces resolve-challenger.json only — no solve-critic.json. The change-challenge artifact has no full-mode trace to validate against; the per-item label match against resolve-challenger is performed in the resolve-challenge branch (lines 14-68 of adversarial-merge-gate.sh), not change-challenge. Skipping change-challenge trace validation in light mode is structurally correct.",
+      "issue": "https://github.com/anthropic/mvp-template/issues/1350"
+    }
+  ]
+}

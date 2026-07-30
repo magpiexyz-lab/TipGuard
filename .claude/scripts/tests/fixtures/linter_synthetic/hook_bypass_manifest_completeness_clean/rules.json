@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "fixture-hbmc-clean",
+      "type": "hook_bypass_manifest_completeness",
+      "severity": "block",
+      "manifests": [
+        {
+          "path": ".claude/patterns/gate-readable-canonical-exemptions.json",
+          "entries_field": "exemptions",
+          "required_fields": ["path", "category", "justification"],
+          "valid_categories": ["structural-bootstrap", "derive-pending", "legacy-migration"]
+        }
+      ]
+    }
+  ]
+}

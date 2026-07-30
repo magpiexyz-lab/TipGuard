@@ -1,0 +1,10 @@
+branch: "chore/distribute"
+states: ["0","1","2","3","3a","3b","4","5","6","99"]
+embed:
+  - at: "3a"
+    skill: verify
+    scope: campaign
+observation:
+  gate: commit-pr-gate
+  artifacts: [verify-report.md]
+  pr_checks: [frontmatter-validation, trace-completeness, agent-match, postcondition-rerun]

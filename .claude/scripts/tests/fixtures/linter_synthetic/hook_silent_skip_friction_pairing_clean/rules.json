@@ -1,0 +1,15 @@
+{
+  "rules": [
+    {
+      "id": "fixture-hssfp-clean",
+      "type": "hook_silent_skip_friction_pairing",
+      "severity": "block",
+      "scan_glob": ".claude/hooks/*.sh",
+      "exclude_paths": [".claude/hooks/lib-core.sh"],
+      "exit_pattern": "(^[\\t ]*exit[\\t ]+0\\b)|((?:&&|\\|\\|)[\\t ]*exit[\\t ]+0\\b)|(\\bsys\\.exit\\(0\\))",
+      "friction_call_pattern": "(_write_hook_friction|deny[\\t ]|deny_errors[\\t ]|handle_validation[\\t ])",
+      "lookback_lines": 10,
+      "pragma": "# friction-skip:"
+    }
+  ]
+}

@@ -1,0 +1,374 @@
+{
+  "_description": "Canonical agent metadata — hooks read from here instead of hardcoding names",
+  "_schema_version": 6,
+  "_schema_version_notes": "v6 (AOC v1.2): adds `lead-orchestrated` (pass-able via pass_lead_orchestrated) and `lead-skipped` (audit-only, no predicate) provenance values; adds `lead_orchestrated_forbidden` registry field excluding security-attacker/security-defender (probes touch live endpoints; retrospective lead attestation unsound); extends security-fixer/quality-fixer `allowed_verdicts`/`allowed_results` to include `skipped`; adds `_aggregate_ok_accepted_predicates` structured field (single source of truth for the aggregate_ok sibling-acceptance set; F8 lint asserts AST equality with the predicate impl). v5 (AOC v1.1 PR4): adds resolve-reviewer as a first-class verdict_agent (closes #1055 alias drift). v4 (AOC v1.1): extends provenance enum to 7 values (lead-on-behalf, lead-synthesized, lead-fix); adds pass_lead_on_behalf / pass_lead_fix / pass_lead_synthesized predicates; validated_fallback now accepts lead-on-behalf with recovery_validated:true; aggregate_ok sibling acceptance includes new predicates. See agent-output-contract.md \"Versioning rules\" for the synchronized-update protocol. v3 (AOC v1): adds verdict_agents_schema declaring per-agent allowed_verdicts/allowed_results/required_structured_fields. hard_gates add pass_clean/pass_after_fixes predicates alongside v2 predicates. v2: adds non_fixer_agents, recovery_forbidden, lead_merge_aggregate_agents; hard_gates use structured predicates. See .claude/patterns/agent-trace-protocol.md.",
+  "verdict_agents": [
+    "observer", "spec-reviewer", "design-critic", "design-consistency-checker",
+    "landing-sections-critic", "landing-images-critic",
+    "ux-journeyer", "security-fixer", "quality-fixer", "security-attacker", "security-defender",
+    "behavior-verifier", "performance-reporter", "accessibility-scanner",
+    "build-info-collector", "pattern-classifier",
+    "resolve-challenger", "review-challenger", "solve-critic",
+    "resolve-reviewer"
+  ],
+  "_verdict_agents_schema_docs": "AOC v1 per-agent vocabulary. Each entry declares the allowed verdict values (AVS v1 core: pass/fail/blocked/unresolved) and allowed result qualifiers (clean/fixed/partial/degraded/skipped/none/count_summary/null). count_summary agents MUST emit required_structured_fields; gates key on those fields via additional_block_conditions in hard_gates[]. R1 coherence rule enforces that evaluate-hard-gate-predicates.py predicates and agent .md files stay consistent with this table.",
+  "verdict_agents_schema": {
+    "observer": {
+      "allowed_verdicts": ["pass", "blocked"],
+      "allowed_results": ["clean", "none", null]
+    },
+    "spec-reviewer": {
+      "allowed_verdicts": ["pass", "fail"],
+      "allowed_results": ["clean", "partial"]
+    },
+    "design-critic": {
+      "allowed_verdicts": ["pass", "fail", "unresolved"],
+      "allowed_results": ["clean", "fixed", "partial", null]
+    },
+    "landing-sections-critic": {
+      "allowed_verdicts": ["pass", "fail", "unresolved"],
+      "allowed_results": ["clean", "fixed", "partial", null],
+      "_split_from_note": "#1468 landing-critic split: sibling of landing-images-critic. Layer 1/2/3 section scoring scope only. Pre-aggregated by .claude/scripts/merge-landing-critic-traces.py into design-critic-landing.json before the outer merge-design-critic-traces.py runs. Same verdict/result vocab as design-critic."
+    },
+    "landing-images-critic": {
+      "allowed_verdicts": ["pass", "fail", "unresolved"],
+      "allowed_results": ["clean", "fixed", "partial", null],
+      "_split_from_note": "#1468 landing-critic split: sibling of landing-sections-critic. Step 5.5 image candidate inspection + image-quality anti-patterns + image fixes scope only. Pre-aggregated into design-critic-landing.json. Same verdict/result vocab as design-critic."
+    },
+    "design-consistency-checker": {
+      "allowed_verdicts": ["pass", "fail"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": ["inconsistent_count"]
+    },
+    "ux-journeyer": {
+      "allowed_verdicts": ["pass", "fail", "blocked"],
+      "allowed_results": ["clean", "fixed", "partial", "none"],
+      "required_structured_fields": ["fixes_applied"],
+      "_fixes_applied_note": "#1379 G2: fixes_applied is an int COUNT (not a list[dict]). The file list goes in `fixes[]`. Schema drift bug: agents/ux-journeyer.md documents the field as a count, but verify-design-critic-post-fix-respawn.py used to iterate it expecting list[dict] and crashed with 'int' object is not iterable. Iteration removed; field role pinned here for downstream consumers."
+    },
+    "security-fixer": {
+      "allowed_verdicts": ["pass", "fail", "blocked"],
+      "allowed_results": ["clean", "fixed", "partial", "none", "skipped"],
+      "required_structured_fields": ["tests_need_update"],
+      "_tests_need_update_note": "#1450 gap 9: list[dict] of {file, line, old_code, new_code, reason}. Emitted unconditionally; empty list [] when no test assertions were invalidated by the applied fixes. Surfaces stale colocated-test assertions after OWASP A4 fixes (e.g., status-code collapse 404/409 → 400) so the lead can dispatch a test-reconciler or escalate to user instead of manually rewriting assertions. Consumer: /verify or /change Phase X.",
+      "_skipped_note": "AOC v1.2: verdict=blocked + result=skipped is the audit-only sanctioned-skip shape written by write-skipped-fixer-trace.sh when the upstream gate fired. AVS v1 closes verdict to {pass,fail,blocked,unresolved}, so we use 'blocked' (semantically: 'fixer was blocked from spawning by upstream') with result='skipped' as the qualifier. No pass_* predicate accepts verdict=blocked, so the hard gate blocks naturally; the trace exists solely so observer + audit consumers see the decision. Note: ux-journeyer ALREADY uses verdict=blocked as an additional_block_condition — precedent exists for this verdict value."
+    },
+    "quality-fixer": {
+      "allowed_verdicts": ["pass", "fail", "blocked"],
+      "allowed_results": ["clean", "fixed", "partial", "none", "skipped"],
+      "_skipped_note": "AOC v1.2: see security-fixer _skipped_note."
+    },
+    "security-attacker": {
+      "allowed_verdicts": ["pass", "fail"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": ["findings_count"]
+    },
+    "security-defender": {
+      "allowed_verdicts": ["pass", "fail"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": ["fails_count", "findings_count"]
+    },
+    "behavior-verifier": {
+      "allowed_verdicts": ["pass", "fail"],
+      "allowed_results": ["clean", "degraded", "skipped", "partial"]
+    },
+    "performance-reporter": {
+      "allowed_verdicts": ["pass", "fail"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": ["warnings_count"]
+    },
+    "accessibility-scanner": {
+      "allowed_verdicts": ["pass", "fail"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": ["violations_count"]
+    },
+    "build-info-collector": {
+      "allowed_verdicts": ["pass"],
+      "allowed_results": ["clean", "none"]
+    },
+    "pattern-classifier": {
+      "allowed_verdicts": ["pass"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": ["saved", "skipped", "total"]
+    },
+    "resolve-challenger": {
+      "allowed_verdicts": ["pass"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": ["confirmed_count", "disputed_count"]
+    },
+    "review-challenger": {
+      "allowed_verdicts": ["pass"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": ["confirmed_count", "disputed_count"]
+    },
+    "solve-critic": {
+      "allowed_verdicts": ["pass"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": [
+        "type_a_count",
+        "type_b_count",
+        "type_c_count",
+        "prior_failure_dossier_evaluated"
+      ],
+      "_rmg_v2_concern_schema": {
+        "_doc": "RMG v2 Phase D — each entry in concerns[] must carry concern_id (12-char sha1 of category|canonicalized-description) and category (enum). prior_failure_dossier_evaluated is now strict-required at the trace top level (empty list when no dossier was passed). Tightened in the post-cutover follow-up after first-principles risk analysis confirmed required_structured_fields is documentation/contract — runtime traces are not retroactively validated against it.",
+        "concern_required_fields": ["type", "concern_id", "category", "description", "evidence"],
+        "category_enum": [
+          "cross-run-prior-failure-unaddressed",
+          "within-run-round1-concern-unaddressed",
+          "unguardability-rationale-weak",
+          "symptom-only",
+          "unguarded-recurrence",
+          "uncovered-instances",
+          "other"
+        ]
+      }
+    },
+    "resolve-reviewer": {
+      "allowed_verdicts": ["pass"],
+      "allowed_results": ["count_summary"],
+      "required_structured_fields": ["confirmed_count", "disputed_count"]
+    }
+  },
+  "non_fixer_agents": [
+    "observer", "spec-reviewer", "behavior-verifier",
+    "performance-reporter", "accessibility-scanner",
+    "design-critic", "design-consistency-checker",
+    "landing-sections-critic", "landing-images-critic",
+    "ux-journeyer", "security-defender", "security-attacker",
+    "solve-critic", "resolve-challenger", "review-challenger",
+    "resolve-reviewer",
+    "build-info-collector", "pattern-classifier",
+    "scaffold-externals"
+  ],
+  "recovery_forbidden": [
+    "security-fixer", "quality-fixer"
+  ],
+  "_lead_orchestrated_forbidden_docs": "AOC v1.2: agents whose verdicts are NOT eligible for retrospective lead-orchestrated re-spawn even though they are non-fixers. security-* probes touch live endpoints whose original failure conditions (server state, rate-limits, token freshness) may not be reproducible at retrospective time; lead-attesting `pass` against a snapshot the system cannot independently re-verify is unsound. F7 lint enforces: agents in this list MUST NOT have `pass_lead_orchestrated` in their hard_gates allow_predicates.",
+  "lead_orchestrated_forbidden": [
+    "security-attacker", "security-defender"
+  ],
+  "lead_merge_aggregate_agents": [
+    "design-critic", "scaffold-pages", "scaffold-images", "implementer", "visual-implementer"
+  ],
+  "merge_gates": {
+    "design_ux": {
+      "checks": {
+        "traces": [
+          {
+            "trace_file": "design-critic.json",
+            "merge_key": "design_critic",
+            "missing_error": "design-critic.json trace not found — cannot validate merge",
+            "fields": [
+              {"trace_field": "verdict",   "merge_field": "verdict"},
+              {"trace_field": "min_score", "merge_field": "min_score", "null_ok": true}
+            ],
+            "sub_traces": [
+              {
+                "trace_file": "design-critic-shared.json",
+                "condition": "exists",
+                "fields": [
+                  {"trace_field": "fixes_applied", "merge_field": "shared_fixes_applied", "null_ok": true}
+                ]
+              }
+            ]
+          },
+          {
+            "trace_file": "ux-journeyer.json",
+            "merge_key": "ux_journeyer",
+            "missing_error": "ux-journeyer.json trace not found — cannot validate merge",
+            "fields": [
+              {"trace_field": "verdict",         "merge_field": "verdict"},
+              {"trace_field": "clicks_to_value", "merge_field": "clicks_to_value", "null_ok": true},
+              {"trace_field": "dead_ends",       "merge_field": "dead_ends",       "null_ok": true}
+            ]
+          }
+        ],
+        "self_checks": []
+      }
+    },
+    "security": {
+      "checks": {
+        "traces": [
+          {
+            "trace_file": "security-defender.json",
+            "merge_key": null,
+            "missing_error": "security-defender.json trace not found — cannot validate merge",
+            "fields": [
+              {"trace_field": "fails_count", "merge_field": "defender_fails"}
+            ]
+          },
+          {
+            "trace_file": "security-attacker.json",
+            "merge_key": null,
+            "missing_error": "security-attacker.json trace not found — cannot validate merge",
+            "fields": [
+              {"trace_field": "findings_count", "merge_field": "attacker_findings"}
+            ]
+          }
+        ],
+        "self_checks": [
+          {"type": "count_match", "array_field": "issues", "count_field": "merged_issues"}
+        ]
+      }
+    },
+    "adversarial": {
+      "resolve": {
+        "light_trace": "resolve-challenger",
+        "full_trace": "solve-critic"
+      },
+      "review": {
+        "trace": "review-challenger"
+      },
+      "change": {
+        "checks": {
+          "traces": [
+            {
+              "trace_file": "solve-critic.json",
+              "merge_key": null,
+              "missing_error": "solve-critic.json trace not found -- cannot validate change challenge (solve_depth=full)",
+              "fields": [
+                {"trace_field": "type_a_count", "merge_field": "round_1_type_a_count"},
+                {"trace_field": "round", "merge_field": "critic_rounds"}
+              ]
+            }
+          ],
+          "self_checks": []
+        }
+      }
+    }
+  },
+  "_hard_gates_docs": "Rules block verify-report-gate from allowing hard_gate_failure:false when ANY of them fires. v2 gates use structured predicates (see _hard_gates_predicate_docs) that make recovery an audit marker validated by evidence, not a blanket fail trigger.",
+  "_hard_gates_predicate_docs": {
+    "pass_clean": "AOC v1: verdict == pass AND result == clean AND provenance == self. Agent found nothing to do (no work performed).",
+    "pass_after_fixes": "AOC v1: verdict == pass AND result in {fixed, partial} AND provenance == self AND unresolved_critical == 0. Agent found issues and resolved all non-critical; criticals are zero.",
+    "pass_self_pass_or_fail": "verdict in {pass,fail} AND provenance == self. For agents where a recorded fail is acceptable as long as it was self-reported.",
+    "pass_self_strict": "verdict == pass AND provenance == self. For agents where anything but a clean self-reported pass requires investigation.",
+    "validated_fallback": "AOC v1.1: provenance in {recovery, self-degraded, lead-on-behalf} AND recovery_validated == true. Acceptable replacement for pass_self_* when independent evidence confirms the verdict. AOC v1: accepts #1042 fixture short-circuit self-degraded traces. AOC v1.1: lead-on-behalf permits the case where the agent succeeded but its trace write was blocked and the lead transcribed; same evidence discipline (build + e2e + diff-fix) applies.",
+    "aggregate_ok": "provenance == lead-merge AND contributing_spawn_indexes present AND each contributing sibling trace satisfies any pass-class predicate. The authoritative enumeration of accepted sibling predicates lives in `_aggregate_ok_accepted_predicates` below — DO NOT consult this prose for the predicate set; F8 lint asserts AST equality between that structured array and the impl in evaluate-hard-gate-predicates.py. Prose retained only as human-readable summary.",
+    "legacy_pass_no_recovery": "verdict == pass AND recovery != true. Backward-compat predicate for traces missing provenance (pre-migration). Drops after legacy migration completes.",
+    "pass_lead_on_behalf": "AOC v1.1: verdict == pass AND provenance == lead-on-behalf AND recovery_validated == true. Distinct opt-in for agents whose hard_gate explicitly accepts lead-transcribed traces beyond what validated_fallback covers; usually unnecessary because validated_fallback already accepts lead-on-behalf.",
+    "pass_lead_fix": "AOC v1.1: verdict == pass AND provenance == lead-fix AND lead_attestation == true. Lead applied an in-flight fix without spawning a subagent; lead has direct knowledge so no recovery_validated required. Used by virtual lead-<skill> agents when registered in hard_gates.",
+    "pass_lead_synthesized": "AOC v1.1: verdict == pass AND provenance == lead-synthesized AND coverage_provider != null. Agent was never spawned; lead wrote a consistency marker pointing to the artifact that satisfies coverage. Used by virtual lead-<skill> agents when registered in hard_gates.",
+    "pass_lead_orchestrated": "AOC v1.2: verdict == pass AND provenance == lead-orchestrated AND lead_attestation == true AND source_run_id AND source_skill. Lead orchestrated a retrospective re-spawn under post-completion conditions (all .runs/*-context.json had completed:true, so resolve_active_identity returned empty). Explicit identity supplied via --source-run-id / --source-skill flags; spawn-log presence enforced upstream by the writer's R3 validation. Same evidence discipline as pass_lead_fix (lead has direct knowledge). Forbidden for agents in `recovery_forbidden` (high-risk fixers) AND in `lead_orchestrated_forbidden` (security-* probes whose live-endpoint state may be irreproducible)."
+  },
+  "_aggregate_ok_accepted_predicates": [
+    "pass_clean",
+    "pass_after_fixes",
+    "pass_self_pass_or_fail",
+    "validated_fallback",
+    "legacy_pass_no_recovery",
+    "pass_lead_on_behalf",
+    "pass_lead_fix",
+    "pass_lead_synthesized",
+    "pass_lead_orchestrated"
+  ],
+  "_aggregate_ok_accepted_predicates_docs": "AOC v1.2: SINGLE SOURCE OF TRUTH for the predicate set that aggregate_ok accepts as sibling-pass shapes. F8 lint (aggregate_ok_predicate_doc_matches_impl) parses evaluate-hard-gate-predicates.py via AST and asserts the predicate-name set called inside the aggregate_ok `or` chain equals this array exactly. Adding/removing here REQUIRES the matching impl edit in the same PR — drift is blocked.",
+  "hard_gates": [
+    {
+      "agent": "design-critic",
+      "allow_predicates": ["pass_clean", "pass_after_fixes", "pass_self_pass_or_fail", "validated_fallback", "aggregate_ok", "legacy_pass_no_recovery", "pass_lead_synthesized", "pass_lead_orchestrated"],
+      "_block_explanation": "Blocked unless AOC v1 pass_clean/pass_after_fixes, or v2 pass_self_pass_or_fail / validated_fallback (also covers #1042 fixture short-circuit via self-degraded + recovery_validated) / aggregate_ok, or legacy_pass_no_recovery (pre-migration), or pass_lead_synthesized (#1256 Stage 0 all-pages-fast-path lead-synthesized aggregate with sanctioned coverage_provider), or AOC v1.2 pass_lead_orchestrated (post-completion lead-orchestrated re-spawn with explicit-identity attestation)."
+    },
+    {
+      "agent": "landing-sections-critic",
+      "allow_predicates": ["pass_clean", "pass_after_fixes", "pass_self_pass_or_fail", "validated_fallback", "aggregate_ok", "legacy_pass_no_recovery", "pass_lead_synthesized", "pass_lead_orchestrated"],
+      "_block_explanation": "Parity with design-critic per design-agents-hard-gate-parity coherence rule. #1468 landing split: this sibling of landing-images-critic owns Layer 1/2/3 section scoring; same allow_predicates set so the pre-merged design-critic-landing.json sibling is accepted via aggregate_ok at the outer design-critic merge."
+    },
+    {
+      "agent": "landing-images-critic",
+      "allow_predicates": ["pass_clean", "pass_after_fixes", "pass_self_pass_or_fail", "validated_fallback", "aggregate_ok", "legacy_pass_no_recovery", "pass_lead_synthesized", "pass_lead_orchestrated"],
+      "_block_explanation": "Parity with design-critic per design-agents-hard-gate-parity coherence rule. #1468 landing split: this sibling of landing-sections-critic owns Step 5.5 image candidate inspection; same allow_predicates set."
+    },
+    {
+      "agent": "ux-journeyer",
+      "allow_predicates": ["pass_clean", "pass_after_fixes", "pass_self_pass_or_fail", "validated_fallback", "aggregate_ok", "legacy_pass_no_recovery", "pass_lead_orchestrated"],
+      "additional_block_conditions": [
+        {"field": "verdict", "eq": "blocked"},
+        {"field": "unresolved_dead_ends", "gt": 0}
+      ]
+    },
+    {
+      "agent": "security-fixer",
+      "allow_predicates": ["pass_clean", "pass_after_fixes", "pass_self_pass_or_fail", "validated_fallback", "aggregate_ok", "legacy_pass_no_recovery"],
+      "additional_block_conditions": [
+        {
+          "all": [
+            {"field": "verdict", "eq": "fail"},
+            {"field": "result", "eq": "partial"},
+            {"field": "unresolved_critical", "gt": 0}
+          ]
+        },
+        {
+          "all": [
+            {"field": "verdict", "eq": "partial"},
+            {"field": "unresolved_critical", "gt": 0}
+          ],
+          "_legacy_note": "Pre-AOC-v1 partial-as-verdict shape; retained until legacy traces migrated."
+        }
+      ],
+      "_note": "security-fixer is in recovery_forbidden — recovery provenance is refused by write-recovery-trace.sh. Only self / self-degraded / lead-merge paths are reachable. AOC v1: fail+partial with unresolved_critical>0 is the blocking shape; pass+partial with criticals=0 passes via pass_after_fixes."
+    },
+    {
+      "agent": "quality-fixer",
+      "allow_predicates": ["pass_clean", "pass_after_fixes", "pass_self_pass_or_fail", "validated_fallback", "aggregate_ok", "legacy_pass_no_recovery"],
+      "additional_block_conditions": [
+        {
+          "all": [
+            {"field": "verdict", "eq": "fail"},
+            {"field": "result", "eq": "partial"},
+            {"field": "unresolved_critical", "gt": 0}
+          ]
+        },
+        {
+          "all": [
+            {"field": "verdict", "eq": "partial"},
+            {"field": "unresolved_critical", "gt": 0}
+          ],
+          "_legacy_note": "Pre-AOC-v1 partial-as-verdict shape; retained until legacy traces migrated."
+        }
+      ],
+      "_note": "quality-fixer is in recovery_forbidden — see security-fixer note."
+    },
+    {
+      "agent": "resolve-reviewer",
+      "allow_predicates": ["pass_clean", "pass_self_pass_or_fail", "validated_fallback", "legacy_pass_no_recovery", "pass_lead_orchestrated"],
+      "_note": "AOC v1.1 PR4 (closes #1055): resolve-reviewer is read-mostly (no fixes), so allow_predicates excludes pass_after_fixes (no fix application) and aggregate_ok (single-trace, no per-issue siblings). Sibling of resolve-challenger but with implementation-review vectors (completeness/correctness/consistency). AOC v1.2: pass_lead_orchestrated added per F7 derivation (verdict_agent, not in recovery_forbidden, not in lead_orchestrated_forbidden)."
+    },
+    {
+      "agent": "observer",
+      "allow_predicates": ["pass_clean", "pass_self_pass_or_fail", "validated_fallback", "legacy_pass_no_recovery", "pass_lead_orchestrated"],
+      "_note": "#1275 / Group A: observer is canonical /observe re-spawn target. Hard_gate exists primarily to license post-completion lead-orchestrated re-spawns (SOURCE_RUN_ID/SOURCE_SKILL honoring path) — observer is observation-only and never blocks delivery in normal flow. No additional_block_conditions because audit agents do not ship code."
+    },
+    {
+      "agent": "pattern-classifier",
+      "allow_predicates": ["pass_clean", "pass_self_pass_or_fail", "validated_fallback", "legacy_pass_no_recovery", "pass_lead_orchestrated"],
+      "_note": "#1275 / Group A: pattern-classifier is canonical /observe and /retro re-spawn target. See observer note for rationale."
+    },
+    {
+      "agent": "design-consistency-checker",
+      "allow_predicates": ["pass_clean", "pass_after_fixes", "pass_self_pass_or_fail", "validated_fallback", "legacy_pass_no_recovery", "aggregate_ok", "pass_lead_synthesized", "pass_lead_orchestrated"],
+      "_note": "#1275 / Group A: design-consistency-checker may be lead-orchestrated re-spawned after a shared-component fix lands (state-3a Stage 1b → state-3c flow). #1257: aggregate_ok added so the page-batched lead-merge aggregate (provenance=lead-merge + contributing_spawn_indexes) is accepted by the gate. #1381 D1: pass_lead_synthesized added for parity with design-critic — state-3a Stage 0 all-pages-fast-path writes a lead-synthesized aggregate for BOTH design agents; design-critic accepts it via this predicate, design-consistency-checker must too."
+    },
+    {
+      "agent": "design-page-contract",
+      "allow_predicates": ["pass_clean", "pass_after_fixes", "pass_self_pass_or_fail", "validated_fallback", "aggregate_ok", "legacy_pass_no_recovery", "pass_lead_synthesized", "pass_lead_orchestrated"],
+      "_note": "#1387: post-fan-out behavior-contract audit. Same lifecycle position as design-critic / design-consistency-checker (consumes scaffold-pages output, produces verdict for state-11c VERIFY). Executor is lead-orchestrated Python (.claude/scripts/lib/behavior_contract_auditor.py), not a spawned subagent — the verdict artifact .runs/behavior-implementation-audit.json is consumed by .claude/scripts/verify-state-11c-behavior-audit.py at state-registry:bootstrap.11c. allow_predicates superset of design-critic via design-agents-hard-gate-parity linter rule (template-coherence-rules.json design-agents-hard-gate-parity)."
+    }
+  ],
+  "_legacy_hard_gates_v1": [
+    "The v1 block_rules form is preserved below only for reference during migration. Do not read from it — verify-report-gate.sh reads hard_gates (v2) above."
+  ],
+  "trace_required": [
+    {
+      "agent": "design-consistency-checker",
+      "when_scope": ["full", "visual"],
+      "when_archetype": "web-app"
+    },
+    {
+      "agent": "quality-fixer",
+      "when_scope": ["full", "visual"],
+      "when_archetype": "web-app"
+    }
+  ]
+}

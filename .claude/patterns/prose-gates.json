@@ -1,0 +1,171 @@
+{
+  "_description": "Registry of prose gates: declarative source of truth binding prose intent in skill state files to a programmatic enforcement mechanism. Consumed by validators, hooks, and lint rules. See .claude/patterns/prose-gates-schema.json for shape validation. Closes #1434/#1431/#1393/#1433 defect class.",
+  "_schema_version": 2,
+  "_schema_version_notes": {
+    "1": "Initial — 6 gates covering the #1434 symptom table. All entries start fail_mode=warn for Phase A soak (Phase B). Phase C flips 4 of 6 to deny.",
+    "2": "fail_mode field is now load-bearing for callers that opt in via prose_gate_mode.resolve(). Helper enforces snapshot version-check before consulting registry value, preserving in-flight run safety. Phase C-fast: gates 1, 2, 4, 6 flipped warn→deny; gate 5 (retro-suppressions-confirmation) registry corrected from warn to deny matching #1393 phase-2 runtime default. Gate 3 (verify-state-2-phase1-spawn-no-background) is binary skill-yaml-mode and now omits fail_mode entirely (no warn↔deny concept). Closes #1449/#1431/#1433.",
+    "2.1": "PR 2 adds gate #7 agent-trace-schema-completeness (warn mode, validator-extension) enforcing AOC v1.3 workarounds[] and template_gap_observed[] keys present on every trace-writing agent. PR 3 will flip warn→deny after 1-2 weeks observation. No other registry changes."
+  },
+  "gates": [
+    {
+      "gate_id": "lead-synthesized-numerical-bounds",
+      "scope": { "skill": "*", "state_id": "*" },
+      "intent": "Numerical claims in lead-synthesized aggregates must be bounded by the coverage_provider artifact. Defense-in-depth fallback: where no per-agent bound is registered, all numerical fields MUST be zero AND no_fixes_claimed:true.",
+      "enforcement_kind": "hook",
+      "enforcer": ".claude/hooks/bound-by-coverage-provider-gate.sh",
+      "validator": ".claude/scripts/lib/bound-by-coverage-provider.py",
+      "bound_semantics": {
+        "design-critic": {
+          "coverage_provider_kind": "stage0-decision-artifact",
+          "bounded_fields": {
+            "pages_reviewed": "<= len(coverage_provider.page_set)",
+            "pages": "<= len(coverage_provider.page_set)",
+            "min_score": ">=10 only when coverage_provider proves all-pages-fast-path; else <= max(per_page_traces.score)",
+            "min_score_all": "<= min_score",
+            "sections_below_8": "== count(per_page_traces where score < 8); 0 when all-pages-fast-path",
+            "unresolved_sections": "0 when all-pages-fast-path",
+            "unresolved_shared": "0 when all-pages-fast-path",
+            "fixes_applied": "<= count(fix_ledger.rows where agent=design-critic AND run_id=current)"
+          }
+        },
+        "design-consistency-checker": {
+          "coverage_provider_kind": "stage0-decision-artifact",
+          "bounded_fields": {
+            "inconsistent_count": "0 when all-pages-fast-path; else <= count(coverage_provider.markers)"
+          }
+        },
+        "_default": {
+          "coverage_provider_kind": "any",
+          "bounded_fields": {
+            "all_numerical": "== 0",
+            "no_fixes_claimed": "== true"
+          }
+        }
+      },
+      "waivers": [
+        {
+          "skill": "verify",
+          "state_id": "3a",
+          "agents": ["design-critic", "design-consistency-checker"],
+          "coverage_provider": ".runs/all-pages-fast-path-decision.json",
+          "rationale": "#1256 — verify/state-3a-design-agents.md:134-147 Stage 0 fast-path; lead synthesizes both aggregates when PR_RELEVANT=0"
+        }
+      ],
+      "deviation_log": true,
+      "fail_mode": "deny",
+      "retrospective_visible": true,
+      "prose_locations": [
+        ".claude/skills/verify/state-3a-design-agents.md:134-147"
+      ]
+    },
+    {
+      "gate_id": "bootstrap-state-6-user-approval",
+      "scope": { "skill": "bootstrap", "state_id": "6" },
+      "intent": "User must explicitly approve the plan before advancing to STATE 7. advance-state.sh bootstrap 6 is denied unless .runs/user-approval-evidence.json exists with approval_source, quoted_user_reply (min_length:8), and timestamp within 60s of now.",
+      "enforcement_kind": "artifact-schema",
+      "validator": ".claude/scripts/lib/user-approval-evidence-validator.py",
+      "required_artifact": ".runs/user-approval-evidence.json",
+      "required_fields": {
+        "approval_source": { "enum": ["AskUserQuestion", "direct-user-message"] },
+        "quoted_user_reply": { "min_length": 8 },
+        "timestamp": { "within_seconds_of_now": 60 }
+      },
+      "deviation_log": true,
+      "fail_mode": "deny",
+      "retrospective_visible": true,
+      "prose_locations": [
+        ".claude/skills/bootstrap/state-6-user-approval.md:14"
+      ]
+    },
+    {
+      "gate_id": "verify-state-2-phase1-spawn-no-background",
+      "scope": { "skill": "verify", "state_id": "2" },
+      "intent": "verify Phase 1 spawn agents must run in foreground. Enforced by skill-agent-gate.sh reading mode:foreground from verify/skill.yaml.",
+      "enforcement_kind": "skill-yaml-mode",
+      "enforcer": ".claude/hooks/skill-agent-gate.sh",
+      "required_skill_yaml_field": "agents.<all>.mode",
+      "required_value": "foreground",
+      "deviation_log": true,
+      "_no_fail_mode_reason": "Binary enforcement via skill-yaml-mode: agent either runs in foreground (passes) or in background (denied). No warn↔deny gradient applies. fail_mode field omitted by schema v2 condition (required only when enforcement_kind != 'skill-yaml-mode'). Helper prose_gate_mode.resolve() raises ProseGateError if invoked for this gate; the enforcer (skill-agent-gate.sh) does not call the helper.",
+      "retrospective_visible": true,
+      "prose_locations": [
+        ".claude/skills/verify/state-2.md"
+      ]
+    },
+    {
+      "gate_id": "observation-phase-step5c-anomaly-audit",
+      "scope": { "skill": "*", "state_id": "99" },
+      "intent": "observation-phase.md Step 5c must invoke audit-sample.py unconditionally; .runs/audit-sample-result.json must exist with {triggered, audit_outcome, anomaly_count_observed}; when triggered==true, audit_outcome must be non-empty.",
+      "enforcement_kind": "artifact-schema",
+      "validator": ".claude/scripts/lib/anomaly-audit-evidence.py",
+      "required_artifact": ".runs/audit-sample-result.json",
+      "required_fields": {
+        "triggered": { "type": "boolean" },
+        "audit_outcome": { "type": "string", "non_empty_when": "triggered==true" },
+        "anomaly_count_observed": { "type": "integer" }
+      },
+      "deviation_log": true,
+      "fail_mode": "deny",
+      "retrospective_visible": true,
+      "prose_locations": [
+        ".claude/patterns/observation-phase.md:680-735"
+      ],
+      "deterministic_invokers": [
+        ".claude/scripts/check-observation-artifacts.sh"
+      ]
+    },
+    {
+      "gate_id": "retro-suppressions-confirmation",
+      "scope": { "skill": "retro", "state_id": "3" },
+      "intent": "Each suppression in retrospective-result.json must carry confirmation_evidence (min_length:40); each findings_filed[] entry must carry confirmation_evidence (min_length:40).",
+      "enforcement_kind": "validator-extension",
+      "validator": ".claude/scripts/validate-retrospective-completeness.py",
+      "required_fields": {
+        "suppressions[*].confirmation_evidence": { "min_length": 40 },
+        "findings_filed[*].confirmation_evidence": { "min_length": 40 }
+      },
+      "deviation_log": true,
+      "fail_mode": "deny",
+      "retrospective_visible": false,
+      "prose_locations": [
+        ".claude/patterns/observation-phase.md:497-548"
+      ]
+    },
+    {
+      "gate_id": "verify-state-3a-stage0-design-critic",
+      "scope": { "skill": "verify", "state_id": "3a", "sub_id": "Stage 0" },
+      "intent": "Stage 0 lead-synthesized design-critic aggregate permitted only when ALL_PAGES_FAST_PATH=true auto-detection fired. Manual bypass must carry auto_trigger_evidence (sha:<40 hex> OR marker:legitimate-bypass:<>=40 chars>).",
+      "enforcement_kind": "artifact-schema",
+      "validator": ".claude/scripts/lib/bound-by-coverage-provider.py",
+      "required_fields": {
+        "auto_trigger_evidence": {
+          "pattern": "^(sha:[0-9a-f]{40}|marker:legitimate-bypass:.{40,})$"
+        }
+      },
+      "deviation_log": true,
+      "fail_mode": "deny",
+      "retrospective_visible": true,
+      "prose_locations": [
+        ".claude/skills/verify/state-3a-design-agents.md:32-167"
+      ]
+    },
+    {
+      "gate_id": "agent-trace-schema-completeness",
+      "scope": { "skill": "*", "state_id": "*" },
+      "intent": "Every trace-writing agent (28 classes, AOC v1.3) MUST emit `workarounds[]` and `template_gap_observed[]` keys with empty-array defaults. Eliminates per-class schema carveouts that broke observer ingestion uniformity (#1252 mistake). Phase C-fast PR 2 lands warn; PR 3 flips to deny after observation.",
+      "enforcement_kind": "validator-extension",
+      "validator": ".claude/scripts/lib/agent-trace-schema-validator.py",
+      "required_fields": {
+        "workarounds": { "type": "array", "default_allowed": [] },
+        "template_gap_observed": { "type": "array", "default_allowed": [] }
+      },
+      "deviation_log": true,
+      "fail_mode": "warn",
+      "retrospective_visible": true,
+      "prose_locations": [
+        ".claude/patterns/agent-output-contract.md",
+        ".claude/patterns/agent-trace-protocol.md"
+      ]
+    }
+  ]
+}

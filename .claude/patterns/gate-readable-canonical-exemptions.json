@@ -1,0 +1,11 @@
+{
+  "$comment": "Issue #1349 Mechanism B exemptions registry for gate-artifact-write-gate.sh fail-open paths. The hook itself fail-opens on manifest-missing and unknown-MODE per Constraint 19 (gate-readable manifest is auto-derived from state-registry; its absence is structural). This file documents intentional bypass categories so reviewers can distinguish 'expected fail-open' from 'unobserved silent bypass'. Empty by default — populate only when a category needs structured tracking. The companion friction-log entries in .runs/hook-friction.jsonl are the runtime telemetry; this file is the design-time documentation. Schema enforced by hook_bypass_manifest_completeness coherence rule.",
+  "version": "1.0",
+  "schema": {
+    "exemptions[].path": "Repo-relative .runs/*.json path that the canonical writer policy exempts.",
+    "exemptions[].category": "One of: structural-bootstrap, derive-pending, legacy-migration.",
+    "exemptions[].justification": "Why this path is allowed to be Write/Edit-direct. Required, non-empty.",
+    "exemptions[].issue": "GitHub issue link tracking the migration to canonical writer (or null if permanent)."
+  },
+  "exemptions": []
+}

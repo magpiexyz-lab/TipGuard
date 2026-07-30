@@ -1,0 +1,8 @@
+{
+  "test": {
+    "5": {
+      "verify": "test -f .runs/test-foo.json",
+      "defer_verify_when_writer": [".runs/test-foo.json"]
+    }
+  }
+}

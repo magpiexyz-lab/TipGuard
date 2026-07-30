@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/anthropics/mvp-template/.claude/patterns/prose-gates-schema.json",
+  "title": "Prose-Gate Registry Schema",
+  "description": "Validates .claude/patterns/prose-gates.json. Each gate binds prose intent in a skill state file to a programmatic enforcement mechanism.",
+  "type": "object",
+  "required": ["_schema_version", "gates"],
+  "properties": {
+    "_description": { "type": "string" },
+    "_schema_version": { "type": "integer", "minimum": 1 },
+    "_schema_version_notes": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "gates": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/gate" }
+    }
+  },
+  "definitions": {
+    "gate": {
+      "type": "object",
+      "required": ["gate_id", "scope", "intent", "enforcement_kind", "prose_locations"],
+      "allOf": [
+        {
+          "description": "fail_mode is required when enforcement_kind != 'skill-yaml-mode'. Binary gates (skill-yaml-mode) have no warn↔deny gradient and omit the field; they MUST instead carry _no_fail_mode_reason explaining the omission.",
+          "if": {
+            "properties": { "enforcement_kind": { "not": { "const": "skill-yaml-mode" } } }
+          },
+          "then": { "required": ["fail_mode"] },
+          "else": { "required": ["_no_fail_mode_reason"] }
+        }
+      ],
+      "properties": {
+        "gate_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]+[a-z0-9]$",
+          "description": "Stable identifier; matches the <!-- prose-gate:<id> --> annotation."
+        },
+        "scope": {
+          "type": "object",
+          "required": ["skill", "state_id"],
+          "properties": {
+            "skill": {
+              "type": "string",
+              "description": "Skill name (e.g., 'verify') or '*' for cross-skill gates."
+            },
+            "state_id": {
+              "type": "string",
+              "description": "State id (e.g., '3a', '6', '99') or '*' for cross-state gates."
+            },
+            "sub_id": {
+              "type": "string",
+              "description": "Optional sub-state identifier (e.g., 'Stage 0')."
+            }
+          }
+        },
+        "intent": {
+          "type": "string",
+          "minLength": 40,
+          "description": "Human-readable prose describing what the gate enforces."
+        },
+        "enforcement_kind": {
+          "type": "string",
+          "enum": ["hook", "artifact-schema", "validator-extension", "skill-yaml-mode"]
+        },
+        "enforcer": {
+          "type": "string",
+          "description": "Path to the hook or script that enforces the gate at write/spawn time."
+        },
+        "validator": {
+          "type": "string",
+          "description": "Path to the validator script invoked by hook or VERIFY."
+        },
+        "required_artifact": {
+          "type": "string",
+          "description": "Path to the artifact that satisfies the gate (when enforcement_kind=artifact-schema)."
+        },
+        "required_fields": {
+          "type": "object",
+          "description": "Per-field validation rules (min_length, enum, type, pattern, within_seconds_of_now, non_empty_when)."
+        },
+        "required_skill_yaml_field": {
+          "type": "string",
+          "description": "Dotted field path inside skill.yaml (when enforcement_kind=skill-yaml-mode)."
+        },
+        "required_value": {
+          "type": "string",
+          "description": "Expected value at required_skill_yaml_field."
+        },
+        "bound_semantics": {
+          "type": "object",
+          "description": "Per-agent bound rules for lead-synthesized numerical claims. Keys are agent names; '_default' is the defense-in-depth fallback.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["bounded_fields"],
+            "properties": {
+              "coverage_provider_kind": { "type": "string" },
+              "bounded_fields": { "type": "object" }
+            }
+          }
+        },
+        "waivers": {
+          "type": "array",
+          "description": "Sanctioned exemptions where the gate would otherwise fire.",
+          "items": {
+            "type": "object",
+            "required": ["skill", "state_id", "rationale"],
+            "properties": {
+              "skill": { "type": "string" },
+              "state_id": { "type": "string" },
+              "agents": { "type": "array", "items": { "type": "string" } },
+              "coverage_provider": { "type": "string" },
+              "rationale": { "type": "string", "minLength": 20 }
+            }
+          }
+        },
+        "deviation_log": {
+          "type": "boolean",
+          "description": "When true, violations append to .runs/lead-deviation-log.jsonl with gate_layer:prose-gates-v1."
+        },
+        "fail_mode": {
+          "type": "string",
+          "enum": ["warn", "deny"],
+          "description": "warn = log and allow (Phase A/B); deny = block (Phase C). Required when enforcement_kind != 'skill-yaml-mode' (see allOf condition above). Resolved at runtime via prose_gate_mode.resolve() — the helper consults snapshot, env override, and prior_default before falling back to this registry value (only when _schema_version >= 2)."
+        },
+        "_no_fail_mode_reason": {
+          "type": "string",
+          "minLength": 60,
+          "description": "Required ONLY for binary gates (enforcement_kind=skill-yaml-mode) where fail_mode is intentionally omitted. Explains why no warn↔deny gradient applies. Helper prose_gate_mode.resolve() raises ProseGateError if invoked for such gates."
+        },
+        "retrospective_visible": {
+          "type": "boolean",
+          "description": "When true, deviations surface in retrospective-enumerator's 6th channel."
+        },
+        "prose_locations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "File:line references where the prose intent lives."
+        }
+      }
+    }
+  }
+}

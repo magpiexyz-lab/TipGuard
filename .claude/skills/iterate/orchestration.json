@@ -1,0 +1,11 @@
+{
+  "skill": "iterate",
+  "phases": [
+    {
+      "name": "Execute",
+      "state_range": [0, 5],
+      "interactive": true,
+      "gate": null
+    }
+  ]
+}

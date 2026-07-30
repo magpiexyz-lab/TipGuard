@@ -1,0 +1,13 @@
+{
+  "rules": [
+    {
+      "id": "fixture-bcp-violation",
+      "type": "branch_checkout_propagation_pairing",
+      "severity": "block",
+      "scan_globs": [
+        ".claude/skills/**/*.md",
+        ".claude/scripts/**/*.sh"
+      ]
+    }
+  ]
+}

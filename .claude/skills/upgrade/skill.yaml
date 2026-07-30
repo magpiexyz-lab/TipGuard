@@ -1,0 +1,6 @@
+branch: "chore/upgrade-{slug}"
+states: ["0", "1", "2", "3","99"]
+skip_experiment_validation: true
+observation:
+  gate: commit-pr-gate
+  artifacts: [observe-result.json, upgrade-diff-report.json]

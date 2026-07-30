@@ -1,0 +1,45 @@
+{
+  "skill": "distribute",
+  "phases": [
+    {
+      "name": "Setup",
+      "state_range": [0, "1_5"],
+      "interactive": true,
+      "gate": {
+        "completed_states": ["1_5"]
+      }
+    },
+    {
+      "name": "Research",
+      "state_range": [2, 4],
+      "interactive": false,
+      "max_budget": 30,
+      "gate": {
+        "completed_states": [4]
+      }
+    },
+    {
+      "name": "Config",
+      "state_range": [5, 6],
+      "interactive": true,
+      "gate": {
+        "completed_states": [6]
+      }
+    },
+    {
+      "name": "Implement",
+      "state_range": [7, 8],
+      "interactive": false,
+      "max_budget": 80,
+      "gate": {
+        "postconditions": true
+      }
+    },
+    {
+      "name": "Launch",
+      "state_range": [9, 9],
+      "interactive": true,
+      "gate": null
+    }
+  ]
+}

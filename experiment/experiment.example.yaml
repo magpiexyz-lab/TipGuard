@@ -1,0 +1,226 @@
+# experiment.example.yaml — Worked example of a filled-in experiment.yaml
+#
+# This was filled in manually. For a faster path, run `/spec 'your idea'` — it
+# generates hypotheses, behaviors, variants, and stack choices automatically.
+#
+# Copy the structure to idea/experiment.yaml and replace with your own values.
+
+# --- 1. Identity ---
+name: quickbill
+owner: my-team                 # Who owns this experiment. Used as project_owner in analytics.
+type: web-app                  # Product archetype (web-app | service | cli). Default: web-app.
+level: 3                       # Product: auth + payments + complete features
+status: draft
+quality: production              # Default. TDD, per-task implementer, spec review.
+                               # This field is reserved for future use. Do not set quality: mvp.
+
+# --- 2. Intent ---
+description: |
+  Freelancers billing fewer than 5 clients per month waste 2-3 hours on invoicing,
+  bouncing between spreadsheets, PDF generators, and manual payment follow-ups.
+  QuickBill is a single-page invoicing tool where freelancers create an invoice in
+  under 60 seconds, send a payment link to clients, and get notified when paid.
+
+thesis: "If freelancers can create and send an invoice in under 60 seconds, then 10+ will complete at least one paid invoice within 2 weeks, as measured by Stripe checkout completions"
+target_user: Freelance designers and developers billing 1-5 clients per month
+
+distribution: |
+  Post launch in r/freelance, r/webdev, Indie Hackers.
+  LinkedIn posts targeting freelancer communities.
+  Cold DM 50 freelancers from Dribbble/Behance.
+
+hypotheses:
+  - id: h-01
+    category: demand
+    statement: ">5% of freelancers who see the landing page click 'Start Invoicing Free'"
+    metric:
+      formula: "cta_click / visit_landing"
+      threshold: 0.05
+      operator: gte
+    priority_score: 90
+    experiment_level: 1
+    depends_on: []
+    status: pending
+  - id: h-02
+    category: activate
+    statement: "A freelancer can create and send an invoice in under 60 seconds on first use"
+    metric:
+      formula: "activate / signup_complete"
+      threshold: 0.30
+      operator: gte
+    priority_score: 80
+    experiment_level: 2
+    depends_on: [h-01]
+    status: pending
+  - id: h-03
+    category: monetize
+    statement: ">10% of freelancers who send an invoice will have at least one paid via Stripe"
+    metric:
+      formula: "pay_success / activate"
+      threshold: 0.10
+      operator: gte
+    priority_score: 70
+    experiment_level: 3
+    depends_on: [h-02]
+    status: pending
+  - id: h-04
+    category: retain
+    statement: ">50% of freelancers who send one invoice return to send a second within 14 days"
+    metric:
+      formula: "retain_return / signup_complete"
+      threshold: 0.50
+      operator: gte
+    priority_score: 60
+    experiment_level: 3
+    depends_on: [h-03]
+    status: pending
+
+# --- 3. Behaviors ---
+behaviors:
+  - id: b-01
+    hypothesis_id: h-01
+    pages: [landing]                        # web-app + actor:user → required (see .claude/templates/experiment-yaml.md)
+    given: "A freelancer visits the QuickBill landing page"
+    when: "They read the value proposition"
+    then: "They click 'Start Invoicing Free' CTA (>5% of visitors)"
+    tests:
+      - "Landing page renders without errors"
+      - "CTA button is visible and clickable"
+    level: 1
+  - id: b-02
+    hypothesis_id: h-01
+    pages: [signup, dashboard]              # spans signup form → dashboard landing
+    given: "A visitor clicks the CTA"
+    when: "They fill in email and password"
+    then: "Account is created and they land on the dashboard"
+    tests:
+      - "Signup form validates input"
+      - "User is redirected to dashboard after signup"
+    level: 2
+  - id: b-03
+    hypothesis_id: h-02
+    pages: [dashboard, invoice-create]      # starts on dashboard → invoice-create form
+    given: "A signed-up freelancer is on the dashboard"
+    when: "They click 'New Invoice' and fill in line items"
+    then: "An invoice is created and send-link is generated in <60 seconds"
+    tests:
+      - "Invoice form accepts line items, tax, and due date"
+      - "Send-link is generated after submission"
+    level: 2
+  - id: b-04
+    hypothesis_id: h-03
+    pages: [invoice-pay]                    # public invoice page (NOT in golden_path — exactly the #1024 case)
+    given: "A client receives an invoice link"
+    when: "They click 'Pay Now' and complete Stripe checkout"
+    then: "Invoice status updates to 'paid' and freelancer is notified"
+    tests:
+      - "Public invoice page renders with pay button"
+      - "Stripe checkout redirects back to confirmation"
+    level: 3
+  - id: b-05
+    actor: system
+    trigger: "stripe webhook checkout.session.completed"
+    hypothesis_id: h-03
+    given: "A Stripe checkout session completes"
+    when: "Webhook is received"
+    then: "Invoice marked paid, freelancer notified via email"
+    tests:
+      - "invoices table has status='paid'"
+      - "2 emails queued (confirmation to freelancer, receipt to client)"
+    level: 3
+  - id: b-06
+    actor: cron
+    trigger: "daily cron"
+    hypothesis_id: h-04
+    given: "Invoices exist past due date with status='sent'"
+    when: "Daily cron runs"
+    then: "Reminder email sent to client, nudge_sent_at timestamp updated"
+    tests:
+      - "Overdue invoices have nudge_sent_at set"
+      - "Reminder emails queued for each overdue invoice"
+    level: 3
+
+# --- 4. Journey ---
+golden_path:
+  - step: "Visit landing page"
+    event: visit_landing
+    page: landing
+  - step: "Click 'Start Invoicing Free'"
+    event: cta_click
+    page: landing
+  - step: "Fill email + password, submit"
+    event: signup_complete
+    page: signup
+  - step: "Click 'New Invoice' on dashboard"
+    event: activate
+    page: dashboard
+  - step: "Fill line items, click 'Send Invoice'"
+    event: invoice_sent
+    page: invoice-create
+target_clicks: 4
+
+# --- 5. Variants ---
+variants:
+  - slug: speed
+    headline: "Invoice Clients in 60 Seconds"
+    subheadline: "Stop wasting hours on invoicing. Create, send, get paid."
+    cta: "Send Your First Invoice"
+    promise: "Get paid faster with zero overhead"
+    proof: "Built by a freelancer who billed 200+ clients"
+    urgency: "Stop losing money to late payments today"
+    pain_points:
+      - "Manual invoicing wastes hours every week"
+      - "Chasing payments is exhausting"
+      - "Existing tools are overkill for solo freelancers"
+  - slug: simplicity
+    headline: "Dead-Simple Invoicing for Freelancers"
+    subheadline: "No accounting degree needed. Professional invoices in minutes."
+    cta: "Start Invoicing Free"
+    promise: "Professional invoices without the complexity"
+    proof: "Used by 50+ freelancers in beta"
+    urgency: "Your next invoice is due — make it easy"
+    pain_points:
+      - "FreshBooks and QuickBooks are too complex"
+      - "You just need to send an invoice, not run accounting"
+      - "Spreadsheet invoices look unprofessional"
+
+# --- 6. Funnel ---
+# Dimension thresholds are derived from the highest-priority hypothesis per category.
+funnel:
+  available_from:
+    reach: L1
+    demand: L1
+    activate: L2
+    monetize: L2
+    retain: L3
+  decision_framework:
+    scale: "All tested dimensions >= 1.0"
+    kill: "Any top-funnel (REACH or DEMAND) < 0.5"
+    pivot: "2+ dimensions < 0.8"
+    refine: "1+ dimensions < 1.0 but fewer than 2 below 0.8"
+
+# --- 7. Stack + Deploy ---
+stack:
+  services:
+    - name: app
+      runtime: nextjs
+      hosting: vercel
+      ui: shadcn
+      testing: playwright
+  database: supabase
+  auth: supabase
+  auth_providers:
+    - google
+  analytics: posthog
+  payment: stripe
+  # surface: co-located         # Optional override for surface type (co-located | detached | none).
+                                 # Default: inferred from archetype and hosting config during /bootstrap.
+                                 # Set explicitly when inference doesn't match your intent.
+
+# --- Target Geography ---
+target_geo: [US, GB, CA, AU, NZ]   # English-speaking Five Eyes nations. Used by /distribute for ad targeting.
+
+deploy:
+  url: null
+  repo: null
+  domain: null               # <name>.<domain> for hosting, noreply@<domain> for email. Default: draftlabs.org

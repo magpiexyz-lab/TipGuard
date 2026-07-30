@@ -1,0 +1,12 @@
+{
+  "rules": [
+    {
+      "id": "fixture-fr-violation",
+      "type": "field_role_map",
+      "severity": "block",
+      "field": "golden_path",
+      "canonical_function": "derive_scope_pages",
+      "consumers": [".claude/agents/test-consumer.md"]
+    }
+  ]
+}

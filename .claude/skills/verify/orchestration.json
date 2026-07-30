@@ -1,0 +1,12 @@
+{
+  "skill": "verify",
+  "phases": [
+    {
+      "name": "Execute",
+      "state_range": [0, 8],
+      "interactive": false,
+      "max_budget": 80,
+      "gate": null
+    }
+  ]
+}

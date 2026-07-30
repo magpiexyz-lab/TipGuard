@@ -1,0 +1,42 @@
+name: State Consistency
+
+# Enforces declarative-vs-prose drift detection for state-registry.json fields
+# (allows_early_exit_when, verify_semantics). Other verify-linter.sh categories
+# (UNCOVERED / DIVERGED / UNJUSTIFIED_TRUE) are manual dev tooling with their
+# own backlog — not gated here to keep this check's scope narrow.
+
+on:
+  pull_request:
+    paths:
+      - '.claude/patterns/state-registry.json'
+      - '.claude/patterns/template-coherence-rules.json'
+      - '.claude/skills/**/state-*.md'
+      - '.claude/scripts/verify-linter.sh'
+      - '.claude/scripts/tests/test_verify_semantics.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: state-consistency-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check declarative-vs-prose drift + cross-file coherence
+        run: |
+          set +e
+          OUTPUT=$(bash .claude/scripts/verify-linter.sh)
+          echo "$OUTPUT"
+          set -e
+          if echo "$OUTPUT" | grep -qE '^(DRIFT_DECLARED_VS_PROSE|CROSS_FILE_CONTRADICTION)'; then
+            echo "::error::Template coherence violation detected. Fix the registry declaration, update the state-file prose, or address the cross-file contradiction above."
+            exit 1
+          fi
+          echo "No declarative drift or cross-file contradictions detected."
+      - name: Behavioral tests for VERIFY semantics (#928 regression guard)
+        run: make test-verify-semantics

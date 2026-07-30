@@ -1,0 +1,1480 @@
+{
+  "$comment": "GRAIM v2 — gate-readable artifacts that MUST carry {skill, run_id, written_at}. Auto-derived from state-registry.json VERIFY blocks. DO NOT EDIT MANUALLY — re-run derive-graim-manifest.py.",
+  "$jsonl_carveout": "#1393 r3 Item 2 — `.jsonl` telemetry is a known non-canonical class. The regex carve-out at derive-graim-manifest.py:RE_RUNS_JSON (negative lookahead `(?![a-zA-Z0-9])`) is load-bearing — see that file's module docstring. New telemetry: pick `.jsonl` extension, document per-line schema in writer docstring, do NOT register here. Enforced by template-coherence-rules.json rule `derive-graim-manifest-carveout-pin`.",
+  "version": "1.0",
+  "generated_at": "2026-04-30T11:14:14Z",
+  "generator": ".claude/scripts/derive-graim-manifest.py",
+  "artifacts": [
+    {
+      "path": ".runs/ads-ready-smoke-result.json",
+      "consumers": [
+        "state-registry:ads-ready.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: ads-ready."
+    },
+    {
+      "path": ".runs/ads-ready-static-result.json",
+      "consumers": [
+        "state-registry:ads-ready.0"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: ads-ready."
+    },
+    {
+      "path": ".runs/agent-traces/accessibility-scanner.json",
+      "consumers": [
+        "state-registry:verify.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Agent trace consumed by VERIFY block; provenance must include {skill,run_id,written_at}."
+    },
+    {
+      "path": ".runs/agent-traces/behavior-verifier.json",
+      "consumers": [
+        "state-registry:verify.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Agent trace consumed by VERIFY block; provenance must include {skill,run_id,written_at}."
+    },
+    {
+      "path": ".runs/agent-traces/design-consistency-checker.json",
+      "consumers": [
+        "state-registry:verify.3b"
+      ],
+      "writers": [
+        ".claude/scripts/write-agent-trace.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Agent trace consumed by VERIFY block; provenance must include {skill,run_id,written_at}. #1256 Stage 0 fast-path may write a lead-synthesized trace via write-agent-trace.sh with coverage_provider=.runs/all-pages-fast-path-decision.json."
+    },
+    {
+      "path": ".runs/agent-traces/design-critic-landing.json",
+      "consumers": [
+        "state-registry:verify.3a",
+        "state-registry:verify.3b"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Agent trace consumed by VERIFY block; provenance must include {skill,run_id,written_at}."
+    },
+    {
+      "path": ".runs/agent-traces/design-critic.json",
+      "consumers": [
+        "state-registry:verify.3a",
+        "state-registry:verify.3b",
+        "state-registry:verify.3c",
+        "state-registry:verify.7b"
+      ],
+      "writers": [
+        ".claude/scripts/check-design-critic-sanctioned.py",
+        ".claude/scripts/merge-design-critic-traces.py",
+        ".claude/scripts/write-agent-trace.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Agent trace consumed by VERIFY block; provenance must include {skill,run_id,written_at}. #1256 Stage 0 fast-path writes a lead-synthesized aggregate via write-agent-trace.sh with coverage_provider=.runs/all-pages-fast-path-decision.json (sanctioned by state-completion-gate.sh SANCTIONED_COVERAGE_PROVIDERS allowlist)."
+    },
+    {
+      "path": ".runs/agent-traces/quality-fixer.json",
+      "consumers": [
+        "state-registry:verify.3d",
+        "state-registry:verify.7b"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Agent trace consumed by VERIFY block; provenance must include {skill,run_id,written_at}."
+    },
+    {
+      "path": ".runs/agent-traces/resolve-reviewer.json",
+      "consumers": [
+        "state-registry:resolve.10"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Agent trace consumed by VERIFY block; provenance must include {skill,run_id,written_at}."
+    },
+    {
+      "path": ".runs/agent-traces/scaffold-pages.json",
+      "consumers": [
+        ".claude/hooks/agent-trace-write-guard.sh"
+      ],
+      "writers": [
+        ".claude/scripts/merge-scaffold-pages-traces.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Lead-merge aggregate trace produced by merge-scaffold-pages-traces.py (allowlisted in agent-trace-write-guard.sh:181). Bypasses write-agent-trace.sh — pre-AOC-v1.1 legacy aggregate, see merge script comment lines 18-22 for full lead-merge invariant retrofit deferred. Slice 3.2 enrolls in GRAIM canonical manifest; full identity stamping comes when this aggregate is upgraded to AOC v1.1 lead-merge contract."
+    },
+    {
+      "path": ".runs/agent-traces/security-fixer.json",
+      "consumers": [
+        "state-registry:verify.3c",
+        "state-registry:verify.7b"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Agent trace consumed by VERIFY block; provenance must include {skill,run_id,written_at}."
+    },
+    {
+      "path": ".runs/agent-traces/ux-journeyer.json",
+      "consumers": [
+        "state-registry:verify.3c",
+        "state-registry:verify.7b"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Agent trace consumed by VERIFY block; provenance must include {skill,run_id,written_at}."
+    },
+    {
+      "path": ".runs/all-pages-fast-path-decision.json",
+      "consumers": [
+        "state-registry:verify.3a",
+        "state-registry:verify.3b"
+      ],
+      "writers": [
+        ".claude/skills/verify/state-3a-design-agents.md"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "#1256 Stage 0 all-pages-fast-path detector decision artifact. Written by state-3a Stage 0 (lead-side bash, no agent) when PR boundary contains zero UI-rendering source files (after excluding test files, shadcn primitives, and api routes). Read by state-3a/3b VERIFY blocks to short-circuit per-page-glob assertions, and by state-completion-gate.sh SANCTIONED_COVERAGE_PROVIDERS allowlist to exempt the lead-synthesized design-critic.json + design-consistency-checker.json aggregates from the per-trace spawn-log integrity check."
+    },
+    {
+      "path": ".runs/audit-analysis.json",
+      "consumers": [
+        "state-registry:audit.1",
+        "state-registry:audit.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: audit."
+    },
+    {
+      "path": ".runs/audit-context.json",
+      "consumers": [
+        "state-registry:audit.0"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: audit."
+    },
+    {
+      "path": ".runs/audit-skill-manifest.json",
+      "consumers": [
+        "state-registry:audit.0",
+        "state-registry:audit.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: audit."
+    },
+    {
+      "path": ".runs/b1-spawn-result.json",
+      "consumers": [
+        "state-registry:bootstrap.11a"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/b1-verify-result.json",
+      "consumers": [
+        "state-registry:bootstrap.11b"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-archetype-trace.json",
+      "consumers": [
+        "state-registry:bootstrap.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-build-result.json",
+      "consumers": [
+        "state-registry:bootstrap.13"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-context.json",
+      "consumers": [
+        "state-registry:bootstrap.11",
+        "state-registry:bootstrap.11c",
+        "state-registry:bootstrap.14",
+        "state-registry:bootstrap.3b",
+        "state-registry:bootstrap.8"
+      ],
+      "writers": [
+        ".claude/scripts/merge-scaffold-pages-traces.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-design-validated.json",
+      "consumers": [
+        "state-registry:bootstrap.13a"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-modules-trace.json",
+      "consumers": [
+        "state-registry:bootstrap.16"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-on-touch-trace.json",
+      "consumers": [
+        "state-registry:bootstrap.17"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-preconditions.json",
+      "consumers": [
+        "state-registry:bootstrap.4"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-scan.json",
+      "consumers": [
+        "state-registry:bootstrap.15",
+        "state-registry:bootstrap.16"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-state12-stack-knowledge-hints.json",
+      "consumers": [
+        "state-registry:bootstrap.12"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-validation-trace.json",
+      "consumers": [
+        "state-registry:bootstrap.3"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/bootstrap-wire-trace.json",
+      "consumers": [
+        "state-registry:bootstrap.14"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/build-result.json",
+      "consumers": [
+        "state-registry:verify.1",
+        "state-registry:verify.3b",
+        "state-registry:verify.7b"
+      ],
+      "writers": [
+        ".claude/hooks/lib-artifacts.sh",
+        ".claude/scripts/check-artifact-presence.py",
+        ".claude/scripts/lifecycle-finalize.sh",
+        ".claude/scripts/validate-recovery.sh",
+        ".claude/scripts/write-phase-a-repair.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/change-context.json",
+      "consumers": [
+        "state-registry:change.2",
+        "state-registry:change.4",
+        "state-registry:change.5",
+        "state-registry:change.9"
+      ],
+      "writers": [
+        ".claude/hooks/adversarial-merge-gate.sh",
+        ".claude/hooks/lib-state.sh",
+        ".claude/scripts/verify-change-solve.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: change."
+    },
+    {
+      "path": ".runs/change-stack-knowledge-hints.json",
+      "consumers": [
+        "state-registry:change.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: change."
+    },
+    {
+      "path": ".runs/consistency-check-prepass.json",
+      "consumers": [
+        "state-registry:verify.3b"
+      ],
+      "writers": [
+        ".claude/scripts/run-consistency-static-prepass.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by state-3b VERIFY partition-cardinality assertion (#1257) and by merge-design-consistency-checker-traces.py for telemetry emission. Written by run-consistency-static-prepass.py via write-gate-artifact.sh."
+    },
+    {
+      "path": ".runs/consistency-scan-result.json",
+      "consumers": [
+        "state-registry:change.10"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: change."
+    },
+    {
+      "path": ".runs/deploy-config.json",
+      "consumers": [
+        "state-registry:deploy.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: deploy."
+    },
+    {
+      "path": ".runs/deploy-context.json",
+      "consumers": [
+        "state-registry:deploy.0",
+        "state-registry:deploy.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: deploy."
+    },
+    {
+      "path": ".runs/deploy-health-4a.json",
+      "consumers": [
+        "state-registry:deploy.4a"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: deploy."
+    },
+    {
+      "path": ".runs/deploy-health.json",
+      "consumers": [
+        "state-registry:deploy.4b"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: deploy."
+    },
+    {
+      "path": ".runs/deploy-manifest.json",
+      "consumers": [
+        "state-registry:deploy.5"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: deploy."
+    },
+    {
+      "path": ".runs/deploy-provision-3a.json",
+      "consumers": [
+        "state-registry:deploy.3a"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: deploy."
+    },
+    {
+      "path": ".runs/deploy-provision-3b.json",
+      "consumers": [
+        ".claude/scripts/verify-deploy-3b.py",
+        ".claude/skills/deploy/state-3c-deploy-services.md",
+        ".claude/skills/deploy/state-4b-production-validation.md"
+      ],
+      "writers": [
+        ".claude/skills/deploy/state-3b-provision-host.md"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Intermediate deploy artifact consumed by state-3b VERIFY (via verify-deploy-3b.py) and read by state-3c/state-4b for collected_secrets handoff. Slice 3.2: writer in state-3b migrated from inline json.dump to write-gate-artifact.sh."
+    },
+    {
+      "path": ".runs/deploy-provision.json",
+      "consumers": [
+        "state-registry:deploy.3c"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: deploy."
+    },
+    {
+      "path": ".runs/design-claims.json",
+      "consumers": [
+        "state-registry:verify.3a"
+      ],
+      "writers": [
+        ".claude/hooks/lib-artifacts.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/design-page-set.json",
+      "consumers": [
+        "state-registry:verify.2a",
+        "state-registry:verify.3a",
+        "state-registry:verify.3b"
+      ],
+      "writers": [
+        ".claude/scripts/lib/derive_pages.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/design-ux-merge.json",
+      "consumers": [
+        "state-registry:verify.3c"
+      ],
+      "writers": [
+        ".claude/hooks/lib-artifacts.sh",
+        ".claude/hooks/verify-report-gate.sh",
+        ".claude/scripts/check-artifact-presence.py",
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/distribute-campaign-audit.json",
+      "consumers": [
+        "state-registry:distribute.6"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: distribute."
+    },
+    {
+      "path": ".runs/distribute-context.json",
+      "consumers": [
+        "state-registry:distribute.0",
+        "state-registry:distribute.5"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: distribute."
+    },
+    {
+      "path": ".runs/distribute-impl-step-check.json",
+      "consumers": [
+        "state-registry:distribute.3"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: distribute."
+    },
+    {
+      "path": ".runs/distribute-preconditions.json",
+      "consumers": [
+        "state-registry:distribute.0",
+        "state-registry:distribute.1",
+        "state-registry:distribute.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: distribute."
+    },
+    {
+      "path": ".runs/distribute-step-check.json",
+      "consumers": [
+        "state-registry:distribute.6"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: distribute."
+    },
+    {
+      "path": ".runs/drift-report.json",
+      "consumers": [
+        "state-registry:verify.2b"
+      ],
+      "writers": [
+        ".claude/scripts/check-slot-intent-drift.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/e2e-result.json",
+      "consumers": [
+        "state-registry:verify.5"
+      ],
+      "writers": [
+        ".claude/scripts/check-artifact-presence.py",
+        ".claude/scripts/validate-recovery.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/exploration-trace.json",
+      "consumers": [
+        "state-registry:change.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: change."
+    },
+    {
+      "path": ".runs/gate-verdicts/bg1.json",
+      "consumers": [
+        "state-registry:bootstrap.3a"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Gate verdict file consumed by VERIFY block; persisted across skills."
+    },
+    {
+      "path": ".runs/gate-verdicts/bg2-wire.json",
+      "consumers": [
+        "state-registry:bootstrap.14a"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Gate verdict file consumed by VERIFY block; persisted across skills."
+    },
+    {
+      "path": ".runs/gate-verdicts/bg2.5.json",
+      "consumers": [
+        "state-registry:bootstrap.12"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Gate verdict file consumed by VERIFY block; persisted across skills."
+    },
+    {
+      "path": ".runs/gate-verdicts/bg2.json",
+      "consumers": [
+        "state-registry:bootstrap.13c"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Gate verdict file consumed by VERIFY block; persisted across skills."
+    },
+    {
+      "path": ".runs/gate-verdicts/bg4.json",
+      "consumers": [
+        "state-registry:bootstrap.18"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Gate verdict file consumed by VERIFY block; persisted across skills."
+    },
+    {
+      "path": ".runs/gate-verdicts/phase-a-sentinel.json",
+      "consumers": [
+        "state-registry:bootstrap.11"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Gate verdict file consumed by VERIFY block; persisted across skills. Read-only consumed by .claude/scripts/lib/behavior_contract_auditor.py for the Phase A exemption check (#1187)."
+    },
+    {
+      "path": ".runs/scaffold-pages-contracts.json",
+      "consumers": [
+        ".claude/agents/scaffold-pages.md (per-page direct key access)",
+        ".claude/scripts/lib/behavior_contract_auditor.py (iterates via unstamped_items)"
+      ],
+      "writers": [
+        ".claude/scripts/lib/write-gate-artifact.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "#1387: pre-fan-out behavior contract derived from experiment.yaml.behaviors[*].tests directive tokens. Identity-stamped via canonical writer. Consumers MUST use unstamped_items() from verify_helpers.py (per template-coherence-rules.json verify-d-values-against-stamped-artifact rule)."
+    },
+    {
+      "path": ".runs/behavior-implementation-audit.json",
+      "consumers": [
+        "state-registry:bootstrap.11c"
+      ],
+      "writers": [
+        ".claude/scripts/lib/write-gate-artifact.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "#1387: post-fan-out static audit verdict consumed by state-11c VERIFY (via verify-state-11c-behavior-audit.py). uncovered_count > 0 blocks PR creation. Identity-stamped."
+    },
+    {
+      "path": ".runs/behavior-verifier-static-stubs.json",
+      "consumers": [
+        ".claude/agents/behavior-verifier.md (B7 runtime check)"
+      ],
+      "writers": [
+        ".claude/scripts/lib/write-gate-artifact.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "#1387: runtime check annotations signaled by Layer 4a auditor; consumed by behavior-verifier B7 dynamic-stub-detection in /verify. Load-bearing trustworthy check for fetch-with-stub-fallback patterns."
+    },
+    {
+      "path": ".runs/graduation-result.json",
+      "consumers": [
+        "state-registry:resolve.9a"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/image-candidates.json",
+      "consumers": [
+        "state-registry:verify.3b"
+      ],
+      "writers": [
+        ".claude/scripts/lib/derive_pages.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/image-manifest.json",
+      "consumers": [
+        "state-registry:bootstrap.11b"
+      ],
+      "writers": [
+        ".claude/scripts/migrate-slot-intent.py",
+        ".claude/scripts/verify-state-11a-image-count.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap."
+    },
+    {
+      "path": ".runs/iterate-check-context.json",
+      "consumers": [
+        "state-registry:iterate-check.*"
+      ],
+      "writers": [
+        ".claude/scripts/init-context.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Skill context written by init-context.sh; protected {skill, run_id} per AOC v1.1 protected-fields rule. Enrolled in GRAIM canonical manifest to dismiss discovery rule promotion candidacy."
+    },
+    {
+      "path": ".runs/iterate-check-fixes.json",
+      "consumers": [
+        "state-registry:iterate-check.c2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-check."
+    },
+    {
+      "path": ".runs/iterate-check-health.json",
+      "consumers": [
+        "state-registry:iterate-check.c1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-check."
+    },
+    {
+      "path": ".runs/iterate-context.json",
+      "consumers": [
+        "state-registry:iterate.3"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate."
+    },
+    {
+      "path": ".runs/_iterate-cross-ga-unmatched.json",
+      "consumers": [
+        "state-registry:iterate-cross.x0a"
+      ],
+      "writers": [
+        ".claude/scripts/lib/iterate_cross_ga.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Operator triage file for Google Ads campaigns that bucket logic could not map to an MVP (placeholders like 'Campaign #1'). Written unconditionally by iterate_cross_ga.py merge subcommand so x0a VERIFY can assert presence."
+    },
+    {
+      "path": ".runs/_iterate-cross-phase2-ga-unmatched.json",
+      "consumers": [
+        "state-registry:iterate-cross-phase2.x5"
+      ],
+      "writers": [
+        ".claude/scripts/lib/iterate_cross_ga.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Operator triage file for Phase 2 Google Ads campaigns that bucket logic could not map to an MVP. Written by iterate_cross_ga.py merge subcommand so x5 VERIFY can assert presence."
+    },
+    {
+      "path": ".runs/_iterate-cross-phase2-db-unmatched.json",
+      "consumers": [
+        "state-registry:iterate-cross-phase2.x5"
+      ],
+      "writers": [
+        ".claude/scripts/lib/iterate_cross_phase2_db.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Operator triage file for Phase 2 Supabase pay_intent rows that could not provide trusted DB counts. Written unconditionally by iterate_cross_phase2_db.py merge subcommand so x5 VERIFY can assert presence and run-token freshness."
+    },
+    {
+      "path": ".runs/iterate-cross-auth-preflight.json",
+      "consumers": [
+        "state-registry:iterate-cross.x0",
+        "state-registry:iterate-cross-phase2.x5"
+      ],
+      "writers": [
+        ".claude/scripts/lib/write-gate-artifact.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Auth preflight verdict (state-x0/x5 Step 0). Written via write-gate-artifact.sh so VERIFY can assert all_required_ok and mode; purged by lifecycle-init so a stale pass never satisfies a new run."
+    },
+    {
+      "path": ".runs/iterate-cross-context.json",
+      "consumers": [
+        "state-registry:iterate-cross.x0",
+        "state-registry:iterate-cross.x0a"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-cross."
+    },
+    {
+      "path": ".runs/iterate-cross-data-issues.json",
+      "consumers": [
+        "state-registry:iterate-cross.x1a"
+      ],
+      "writers": [
+        ".claude/scripts/lib/iterate_cross_verdicts.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-cross."
+    },
+    {
+      "path": ".runs/iterate-cross-data.json",
+      "consumers": [
+        "state-registry:iterate-cross.x1",
+        "state-registry:iterate-cross.x2"
+      ],
+      "writers": [
+        ".claude/scripts/lib/iterate_cross_verdicts.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-cross."
+    },
+    {
+      "path": ".runs/iterate-cross-scores.json",
+      "consumers": [
+        "state-registry:iterate-cross.x3"
+      ],
+      "writers": [
+        ".claude/scripts/lib/iterate_cross_verdicts.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-cross."
+    },
+    {
+      "path": ".runs/iterate-cross-teardown-obligations.json",
+      "consumers": [
+        "state-registry:iterate-cross.x4b"
+      ],
+      "writers": [
+        ".claude/scripts/lib/iterate_cross_teardown.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-cross."
+    },
+    {
+      "path": ".runs/iterate-cross-phase2-context.json",
+      "consumers": [
+        "state-registry:iterate-cross-phase2.x5"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-cross-phase2."
+    },
+    {
+      "path": ".runs/iterate-cross-phase2-issues.json",
+      "consumers": [
+        "state-registry:iterate-cross-phase2.x5"
+      ],
+      "writers": [
+        ".claude/scripts/lib/write-gate-artifact.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-cross-phase2."
+    },
+    {
+      "path": ".runs/iterate-cross-phase2-scores.json",
+      "consumers": [
+        "state-registry:iterate-cross-phase2.x5"
+      ],
+      "writers": [
+        ".claude/scripts/lib/write-gate-artifact.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-cross-phase2."
+    },
+    {
+      "path": ".runs/iterate-data.json",
+      "consumers": [
+        "state-registry:iterate.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate."
+    },
+    {
+      "path": ".runs/iterate-manifest.json",
+      "consumers": [
+        "state-registry:iterate.4"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate."
+    },
+    {
+      "path": ".runs/iterate-verdicts.json",
+      "consumers": [
+        "state-registry:iterate.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate."
+    },
+    {
+      "path": ".runs/observation-enforcement.json",
+      "consumers": [
+        "state-registry:audit.99",
+        "state-registry:bootstrap.99",
+        "state-registry:change.99",
+        "state-registry:deploy.99",
+        "state-registry:distribute.99",
+        "state-registry:iterate-check.99",
+        "state-registry:iterate-cross.99",
+        "state-registry:iterate.99",
+        "state-registry:observe.99",
+        "state-registry:resolve.99",
+        "state-registry:retro.99",
+        "state-registry:review.99",
+        "state-registry:rollback.99",
+        "state-registry:solve.99",
+        "state-registry:spec.99",
+        "state-registry:teardown.99",
+        "state-registry:upgrade.99",
+        "state-registry:verify.99"
+      ],
+      "writers": [
+        ".claude/scripts/check-observation-artifacts.sh",
+        ".claude/scripts/derive-graim-manifest.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by state-99 VERIFY across all skills; carries gate verdict (#1198 smoking-gun)."
+    },
+    {
+      "path": ".runs/observation-evidence.json",
+      "consumers": [
+        "observation-phase.md (Step 4 — observer reads envelope)",
+        "compliance-audit.py:check_lead_deliverable_compliance"
+      ],
+      "writers": [
+        ".claude/scripts/write-observation-evidence.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "AOC v1.2 (closes #1259): unified observer evidence envelope. Observer reads ONLY this artifact in Step 4; the envelope schema is the input contract. Promoted from gate-readable-artifacts-pending-review.json (was 'no_reader' / 'exempt (telemetry-only)') because it now has TWO real consumers: observer (via prompt) and compliance-audit (sibling-required for retrospective-result.json). Direct Write/Edit blocked by gate-artifact-write-gate.sh — must go through write-observation-evidence.py which routes through write-gate-artifact.sh canonical writer."
+    },
+    {
+      "path": ".runs/observe-context.json",
+      "consumers": [
+        "state-registry:observe.0"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: observe."
+    },
+    {
+      "path": ".runs/observe-filing-result.json",
+      "consumers": [
+        "state-registry:observe.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: observe."
+    },
+    {
+      "path": ".runs/observe-result.json",
+      "consumers": [
+        "state-registry:iterate-check.c3"
+      ],
+      "writers": [
+        ".claude/hooks/lib-verdict-consistency.sh",
+        ".claude/hooks/observe-commit-gate.sh",
+        ".claude/hooks/verify-pr-gate.sh",
+        ".claude/scripts/check-observation-artifacts.sh",
+        ".claude/scripts/lifecycle-finalize.sh",
+        ".claude/scripts/lifecycle-init.sh",
+        ".claude/scripts/migrate-state-registry-lifecycle.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: iterate-check."
+    },
+    {
+      "path": ".runs/page-image-map.json",
+      "consumers": [
+        "state-registry:verify.2a",
+        "state-registry:verify.3b"
+      ],
+      "writers": [
+        ".claude/scripts/check-slot-intent-drift.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/patterns-saved.json",
+      "consumers": [
+        "state-registry:resolve.9",
+        "state-registry:verify.8"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve, verify."
+    },
+    {
+      "path": ".runs/prior-failure-dossier.json",
+      "consumers": [
+        "state-registry:change.3",
+        "state-registry:resolve.5",
+        "state-registry:solve.1"
+      ],
+      "writers": [
+        ".claude/scripts/lib/dossier_builder.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "RMG v2 Phase 1a Prior-Failure Dossier (Issue #1415). Read by VERIFY blocks in skills: resolve, solve, change. Written by .claude/scripts/lib/dossier_builder.build_dossier() via canonical writer in each skill's Step-0 bash block."
+    },
+    {
+      "path": ".runs/pipeline-phase.json",
+      "consumers": [
+        ".claude/hooks/phase-boundary-gate.sh"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Pipeline-orchestrator phase signal read by phase-boundary-gate.sh. KNOWN CAVEAT: run-skill.sh currently writes the equivalent signal to '.claude/pipeline-phase.json' (not .runs/), so the .runs/ path has no live writer in-tree — phase-boundary-gate.sh fails-open when the file is absent. Writer migration to write-gate-artifact.sh + path unification deferred to follow-up PR (path discrepancy pre-dates GRAIM v2). Slice 3.2 enrolls the canonical reader path so promotion-regression detection covers it."
+    },
+    {
+      "path": ".runs/plan-validation.json",
+      "consumers": [
+        "state-registry:change.6"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: change."
+    },
+    {
+      "path": ".runs/q-dimensions.json",
+      "consumers": [
+        "state-registry:bootstrap.18",
+        "state-registry:solve.2",
+        "state-registry:upgrade.3"
+      ],
+      "writers": [
+        ".claude/scripts/lifecycle-finalize.sh",
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: bootstrap, solve, upgrade."
+    },
+    {
+      "path": ".runs/quality-merge.json",
+      "consumers": [
+        "state-registry:verify.3d"
+      ],
+      "writers": [
+        ".claude/hooks/lib-artifacts.sh",
+        ".claude/scripts/check-artifact-presence.py",
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/resolve-causal-analysis.json",
+      "consumers": [
+        "state-registry:resolve.3b"
+      ],
+      "writers": [
+        ".claude/scripts/resolve-causal-analyzer.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/resolve-clusters.json",
+      "consumers": [
+        "state-registry:resolve.4b"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/resolve-context.json",
+      "consumers": [
+        "state-registry:resolve.1",
+        "state-registry:resolve.11",
+        "state-registry:resolve.4",
+        "state-registry:resolve.7"
+      ],
+      "writers": [
+        ".claude/scripts/resolve-causal-analyzer.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/resolve-learnings.json",
+      "consumers": [
+        "state-registry:resolve.9"
+      ],
+      "writers": [
+        ".claude/hooks/resolve-learnings-gate.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/resolve-reproduction.json",
+      "consumers": [
+        "state-registry:resolve.3"
+      ],
+      "writers": [
+        ".claude/scripts/resolve-causal-analyzer.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/resolve-review.json",
+      "consumers": [
+        "state-registry:resolve.10"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/resolve-side-effects.json",
+      "consumers": [
+        "state-registry:resolve.8b"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/resolve-snippet-precheck-*.json",
+      "consumers": [
+        "state-3-reproduce.md (Step 0 prose)"
+      ],
+      "writers": [
+        ".claude/scripts/resolve-snippet-precheck.py"
+      ],
+      "scope": "transient-per-issue",
+      "rationale": "Per-issue verification_snippet pre-check verdict (M5 — fixes M3 consumer's hand-wave hash derivation). Wildcard <issue> in path because one artifact per issue."
+    },
+    {
+      "path": ".runs/resolve-tier-floors.json",
+      "consumers": [
+        "state-registry:resolve.5b"
+      ],
+      "writers": [
+        ".claude/scripts/resolve-tier-floors.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Tier-floor classifier output (M2 — PR #1397 retro). Cross-checks reproduction.method against file-class minimum tiers; warn-mode in M2 launch, deny-mode in follow-up PR."
+    },
+    {
+      "path": ".runs/resolve-triage.json",
+      "consumers": [
+        "state-registry:resolve.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/resolve-validation.json",
+      "consumers": [
+        "state-registry:resolve.8"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve."
+    },
+    {
+      "path": ".runs/retro-context.json",
+      "consumers": [
+        "state-registry:retro.2",
+        "state-registry:retro.3"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: retro."
+    },
+    {
+      "path": ".runs/retro-interview.json",
+      "consumers": [
+        "state-registry:retro.1",
+        "state-registry:retro.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: retro."
+    },
+    {
+      "path": ".runs/review-baseline.json",
+      "consumers": [
+        "state-registry:review.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: review."
+    },
+    {
+      "path": ".runs/review-complete.json",
+      "consumers": [
+        "state-registry:review.4",
+        "state-registry:review.6"
+      ],
+      "writers": [
+        ".claude/hooks/verify-pr-gate.sh",
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: review."
+    },
+    {
+      "path": ".runs/review-context.json",
+      "consumers": [
+        "state-registry:review.*"
+      ],
+      "writers": [
+        ".claude/scripts/init-context.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Skill context written by init-context.sh; protected {skill, run_id} per AOC v1.1 protected-fields rule. Enrolled in GRAIM canonical manifest to dismiss discovery rule promotion candidacy."
+    },
+    {
+      "path": ".runs/review-findings.json",
+      "consumers": [
+        "state-registry:review.2a",
+        "state-registry:review.2b"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: review."
+    },
+    {
+      "path": ".runs/review-loop-decision.json",
+      "consumers": [
+        "state-registry:review.2e",
+        "state-registry:review.2f"
+      ],
+      "writers": [
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: review."
+    },
+    {
+      "path": ".runs/rollback-context.json",
+      "consumers": [
+        "state-registry:rollback.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: rollback."
+    },
+    {
+      "path": ".runs/rollback-plan.json",
+      "consumers": [
+        "state-registry:rollback.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: rollback."
+    },
+    {
+      "path": ".runs/rollback-result.json",
+      "consumers": [
+        "state-registry:rollback.3"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: rollback."
+    },
+    {
+      "path": ".runs/security-merge.json",
+      "consumers": [
+        "state-registry:verify.4"
+      ],
+      "writers": [
+        ".claude/hooks/lib-artifacts.sh",
+        ".claude/scripts/check-artifact-presence.py",
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/solve-challenge.json",
+      "consumers": [
+        "state-registry:solve.1"
+      ],
+      "writers": [
+        ".claude/scripts/lib/write-gate-artifact.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "#1331 — /solve challenge artifact (closes contract from solve-reasoning.md Phase 5: 'Store in the caller's challenge artifact: /solve: .runs/solve-challenge.json'). Counts {critic_rounds, round_1_type_a_count, round_2_type_a_count} read by solve.1 VERIFY for archival-existence cross-check. Manually enrolled to canonical (Slice 3.2 pattern); written via canonical writer with {skill, run_id, written_at} stamping."
+    },
+    {
+      "path": ".runs/solve-context.json",
+      "consumers": [
+        "state-registry:solve.1",
+        "state-registry:solve.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: solve."
+    },
+    {
+      "path": ".runs/solve-critic-round1.json",
+      "consumers": [
+        "state-registry:resolve.5d",
+        "state-registry:change.3",
+        "state-registry:solve.1"
+      ],
+      "writers": [
+        ".claude/scripts/lib/write-gate-artifact.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "#1331 round-1 critic archive (sidecar outside .runs/agent-traces/ to bypass trace-write-guard). Vector 5 (within-run-round1-concern-unaddressed) needs round-1 concerns by stable concern_id; solve-critic round-2 overwrites the live trace, so this sidecar preserves the audit-trail source for cross-rounds verification. Read by verify-resolve-challenge.py (resolve.5d), verify-change-solve.py (change.3), and verify-recurrence-guard.py (solve.1). Manually enrolled to canonical (Slice 3.2 pattern)."
+    },
+    {
+      "path": ".runs/solve-trace.json",
+      "consumers": [
+        "state-registry:resolve.5",
+        "state-registry:solve.1",
+        "state-registry:solve.2"
+      ],
+      "writers": [
+        ".claude/scripts/verify-change-solve.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: resolve, solve."
+    },
+    {
+      "path": ".runs/spec-context.json",
+      "consumers": [
+        "state-registry:spec.*"
+      ],
+      "writers": [
+        ".claude/scripts/init-context.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Skill context written by init-context.sh; protected {skill, run_id} per AOC v1.1 protected-fields rule. Enrolled in GRAIM canonical manifest to dismiss discovery rule promotion candidacy."
+    },
+    {
+      "path": ".runs/spec-manifest.json",
+      "consumers": [
+        "state-registry:spec.7"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: spec."
+    },
+    {
+      "path": ".runs/spec-research.json",
+      "consumers": [
+        "state-registry:spec.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: spec."
+    },
+    {
+      "path": ".runs/teardown-cleanup.json",
+      "consumers": [
+        "state-registry:teardown.4"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: teardown."
+    },
+    {
+      "path": ".runs/teardown-context.json",
+      "consumers": [
+        "state-registry:teardown.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: teardown."
+    },
+    {
+      "path": ".runs/teardown-result.json",
+      "consumers": [
+        "state-registry:teardown.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: teardown."
+    },
+    {
+      "path": ".runs/teardown-verification.json",
+      "consumers": [
+        "state-registry:teardown.3"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: teardown."
+    },
+    {
+      "path": ".runs/trace-migration-unresolved.json",
+      "consumers": [
+        ".claude/hooks/verify-report-gate.sh"
+      ],
+      "writers": [
+        ".claude/scripts/migrate-legacy-traces.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Fail-closed signal from migrate-legacy-traces.py — verify-report-gate.sh refuses to proceed when unresolved_count > 0. Slice 3.2: writer in migrate-legacy-traces.py migrated from inline json.dump to write-gate-artifact.sh subprocess (with json.dump fallback when the canonical writer cannot resolve identity)."
+    },
+    {
+      "path": ".runs/upgrade-context.json",
+      "consumers": [
+        "state-registry:upgrade.*"
+      ],
+      "writers": [
+        ".claude/scripts/init-context.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Skill context written by init-context.sh; protected {skill, run_id} per AOC v1.1 protected-fields rule. Enrolled in GRAIM canonical manifest to dismiss discovery rule promotion candidacy."
+    },
+    {
+      "path": ".runs/upgrade-diff-report.json",
+      "consumers": [
+        "state-registry:upgrade.1"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: upgrade."
+    },
+    {
+      "path": ".runs/upgrade-memory-report.json",
+      "consumers": [
+        "state-registry:upgrade.2"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: upgrade."
+    },
+    {
+      "path": ".runs/upgrade-step-check.json",
+      "consumers": [
+        "state-registry:upgrade.3"
+      ],
+      "writers": [],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: upgrade."
+    },
+    {
+      "path": ".runs/verify-context.json",
+      "consumers": [
+        "state-registry:verify.0",
+        "state-registry:verify.2",
+        "state-registry:verify.3a",
+        "state-registry:verify.3b",
+        "state-registry:verify.3c",
+        "state-registry:verify.3d"
+      ],
+      "writers": [
+        ".claude/hooks/lib-artifacts.sh",
+        ".claude/hooks/lib-gate-verdicts.sh",
+        ".claude/hooks/skill-commit-gate.sh",
+        ".claude/hooks/verify-pr-gate.sh",
+        ".claude/hooks/verify-report-gate.sh",
+        ".claude/scripts/check-artifact-presence.py",
+        ".claude/scripts/lifecycle-init.sh",
+        ".claude/scripts/lifecycle-lib.sh",
+        ".claude/scripts/merge-design-critic-traces.py",
+        ".claude/scripts/phase-gate.py"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: verify."
+    },
+    {
+      "path": ".runs/verify-lifecycle.json",
+      "consumers": [
+        "state-registry:verify.*"
+      ],
+      "writers": [
+        ".claude/scripts/lifecycle-init.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Lifecycle artifact written by lifecycle-init.sh during MANIFEST emit; protected {skill, run_id} per AOC v1.1 protected-fields rule. Enrolled in GRAIM canonical manifest to dismiss discovery rule promotion candidacy."
+    },
+    {
+      "path": ".runs/verify-recheck.json",
+      "consumers": [
+        "state-registry:audit.99",
+        "state-registry:bootstrap.99",
+        "state-registry:change.99",
+        "state-registry:deploy.99",
+        "state-registry:distribute.99",
+        "state-registry:iterate-check.99",
+        "state-registry:iterate-cross.99",
+        "state-registry:iterate.99",
+        "state-registry:observe.99",
+        "state-registry:resolve.99",
+        "state-registry:retro.99",
+        "state-registry:review.99",
+        "state-registry:rollback.99",
+        "state-registry:solve.99",
+        "state-registry:spec.99",
+        "state-registry:teardown.99",
+        "state-registry:upgrade.99",
+        "state-registry:verify.99"
+      ],
+      "writers": [
+        ".claude/scripts/lifecycle-finalize.sh"
+      ],
+      "scope": "transient-cross-skill",
+      "rationale": "Read by VERIFY blocks in skills: audit, bootstrap, change, deploy, distribute, iterate, iterate-check, iterate-cross, observe, resolve, retro, review, rollback, solve, spec, teardown, upgrade, verify."
+    }
+  ]
+}

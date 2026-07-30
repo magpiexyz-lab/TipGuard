@@ -1,0 +1,18 @@
+{
+  "name": "model-bakeoff",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Independent multi-model fal.ai image bakeoff. Not part of the template build.",
+  "type": "module",
+  "scripts": {
+    "run": "tsx run.ts"
+  },
+  "dependencies": {
+    "@fal-ai/client": "latest"
+  },
+  "devDependencies": {
+    "tsx": "latest",
+    "typescript": "latest",
+    "@types/node": "latest"
+  }
+}

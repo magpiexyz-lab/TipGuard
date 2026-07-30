@@ -1,0 +1,94 @@
+# resolve-tier-floors.yaml — File-class → minimum reproduction tier mapping
+#
+# Consumed by .claude/scripts/resolve-tier-floors.py at /resolve STATE 5b.
+# After STATE 5 (fix-design) writes solve-trace.json with files_touched,
+# this YAML maps each touched file to a minimum required reproduction tier.
+# If any reproduction.method is below the floor for any file the fix touches,
+# STATE 5b emits a warning (warn-mode) or halts (deny-mode — future commit).
+#
+# Rule precedence: rules are evaluated TOP-TO-BOTTOM; first match wins.
+# Place more-specific rules above broader globs.
+#
+# Tier ordering (low → high): cite < grep < validator-fed < exec
+#
+# Background: introduced M2 (PR #1397 retro). Replaces the originally-proposed
+# text-classifier on issue body. The Plan-agent showed that body-text regex
+# was false-precision — the deploy-breaking #1382 case had no telltale `Node \d+`
+# token. File-class (post-design) is deterministic and triggers at the actual
+# moment of risk (after the fix knows which files it touches).
+
+schema_version: 1
+
+rules:
+  # Validator/parser/lib scripts — fixes here MUST be unit-tested or validator-fed
+  - glob: "scripts/validate-*.py"
+    min_tier: validator-fed
+    rationale: "Validator scripts gate every PR. Changes need empirical validator-fed evidence."
+
+  - glob: "scripts/lib/*.py"
+    min_tier: validator-fed
+    rationale: "Shared library modules consumed by validators. Same risk class as validators."
+
+  # Runtime/version-pinned files — bug claims are version-specific; need exec proof
+  - glob: "package.json"
+    min_tier: exec
+    rationale: "Runtime/version pin. Claims like 'package X behaves Y' need isolated repro."
+
+  - glob: "*.config.{ts,mjs,js}"
+    min_tier: exec
+    rationale: "Build/tool config (next.config, playwright.config, etc.). Loader-conditional bugs need exec evidence (#1382 lesson)."
+
+  - glob: "tsconfig.json"
+    min_tier: exec
+    rationale: "TS compiler config affects every file. Need exec to confirm semantics."
+
+  - glob: ".nvmrc"
+    min_tier: exec
+    rationale: "Node version pin. Runtime-version-conditional claims need exec evidence."
+
+  # Stack files with executable code blocks — same risk class as runtime config
+  # The script inspects whether the fix's diff touches a fenced ts/tsx/js code block
+  # within the file (rather than just prose) before applying this rule.
+  - glob: ".claude/stacks/**/*.md"
+    code_block_languages: [ts, tsx, js, jsx, mjs]
+    min_tier: exec
+    rationale: "Stack-file code template fix. Bug-in-template-code needs exec verification on the actual generated shape."
+
+  # Stack files with prose-only edits (when no code block is touched) — cite is OK
+  - glob: ".claude/stacks/**/*.md"
+    min_tier: cite
+    rationale: "Stack-file prose-only edit (no code block touched). Documentation cite OK."
+
+  # Skill prose, patterns, agents, templates — process docs; cite tier sufficient
+  - glob: ".claude/skills/**/*.md"
+    min_tier: cite
+    rationale: "Skill prose. Process documentation. Cite to state-machine spec or equivalent."
+
+  - glob: ".claude/patterns/**/*.md"
+    min_tier: cite
+    rationale: "Pattern docs (cross-skill conventions). Cite to authoritative spec."
+
+  - glob: ".claude/agents/**/*.md"
+    min_tier: cite
+    rationale: "Agent definitions / prompts. Cite to behavior spec."
+
+  - glob: ".claude/templates/**/*.md"
+    min_tier: cite
+    rationale: "Canonical schema docs. Cite the schema source-of-truth."
+
+  - glob: ".claude/patterns/**/*.json"
+    min_tier: validator-fed
+    rationale: "Pattern JSON (state-registry, coherence-rules, etc.). Schema changes need validator-fed proof."
+
+  # State-registry, coherence rules — schema validators read these; need validator-fed
+  - glob: ".claude/patterns/state-registry.json"
+    min_tier: validator-fed
+    rationale: "VERIFY commands consumed by every state-completion-gate. Need validator-fed proof."
+
+  - glob: ".claude/patterns/template-coherence-rules.json"
+    min_tier: validator-fed
+    rationale: "Linter rules. New rule must be validator-fed against the linter."
+
+# Default — when no rule matches, the floor is `cite`. The classifier emits this
+# as the tier-floor; the report records "default rule applied".
+default_min_tier: cite

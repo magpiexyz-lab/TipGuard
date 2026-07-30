@@ -1,0 +1,32 @@
+{
+  "skill": "review",
+  "phases": [
+    {
+      "name": "Setup",
+      "state_range": [0, 1],
+      "interactive": false,
+      "max_budget": 20,
+      "gate": {
+        "completed_states": [1]
+      }
+    },
+    {
+      "name": "Loop",
+      "state_range": ["2a", "2f"],
+      "interactive": false,
+      "max_budget": 100,
+      "gate": {
+        "completed_states": ["2f"]
+      }
+    },
+    {
+      "name": "Finalize",
+      "state_range": [3, 6],
+      "interactive": false,
+      "max_budget": 40,
+      "gate": {
+        "postconditions": true
+      }
+    }
+  ]
+}

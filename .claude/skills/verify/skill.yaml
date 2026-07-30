@@ -1,0 +1,56 @@
+states: ["0","1","2","2a","2b","3a","3b","3c","3d","4","5","7a","7b","8","99"]
+agents:
+  build-info-collector:
+    after: ["1"]
+    mode: "foreground"
+  security-defender:
+    after: ["1"]
+    mode: "foreground"
+    requires_traces: [build-info-collector]
+  security-attacker:
+    after: ["1"]
+    mode: "foreground"
+    requires_traces: [build-info-collector]
+  behavior-verifier:
+    after: ["1"]
+    mode: "foreground"
+    requires_traces: [build-info-collector]
+  performance-reporter:
+    after: ["1"]
+    mode: "foreground"
+    requires_traces: [build-info-collector]
+  accessibility-scanner:
+    after: ["1"]
+    mode: "foreground"
+    requires_traces: [build-info-collector]
+  spec-reviewer:
+    after: ["1"]
+    mode: "foreground"
+    requires_traces: [build-info-collector]
+  design-critic:
+    after: ["1"]
+    mode: "foreground"
+    requires_archetype: web-app
+    requires_traces: [build-info-collector]
+    scope_condition:
+      scope: full
+      requires_traces: [security-defender, security-attacker, behavior-verifier]
+  design-consistency-checker:
+    after: ["1"]
+    mode: "foreground"
+    requires_archetype: web-app
+    requires_traces: [build-info-collector]
+  ux-journeyer:
+    after: ["1"]
+    mode: "foreground"
+    requires_archetype: web-app
+    requires_traces: [design-critic, design-consistency-checker]
+  quality-fixer:
+    after: ["3c"]
+    requires_archetype: web-app
+    requires_traces: [accessibility-scanner, design-consistency-checker]
+  security-fixer:
+    after: ["3a"]
+    requires_traces: [build-info-collector]
+  pattern-classifier:
+    after: ["5"]

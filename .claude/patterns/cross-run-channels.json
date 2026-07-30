@@ -1,0 +1,30 @@
+{
+  "_comment": "Read-side registry of cross-run-by-design channels (read-side metadata only — write-side namespace policy is independent). runs_reader.read_jsonl(scope='cross-run-by-design') requires that cross_run_channel= argument names an entry here AND that the path is declared under that entry. Lockstep with lifecycle-init.sh STALE_ARTIFACTS is enforced by the cross_run_channel_exemption_pairing coherence rule (.claude/patterns/template-coherence-rules.json). To add a new channel: in the PR that creates the underlying .runs/*.jsonl file, append an entry here with paths[], rationale, owner, and (when the path is intentionally per-skill-cleared) transient_cross_state: true; also add the path to lifecycle-init.sh STALE_ARTIFACTS exemption mechanism. New channels MUST be atomic with the file that owns them — no forward-declaration to avoid registry/file drift.",
+  "channels": {
+    "fix-ledger": {
+      "paths": [".runs/fix-ledger.jsonl"],
+      "rationale": "Authoritative append-only ledger of agent + lead fixes across runs. Persists across lifecycle-init (not in STALE_ARTIFACTS). Used by recurrence-detector.py for cross-run composite-identity grouping and by check-cross-artifact-consistency.py for run-id-scoped counts.",
+      "owner": "write-fix-ledger.py"
+    },
+    "recurrence-candidates": {
+      "paths": [".runs/recurrence-candidates.jsonl"],
+      "rationale": "Phase B recurrence-candidate snapshots; explicitly cross-run for trend analysis.",
+      "owner": "recurrence-detector.py"
+    },
+    "agent-spawn-log": {
+      "paths": [".runs/agent-spawn-log.jsonl"],
+      "rationale": "Append-only log of agent spawn events; cross-run for lineage checks (e.g., skill-agent-gate.sh lineage validation).",
+      "owner": "skill-agent-gate.sh"
+    },
+    "lead-deviation-log": {
+      "paths": [".runs/lead-deviation-log.jsonl"],
+      "rationale": "Append-only log of prose-gate violations across runs. Cross-run-by-design: enumerate-pending-retrospective-findings.py 6th candidate source uses entries from prior runs to surface untriaged violations. Preserved by lifecycle-init.sh:287-294. Closes PR-#1444 omission (registry was missing this entry; #1431).",
+      "owner": "append_deviation_log.py"
+    },
+    "lead-deviation-log-write-failures": {
+      "paths": [".runs/lead-deviation-log.write-failures.jsonl"],
+      "rationale": "Append-only log of failed deviation-log writes. Cross-run for visibility — silent appender failures otherwise undetectable. Read by enumerate-pending-retrospective-findings.py 7th candidate source as HIGH-confidence log-write-failure candidates. Closes #1431 reliability gap.",
+      "owner": "append_deviation_log.py"
+    }
+  }
+}

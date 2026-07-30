@@ -1,0 +1,4 @@
+events:
+  signup_complete:
+    funnel_stage: activation
+    archetypes: [web-app]

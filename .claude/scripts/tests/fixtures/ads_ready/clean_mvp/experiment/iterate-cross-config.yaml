@@ -1,0 +1,4 @@
+mvp_mappings:
+  clean-mvp:
+    signup_events:
+      - signup_complete

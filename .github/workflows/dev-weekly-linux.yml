@@ -1,0 +1,128 @@
+name: Dev Weekly Linux (both-suites checkpoint)
+
+# Weekly Linux execution of BOTH validator suites against dev HEAD: the Linux
+# coverage backstop after dev-ci's heavy suites move to a self-hosted Mac runner,
+# and the recovery path for suppressed dev push runs. This is non-blocking
+# observability: a red run is a fix-forward signal, and nothing waits on it.
+# Keep this file BYTE-IDENTICAL on dev and main: schedules fire from the default
+# branch, and the preflight drift guard enforces the pairing. Dispatch ONLY with
+# `--ref main`; the preflight ref assertion rejects anything else because a
+# dev-ref dispatch would make the drift guard compare dev against itself.
+
+permissions:
+  contents: read
+
+on:
+  schedule:
+    - cron: "17 2 * * 6"
+  workflow_dispatch:
+
+jobs:
+  preflight:
+    if: github.repository == 'magpiexyz-lab/mvp-template'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
+    steps:
+      - name: Assert main-ref execution
+        run: |
+          workflow_ref="${{ github.workflow_ref }}"
+          if [[ "$workflow_ref" != *@refs/heads/main ]]; then
+            echo "::error::Expected workflow execution from refs/heads/main; received: $workflow_ref"
+            exit 1
+          fi
+
+      - name: Resolve dev HEAD
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(gh api repos/${{ github.repository }}/git/ref/heads/dev --jq .object.sha)
+          if [[ ! "$sha" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            echo "::error::Resolved dev HEAD is not a 40-character commit SHA: $sha"
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Drift guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha="${{ steps.resolve.outputs.sha }}"
+          dev_copy="$RUNNER_TEMP/dev-weekly-linux.dev.yml"
+          executing_copy="$RUNNER_TEMP/dev-weekly-linux.executing.yml"
+          gh api \
+            -H "Accept: application/vnd.github.raw" \
+            "repos/${{ github.repository }}/contents/.github/workflows/dev-weekly-linux.yml?ref=$sha" \
+            > "$dev_copy"
+          gh api \
+            -H "Accept: application/vnd.github.raw" \
+            "repos/${{ github.repository }}/contents/.github/workflows/dev-weekly-linux.yml?ref=${{ github.workflow_sha }}" \
+            > "$executing_copy"
+          if ! diff -u "$dev_copy" "$executing_copy"; then
+            echo "::error::Workflow copies differ; ship the paired main/dev update before running this checkpoint."
+            exit 1
+          fi
+
+  weekly-full:
+    if: github.repository == 'magpiexyz-lab/mvp-template'
+    runs-on: ubuntu-latest
+    timeout-minutes: 130
+    needs: preflight
+    steps:
+      - name: Publish scoped gitconfig
+        run: echo "GIT_CONFIG_GLOBAL=$RUNNER_TEMP/gitconfig" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.preflight.outputs.sha }}
+
+      - name: Create venv
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
+
+      - name: Install deps
+        run: |
+          "$RUNNER_TEMP/venv/bin/python" -m pip install --require-hashes -r .github/ci-requirements.txt
+
+      - name: Configure git for tests
+        run: |
+          git config --global user.email "ci@local"
+          git config --global user.name "CI"
+          git config --global init.defaultBranch main
+
+      - name: Test validators (scripts/) — WEEKLY
+        run: env -u FRAMEWORK_MAINTENANCE python3 -m pytest scripts/ -q -n 2 --dist load
+
+  weekly-fast:
+    if: github.repository == 'magpiexyz-lab/mvp-template'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: preflight
+    steps:
+      - name: Publish scoped gitconfig
+        run: echo "GIT_CONFIG_GLOBAL=$RUNNER_TEMP/gitconfig" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.preflight.outputs.sha }}
+
+      - name: Create venv
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
+
+      - name: Install deps
+        run: |
+          "$RUNNER_TEMP/venv/bin/python" -m pip install --require-hashes -r .github/ci-requirements.txt
+
+      - name: Configure git for tests
+        run: |
+          git config --global user.email "ci@local"
+          git config --global user.name "CI"
+          git config --global init.defaultBranch main
+
+      - name: Test validators (.claude/scripts/tests/) — WEEKLY
+        run: env -u FRAMEWORK_MAINTENANCE python3 -m pytest .claude/scripts/tests/ -q -n 2 --dist load

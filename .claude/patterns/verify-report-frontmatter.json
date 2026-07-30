@@ -1,0 +1,95 @@
+{
+  "$comment": "AOC v1.1 R4 — canonical schema for verify-report.md frontmatter. Closes #1056. Catches the producer-vs-consumer drift class for frontmatter (analogous to AOC v1 R3 for the fix-ledger). The check_frontmatter_artifact_consistency function in verify-linter.sh enforces (a) the writer at state-7a-write-report.md emits every declared field, and (b) every consumer references only declared field names.",
+  "writer": ".claude/skills/verify/state-7a-write-report.md",
+  "fields": {
+    "timestamp": {
+      "type": "string",
+      "required": true,
+      "description": "ISO 8601 UTC; emitted by state-7a from the run's verify-context timestamp."
+    },
+    "scope": {
+      "type": "string",
+      "enum": ["full", "security", "visual", "build"],
+      "required": true,
+      "description": "Verify scope (from .runs/verify-context.json.scope)."
+    },
+    "build_attempts": {
+      "type": "integer",
+      "required": true,
+      "description": "Build attempts in 1..3 range. Sourced from .runs/verify-context.json.build_attempts."
+    },
+    "fix_log_entries": {
+      "type": "integer",
+      "required": true,
+      "description": "AOC v1 FLS v1 authoritative count = wc -l .runs/fix-ledger.jsonl. Drift between this number and the ledger is a #1048 regression — R4 cross-checks at consumer time; R3 cross-checks at writer time."
+    },
+    "agents_expected": {
+      "type": "array",
+      "required": true,
+      "description": "Agents expected to participate per scope (from skill manifest). Used by lifecycle-finalize.sh and verify-pr-gate.sh."
+    },
+    "agents_completed": {
+      "type": "array",
+      "required": true,
+      "description": "Agents whose traces were observed at report-write time."
+    },
+    "consistency_scan": {
+      "type": "string",
+      "enum": ["pass", "skipped", "N/A"],
+      "required": true,
+      "description": "Cross-artifact consistency scan outcome (#1024 / R3 derivation)."
+    },
+    "auto_observe": {
+      "type": "string",
+      "required": true,
+      "description": "Placeholder ('evaluated-in-epilogue') populated by epilogue."
+    },
+    "lead_retrospective": {
+      "type": "string",
+      "required": true,
+      "description": "Placeholder ('evaluated-in-epilogue') populated by epilogue."
+    },
+    "agent_verdicts": {
+      "type": "object",
+      "required": true,
+      "description": "Map<agent, verdict> derived from .runs/agent-traces/*.json — the RAW (pre-fix) verdict each Phase-1 agent emitted. check-cross-artifact-consistency.py cross-checks this map against actual trace verdicts. For post-fix state, consumers should read agent_verdicts_after_fixes."
+    },
+    "agent_verdicts_after_fixes": {
+      "type": "object",
+      "required": true,
+      "description": "Map<agent, verdict> reflecting POST-FIX state. Derived without re-running Phase-1 agents: for security-defender/security-attacker → security-fixer.json.unresolved_critical (gated on AOC v1.1 trace validity); for accessibility-scanner/design-consistency-checker → quality-fixer.json.unresolved_critical; for ux-journeyer → unresolved_dead_ends on its own trace; for design-critic and others → raw verdict unchanged. Closes #1151."
+    },
+    "agent_verdicts_after_fixes_source": {
+      "type": "object",
+      "required": true,
+      "description": "Map<agent, source-string> documenting where each after-fix verdict was derived from (e.g., 'security-fixer.json', 'self', 'self (fixer absent)'). Companion to agent_verdicts_after_fixes for auditability."
+    },
+    "hard_gate_failure": {
+      "type": "boolean",
+      "required": true,
+      "description": "True iff any hard_gate predicate fired without an explicit acknowledgement. Consumed by lifecycle-finalize.sh, write-q-score.py, validate-recovery.sh."
+    },
+    "process_violation": {
+      "type": "boolean",
+      "required": true,
+      "description": "True iff process compliance failed (e.g., manifest agent skipped). Consumed by lifecycle-finalize.sh, write-q-score.py, verify-pr-gate.sh."
+    },
+    "overall_verdict": {
+      "type": "string",
+      "enum": ["pass", "fail"],
+      "required": true,
+      "description": "Derived from gates only: 'pass' iff hard_gate_failure is false AND process_violation is false. NOT derived from agent_verdicts (which are pre-fix raw values). For post-fix consistency, see the R4 sub-rule that BLOCKS when overall_verdict=pass with any hard_gate agent in agent_verdicts_after_fixes=fail (warns on count_summary agents)."
+    }
+  },
+  "consumers": [
+    ".claude/scripts/write-q-score.py",
+    ".claude/scripts/check-cross-artifact-consistency.py",
+    ".claude/scripts/lifecycle-finalize.sh",
+    ".claude/scripts/check-observation-artifacts.sh",
+    ".claude/scripts/validate-recovery.sh",
+    ".claude/hooks/verify-pr-gate.sh",
+    ".claude/patterns/state-registry.json",
+    ".claude/patterns/q-score.md",
+    ".claude/patterns/observation-phase.md"
+  ]
+}

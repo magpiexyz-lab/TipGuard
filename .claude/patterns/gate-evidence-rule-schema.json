@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "GECR (Gate Evidence Cross-Reference Protocol) — JSON schema for .claude/patterns/gate-evidence-rules.json. Used at runtime by gate_evidence_runner.py via jsonschema.validate() at load time. Malformed rules raise loud SystemExit(2). Closes #1473 + #1470 root cause (gates enforce structural shape as proxy for semantic property) by binding gate pass-signals to evidence sources external to the validated artifact.",
+  "title": "Gate Evidence Cross-Reference Rules",
+  "type": "object",
+  "required": ["rules"],
+  "additionalProperties": false,
+  "properties": {
+    "$comment": {"type": "string"},
+    "rules": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/rule"}
+    },
+    "evidence_check_intentionally_structural": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {"type": "string"},
+          {
+            "type": "object",
+            "required": ["check_id", "justification"],
+            "additionalProperties": false,
+            "properties": {
+              "check_id": {"type": "string"},
+              "justification": {"type": "string"}
+            }
+          }
+        ]
+      },
+      "description": "List of check identifiers (format: <rel-path>:<lineno>) that are intentionally structural-shape — exempt from rule_gate_verdict_evidence_coverage. Each entry should include a justification (string or {check_id, justification} object form)."
+    }
+  },
+  "definitions": {
+    "severity": {
+      "type": "string",
+      "enum": ["block", "warn"]
+    },
+    "reader_kind": {
+      "type": "string",
+      "enum": ["json", "jsonl", "grep_tsx", "filesystem"]
+    },
+    "matcher_kind": {
+      "type": "string",
+      "enum": ["any_of_patterns", "friction_event_extraction", "template_literal_navigation", "recovery_skip_extraction"]
+    },
+    "predicate_kind": {
+      "type": "string",
+      "enum": ["exists_with_citation", "array_non_empty", "matches_friction_count"]
+    },
+    "evidence_source": {
+      "type": "object",
+      "required": ["path_glob", "reader"],
+      "additionalProperties": false,
+      "properties": {
+        "path_glob": {"type": "string"},
+        "reader": {"$ref": "#/definitions/reader_kind"},
+        "always_included_paths": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Paths always included regardless of path_glob — used when an audited file (e.g., nav-bar.tsx) must appear in scope even if path_glob would not naturally include it"
+        }
+      }
+    },
+    "matcher": {
+      "type": "object",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"$ref": "#/definitions/matcher_kind"},
+        "params": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Matcher-specific parameters. Validated by the matcher implementation, not by this schema."
+        }
+      }
+    },
+    "expected_observation": {
+      "type": "object",
+      "required": ["artifact_path", "predicate"],
+      "additionalProperties": false,
+      "properties": {
+        "artifact_path": {"type": "string"},
+        "predicate": {"$ref": "#/definitions/predicate_kind"},
+        "params": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "required": ["id", "type", "gate_id", "severity", "evidence_sources", "matcher", "expected_observation", "failure_citation_format", "mode_env", "schema_cutoff"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Stable rule identifier; kebab-case. Used by --rule-id CLI argument."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["navigation_reachability", "friction_event_extraction", "recovery_path_observation"],
+          "description": "Rule type. Each type maps to specific matcher kinds and predicate behaviors."
+        },
+        "gate_id": {
+          "type": "string",
+          "description": "Gate this rule serves (e.g., bg2-wire-check-1, check-observation-artifacts). Used in failure citations."
+        },
+        "severity": {"$ref": "#/definitions/severity"},
+        "description": {"type": "string"},
+        "evidence_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/definitions/evidence_source"}
+        },
+        "matcher": {"$ref": "#/definitions/matcher"},
+        "expected_observation": {"$ref": "#/definitions/expected_observation"},
+        "failure_citation_format": {
+          "type": "string",
+          "description": "Template string for failure citations. Available placeholders depend on matcher kind."
+        },
+        "mode_env": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*_MODE$",
+          "description": "Environment variable name for MODE override (warn|deny). Default warn during soak per #1291 convention."
+        },
+        "schema_cutoff": {
+          "type": "boolean",
+          "description": "If true, rule honors schema_version_gate.required_schema_version(rid) — pre-cutoff runs SKIP (exit 0) instead of evaluating."
+        },
+        "exempt_paths": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Optional path globs to exclude from evidence scan."
+        }
+      }
+    }
+  }
+}

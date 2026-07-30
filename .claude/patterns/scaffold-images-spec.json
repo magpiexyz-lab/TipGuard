@@ -1,0 +1,88 @@
+{
+  "$comment": "Canonical source for scaffold-images slot model assignments and source diversity rules. Issue #1261: agent silently overrode model selection across slots, observer was blind to deviations because no spec_deviations[] field existed and no JSON spec to compare against. This file is the single truth source. Drift detection: validate-image-spec-compliance.py compares .runs/image-manifest.json (agent output) against this file at runtime and requires spec_deviations[] declarations for any deviation. Three-way coherence between this file, .claude/procedures/scaffold-images.md Phase 1 table, and .claude/stacks/images/fal.md model table is NOT statically enforced today — drift between them is caught only when the agent's run produces a spec-vs-manifest mismatch. A static coherence rule for compile-time three-way pinning is future work (would require a markdown-table parser).",
+  "_schema_version": 1,
+  "_schema_version_notes": "v1 (2026-05-04, #1261): initial spec with closed deviation enum",
+  "_audit_notes": [
+    "Round-2 critic Concern 2: 'budget-low-quality-gate-tripped' enum value DROPPED — the corroborator (self_score < 9) is written by the same actor as the deviation claim. All remaining enum values require external-actor witnesses (visual brief grep, fal API error log, fal API 4xx response).",
+    "When adding a new slot or changing model assignment: update this file FIRST, then propagate to scaffold-images.md table and fal.md table. Drift between the three files is NOT statically guarded; the runtime validator validate-image-spec-compliance.py catches manifest-vs-spec mismatches but does not parse the markdown tables."
+  ],
+  "deviation_enum": {
+    "visual-brief-overrides": {
+      "description": "visual brief explicitly mandates a different model for cross-slot style consistency",
+      "required_evidence": "grep .runs/current-visual-brief.md for slot name + 'mandate' (case-insensitive)"
+    },
+    "source-rate-limited": {
+      "description": "primary source returned HTTP 429 rate-limit; agent fell back to alternative",
+      "required_evidence": ".runs/fal-api-errors.jsonl entry with http_status=429 for the slot"
+    },
+    "model-unavailable-fallback": {
+      "description": "primary model returned HTTP 4xx model-not-found; agent fell back to alternative",
+      "required_evidence": ".runs/fal-api-errors.jsonl entry with http_status in {404, 422} or error_body containing 'model_not_found' for the slot"
+    }
+  },
+  "slots": {
+    "hero": {
+      "budget": "high",
+      "primary_model": "fal-ai/flux-2-pro",
+      "alternate_models": ["fal-ai/gpt-image-2"],
+      "sources": ["fal", "openai", "unsplash"],
+      "explore_count": 3,
+      "exploit_count": 3,
+      "rationale": "Highest-impact slot; FLUX best photorealism + GPT-2 alt for explore diversity + Unsplash for ground-truth photography"
+    },
+    "feature-1": {
+      "budget": "medium",
+      "primary_model": "fal-ai/recraft/v4/pro/text-to-image",
+      "alternate_models": [],
+      "sources": ["fal", "unsplash"],
+      "explore_count": 2,
+      "exploit_count": 1,
+      "rationale": "Ensemble anchor for feature-2/3 style"
+    },
+    "feature-2": {
+      "budget": "medium",
+      "primary_model": "fal-ai/recraft/v4/pro/text-to-image",
+      "alternate_models": [],
+      "sources": ["fal", "unsplash"],
+      "explore_count": 2,
+      "exploit_count": 1,
+      "rationale": "Style-matched to feature-1"
+    },
+    "feature-3": {
+      "budget": "medium",
+      "primary_model": "fal-ai/recraft/v4/pro/text-to-image",
+      "alternate_models": [],
+      "sources": ["fal", "unsplash"],
+      "explore_count": 2,
+      "exploit_count": 1,
+      "rationale": "Style-matched to feature-1"
+    },
+    "logo": {
+      "budget": "medium",
+      "primary_model": "fal-ai/recraft/v4/pro/text-to-vector",
+      "alternate_models": [],
+      "sources": ["fal"],
+      "explore_count": 3,
+      "exploit_count": 0,
+      "rationale": "Only model producing native SVG paths; no Unsplash for vector logos"
+    },
+    "og-photo": {
+      "budget": "medium",
+      "primary_model": "fal-ai/gpt-image-2",
+      "alternate_models": ["fal-ai/flux-2-pro"],
+      "sources": ["fal"],
+      "explore_count": 2,
+      "exploit_count": 1,
+      "rationale": "GPT-2 ~99% text rendering accuracy for OG image overlays"
+    },
+    "empty-state": {
+      "budget": "low",
+      "primary_model": "fal-ai/recraft/v4/pro/text-to-image",
+      "alternate_models": [],
+      "sources": ["fal", "unsplash"],
+      "explore_count": 2,
+      "exploit_count": 0,
+      "rationale": "Friendly illustration; design-taste optimized"
+    }
+  }
+}

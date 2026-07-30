@@ -1,0 +1,21 @@
+{
+  "rules": [
+    {
+      "id": "fixture-frm-baseline",
+      "type": "field_role_map",
+      "severity": "block",
+      "field": "test_field",
+      "canonical_function": "get_test_field",
+      "consumers": [".claude/agents/declared-consumer.md"]
+    },
+    {
+      "id": "fixture-dc-drift",
+      "type": "discover_consumers",
+      "severity": "warn",
+      "field": "test_field",
+      "against_rule": "fixture-frm-baseline",
+      "consumption_patterns": ["test_field\\["],
+      "path_excludes": [".claude/scripts/tests/", ".claude/scripts/lib/"]
+    }
+  ]
+}

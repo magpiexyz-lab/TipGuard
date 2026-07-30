@@ -1,0 +1,379 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancel in-progress runs for the same PR when a new commit is pushed
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # Probe filesystem once after checkout and emit outputs so downstream jobs
+  # can gate on file presence via needs.detect.outputs.* instead of job-level
+  # if: hashFiles(...). hashFiles() at job-level evaluates against a
+  # pre-checkout filesystem and actionlint rejects it as an error, causing
+  # GitHub Actions to fail the run at workflow parse time ("This run likely
+  # failed because of a workflow file issue") with no check-runs created.
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    outputs:
+      e2e_present: ${{ steps.probe.outputs.e2e_present }}
+      migrations_present: ${{ steps.probe.outputs.migrations_present }}
+      nvmrc_present: ${{ steps.probe.outputs.nvmrc_present }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: probe
+        run: |
+          if [ -f playwright.config.ts ]; then
+            echo "e2e_present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "e2e_present=false" >> "$GITHUB_OUTPUT"
+          fi
+          if ls supabase/migrations/*.sql >/dev/null 2>&1; then
+            echo "migrations_present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "migrations_present=false" >> "$GITHUB_OUTPUT"
+          fi
+          # .nvmrc gates the build job: the template repo itself has no Node
+          # app to build, so setup-node@v4 (which requires the file) must be
+          # skipped entirely rather than crash on a missing file.
+          if [ -f .nvmrc ]; then
+            echo "nvmrc_present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "nvmrc_present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  validate:
+    runs-on: ubuntu-latest
+    # Bumped from 3 → 5 → 7 minutes. PR #1453 (prose-gates Phase C-fast)
+    # added the 28-agent .md trace contract sweep + 12 helper tests + 14
+    # phase-c tests; PR #1454 (verifiers) added 13 more tests + 3 new
+    # finalize steps. Combined: 5 min consistently overshoots (5m07s-5m16s)
+    # because the pre-existing slow tests (test_bash_hook_write_operator_binding.py
+    # 28s, test_markdown_cross_file_line_reference.py 26s,
+    # test_worktree_boundary_gate.py 14s, test_agent_trace_write_guard.py
+    # 12s) take 80+s alone, leaving little headroom for the rest. 7 min
+    # restores the same ~30% headroom 5min had at the 3min era.
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shellcheck
+        run: |
+          # SC2016: single-quoted strings contain literal regex patterns passed
+          #         to grep (\s, $, (, | are regex metacharacters, not shell).
+          # SC2001: sed is the idiomatic tool for line-anchored substitutions;
+          #         bash parameter expansion cannot express ^-anchor cleanly.
+          # Both are info/style false-positives in this file.
+          for script in scripts/consistency-check.sh; do
+            if [ -f "$script" ]; then
+              shellcheck --exclude=SC2016,SC2001 "$script"
+            else
+              echo "$script not found — skipping"
+            fi
+          done
+
+      - name: Shellcheck hooks
+        run: |
+          # SC1078/SC1079/SC2140: false positives inside python3 -c "..."
+          #   heredocs — shellcheck misparses Python-level double quotes as
+          #   bash-level quote mismatches. 11 hooks use this pattern; the
+          #   scripts run correctly in production.
+          for script in .claude/hooks/*.sh; do
+            if [ -f "$script" ]; then
+              shellcheck --exclude=SC2154,SC2086,SC2059,SC1091,SC1078,SC1079,SC2140 "$script"
+            fi
+          done
+
+      - name: Install Python dependencies
+        # imagehash + Pillow added (#1272 hard-block validators): Pillow is
+        # ~3MB, imagehash is ~50KB. CI install ~3s. Used by
+        # .claude/scripts/lib/phash.py for image-evidence validation.
+        # python-docx exercises the iterate-cross x4 .docx report happy path; it is
+        # an OPTIONAL runtime dep (the report skips gracefully when absent) so it is
+        # installed here for tests only, NOT in any runtime bootstrap.
+        run: pip3 install pyyaml pytest imagehash Pillow python-docx
+
+      # Configure a default git identity AND init.defaultBranch=main.
+      # - identity: tests do `git init` + `git commit --allow-empty` in
+      #   temp dirs; without a global identity the commit fails with
+      #   "Author identity unknown" and 9+ tests cascade.
+      # - init.defaultBranch: test_resolve_active_identity.py creates
+      #   contexts with branch="main" then `git checkout -q main`. CI's
+      #   default `master` makes the checkout silently fail (the test
+      #   uses `|| true`), the resolver's branch filter rejects all
+      #   contexts, and 8 identity tests cascade.
+      # Both values are intentionally unmappable to real accounts.
+      - name: Configure git for tests
+        run: |
+          git config --global user.email "ci@local"
+          git config --global user.name "CI"
+          git config --global init.defaultBranch main
+
+      # Split pytest into two invocations: scripts/lib/ and .claude/scripts/lib/
+      # are both Python packages named `lib`. A single combined pytest run
+      # inserts scripts/ on sys.path first; tests under .claude/scripts/tests/
+      # then resolve `from lib.<module>` against scripts/lib/ (which lacks
+      # those modules) and fail with ModuleNotFoundError. Running the two
+      # trees separately gives each test file the correct `lib` package.
+      - name: Test validators (scripts/)
+        run: python3 -m pytest scripts/ -v --tb=short
+
+      - name: Test validators (.claude/scripts/tests/)
+        run: python3 -m pytest .claude/scripts/tests/ -v --tb=short
+
+      - name: Validate frontmatter
+        run: python3 scripts/validate-frontmatter.py
+
+      - name: Validate semantics
+        run: python3 scripts/validate-semantics.py
+
+      - name: Validate YAML files
+        run: |
+          python3 -c "
+          import yaml, sys
+          errors = []
+          for f in ['experiment/experiment.yaml', 'experiment/EVENTS.yaml']:
+              try:
+                  with open(f) as fh:
+                      yaml.safe_load(fh)
+                  print(f'{f}: OK')
+              except FileNotFoundError:
+                  print(f'{f}: not found (OK for template)')
+              except yaml.YAMLError as e:
+                  errors.append(f'{f}: {e}')
+                  print(f'{f}: INVALID')
+          # Validate experiment/EVENTS.yaml structure
+          try:
+              with open('experiment/EVENTS.yaml') as fh:
+                  data = yaml.safe_load(fh)
+              if data:
+                  events = data.get('events')
+                  if events is None:
+                      errors.append('experiment/EVENTS.yaml: missing required key \"events\"')
+                  elif not isinstance(events, dict):
+                      errors.append('experiment/EVENTS.yaml: \"events\" must be a dict')
+                  else:
+                      valid_stages = {'reach', 'demand', 'activate', 'monetize', 'retain'}
+                      for name, ev in events.items():
+                          if not isinstance(ev, dict):
+                              errors.append(f'experiment/EVENTS.yaml: events.{name} must be a dict')
+                              continue
+                          if 'funnel_stage' not in ev:
+                              errors.append(f'experiment/EVENTS.yaml: events.{name} missing \"funnel_stage\"')
+                          elif ev['funnel_stage'] not in valid_stages:
+                              errors.append(f'experiment/EVENTS.yaml: events.{name} invalid funnel_stage')
+                          if 'trigger' not in ev:
+                              errors.append(f'experiment/EVENTS.yaml: events.{name} missing \"trigger\"')
+          except FileNotFoundError:
+              pass
+          if errors:
+              for e in errors:
+                  print(f'ERROR: {e}', file=sys.stderr)
+              sys.exit(1)
+          "
+
+      - name: Consistency check
+        run: |
+          if [ -f scripts/consistency-check.sh ]; then
+            bash scripts/consistency-check.sh
+          else
+            echo "No consistency-check.sh found — skipping"
+          fi
+
+      - name: Worktree-ownership pattern (#1200 recurrence guard)
+        run: python3 .claude/scripts/check-worktree-ownership-pattern.py
+
+  build:
+    needs: [validate, detect]
+    if: needs.detect.outputs.nvmrc_present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Dummy env vars so `npm run build` can compile without real credentials.
+    # The app handles missing values gracefully at runtime.
+    # These match the default stack (supabase + posthog). If you change
+    # stack.database or stack.analytics in experiment.yaml, update these env var
+    # names to match the new stack's environment variables.
+    # After bootstrap, compare .env.example with these CI placeholders and
+    # add any new variables here so CI builds don't break.
+    # If you add a stack with new env vars, add placeholders here too.
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+      # Email stack (stack.email: resend) — safe to leave even without email
+      RESEND_API_KEY: re_placeholder_key
+      CRON_SECRET: placeholder-cron-secret
+      RESEND_FROM: noreply@placeholder.example.com
+      # Payment stack (stack.payment: stripe) — safe to leave even without payments
+      STRIPE_SECRET_KEY: placeholder-stripe-secret
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: placeholder-stripe-publishable
+      STRIPE_WEBHOOK_SECRET: placeholder-stripe-webhook-secret
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      # Database stack (stack.database: supabase) — service role key for admin operations
+      SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
+      # AI stack (stack.ai: anthropic) — safe to leave even without AI
+      ANTHROPIC_API_KEY: placeholder-anthropic-api-key
+      # Image generation stack (images/fal) — safe to leave even without image gen
+      FAL_KEY: placeholder-fal-key
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+        # cache: npm requires package-lock.json. If it doesn't exist yet
+        # (e.g., bootstrap PR), setup-node skips caching gracefully.
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install
+          else
+            echo "No package.json found — skipping install"
+          fi
+
+      - name: Build
+        run: |
+          if [ -f package.json ]; then
+            npm run build
+          else
+            echo "No package.json found — skipping build"
+          fi
+
+      - name: Lint
+        run: |
+          if [ -f package.json ] && node -e "process.exit(require('./package.json').scripts?.lint ? 0 : 1)" 2>/dev/null; then
+            npm run lint
+          else
+            echo "No lint script found — skipping"
+          fi
+
+      - name: Unit tests
+        run: |
+          if [ -f vitest.config.ts ]; then
+            npx vitest run
+          else
+            echo "No vitest.config.ts found — skipping unit tests"
+          fi
+
+  e2e:
+    needs: [build, detect]
+    if: needs.detect.outputs.e2e_present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Payment stack (stack.payment: stripe)
+      STRIPE_SECRET_KEY: ${{ secrets.E2E_STRIPE_SECRET_KEY }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.E2E_STRIPE_PUBLISHABLE_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.E2E_STRIPE_WEBHOOK_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - uses: supabase/setup-cli@v1
+      - name: Start local Supabase
+        run: supabase start -x realtime,storage,imgproxy,inbucket,pgadmin-schema-diff,migra,postgres-meta,studio,edge-runtime,logflare,pgbouncer,vector
+      - name: Apply migrations
+        run: supabase db reset
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+      - name: Run E2E tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+      - name: Stop local Supabase
+        if: ${{ always() }}
+        run: supabase stop
+
+  preview-smoke:
+    needs: [build, detect]
+    if: github.event_name == 'pull_request' && needs.detect.outputs.e2e_present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - name: Wait for Vercel preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
+        id: preview
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 300
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+      - name: Smoke test preview deployment
+        run: npx playwright test e2e/smoke.spec.ts --global-setup="" --global-teardown=""
+        env:
+          E2E_BASE_URL: ${{ steps.preview.outputs.url }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: preview-smoke-report
+          path: playwright-report/
+          retention-days: 7
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # gitleaks/gitleaks-action@v2 requires a paid license for organizations.
+    # The gitleaks CLI binary is Apache 2.0 and free; run it directly to keep
+    # the same detection coverage without the action wrapper's licensing.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install gitleaks
+        env:
+          GITLEAKS_VERSION: "8.18.4"
+        run: |
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -o /tmp/gitleaks.tgz
+          tar -xzf /tmp/gitleaks.tgz -C /tmp gitleaks
+          sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      - name: Run gitleaks
+        run: gitleaks detect --source=. --verbose --redact --no-banner
+
+  migrate:
+    needs: [build, detect]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.detect.outputs.migrations_present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+
+      - name: Link to remote project
+        run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+      - name: Push migrations
+        run: supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}

@@ -1,0 +1,5 @@
+branch: "feat/spec-{slug}"
+states: ["0","1","2","3","4","5","6","7","99"]
+skip_experiment_validation: true
+observation:
+  gate: postcondition-only
