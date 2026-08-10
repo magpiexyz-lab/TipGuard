@@ -37,7 +37,7 @@ Args:
 Idempotent: re-running with the same args produces the same trace. Existing
 field values are overwritten (last-writer-wins).
 
-Atomic write: tempfile + os.rename().
+Atomic write: tempfile + os.replace().
 
 Allowed fields (whitelist):
     page                 — design-critic per-page identifier
@@ -383,7 +383,7 @@ def main() -> int:
         with os.fdopen(fd, "w") as f:
             json.dump(trace, f, indent=2)
             f.write("\n")
-        os.rename(tmp_path, out_path)
+        os.replace(tmp_path, out_path)
     except Exception:
         try:
             os.unlink(tmp_path)

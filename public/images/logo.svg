@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="TipGuard">
+  <title>TipGuard</title>
+  <path class="tg-mark-body" fill="#171C13" d="M11 6h42a3 3 0 0 1 3 3v21L32 58 8 30V9a3 3 0 0 1 3-3z"/>
+  <path class="tg-mark-fold" fill="#C89230" d="M32 43.5h12.4L32 58z"/>
+</svg>

@@ -27,7 +27,7 @@ Contract:
   - batch_id = source_trace_basename for agent fixes; per-invocation
     timestamp for --lead-fix (each invocation is its own batch).
   - batch_size = len(trace.fixes) for agent fixes; 1 for --lead-fix.
-  - Atomic write: tempfile + os.rename (POSIX-atomic).
+  - Atomic write: tempfile + os.replace (atomic on POSIX and Windows).
   - Idempotent: existing fix_ids are skipped (consolidate mode);
     --lead-fix uses a monotonic counter persisted in
     .runs/<skill>-context.json.lead_fix_counter so repeat invocations
@@ -300,7 +300,7 @@ def atomic_write(rows, path=LEDGER_PATH):
         with os.fdopen(tmp_fd, "w") as f:
             for row in rows:
                 f.write(json.dumps(row, sort_keys=True) + "\n")
-        os.rename(tmp_path, path)  # POSIX-atomic
+        os.replace(tmp_path, path)  # POSIX-atomic
     except Exception:
         if os.path.isfile(tmp_path):
             try:
@@ -336,7 +336,7 @@ def _bump_lead_fix_counter(skill):
     try:
         with os.fdopen(fd, "w") as f:
             json.dump(ctx, f, indent=2)
-        os.rename(tmp, ctx_path)
+        os.replace(tmp, ctx_path)
     except Exception:
         if os.path.isfile(tmp):
             try:

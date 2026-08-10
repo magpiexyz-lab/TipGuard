@@ -31,7 +31,17 @@ export const dynamic = "force-dynamic";
 
 export const signNoticeSchema = z.object({
   token: z.string().min(8).max(128),
-  signer_name: z.string().trim().min(2).max(120),
+  // `.trim()` strips only the edges — an embedded newline survives it and is
+  // what lets a signer forge extra sections in the audit-file export. A legal
+  // name is one line; reject control characters at the boundary rather than
+  // relying on every downstream renderer to escape them.
+  signer_name: z
+    .string()
+    .trim()
+    .min(2)
+    .max(120)
+    // eslint-disable-next-line no-control-regex
+    .regex(/^[^\x00-\x1f\x7f]+$/, "single line required"),
 });
 
 export type SignNoticeResponse = { signed_at: string; notice_id: string };

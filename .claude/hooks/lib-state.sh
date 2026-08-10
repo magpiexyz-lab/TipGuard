@@ -211,13 +211,24 @@ for f in glob.glob(os.path.join(project, '.runs', '*-context.json')):
     ts = d.get('timestamp', '')
     if not ts:
         continue
-    # 48h staleness cap — protects against abandoned contexts from crashed runs
-    try:
-        ctx_time = datetime.datetime.strptime(ts, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=datetime.timezone.utc)
-        if (now - ctx_time).total_seconds() > 48 * 3600:
-            continue
-    except:
-        pass
+    # 48h staleness cap — protects against abandoned contexts from crashed runs.
+    # Measured against LAST ACTIVITY, not run start: 'timestamp' is pinned at
+    # run start (run_id derives from it and cannot be bumped), so keying off it
+    # alone made any run outliving the cap age itself out mid-flight — identity
+    # then resolved empty and every subagent trace degraded to
+    # provenance: lead-orchestrated / partial: true. 'written_at' is refreshed
+    # on every artifact write, so max(written_at, timestamp) is real liveness.
+    def _parse(v):
+        if not v:
+            return None
+        try:
+            dt = datetime.datetime.fromisoformat(str(v).replace('Z', '+00:00'))
+            return dt if dt.tzinfo else dt.replace(tzinfo=datetime.timezone.utc)
+        except Exception:
+            return None
+    _seen = [t for t in (_parse(d.get('written_at')), _parse(ts)) if t]
+    if _seen and (now - max(_seen)).total_seconds() > 48 * 3600:
+        continue
     if ts > best_ts:
         best_ts = ts
         best = d

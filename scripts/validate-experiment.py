@@ -15,7 +15,7 @@ import sys
 import yaml
 
 
-data = yaml.safe_load(open("experiment/experiment.yaml"))
+data = yaml.safe_load(open("experiment/experiment.yaml", encoding="utf-8"))
 warnings = False
 
 # --- Name format ---
@@ -59,7 +59,7 @@ base_required = [
 # Add archetype-specific required fields
 archetype_path = f".claude/archetypes/{effective_type}.md"
 if os.path.isfile(archetype_path):
-    with open(archetype_path) as af:
+    with open(archetype_path, encoding="utf-8") as af:
         arch_content = af.read()
     arch_fm_match = re.match(r"^---\n(.*?\n)---", arch_content, re.DOTALL)
     if arch_fm_match:
@@ -574,7 +574,7 @@ for cat in SHARED_STACK_KEYS:
     sf = f".claude/stacks/{cat}/{val}.md"
     if not os.path.isfile(sf):
         continue
-    with open(sf) as f:
+    with open(sf, encoding="utf-8") as f:
         content = f.read()
     m = re.match(r"^---\n(.*?\n)---", content, re.DOTALL)
     if not m:
@@ -616,7 +616,7 @@ for i, svc in enumerate(services):
         sf = f".claude/stacks/{dir_name}/{val}.md"
         if not os.path.isfile(sf):
             continue
-        with open(sf) as f:
+        with open(sf, encoding="utf-8") as f:
             content = f.read()
         m_match = re.match(r"^---\n(.*?\n)---", content, re.DOTALL)
         if not m_match:

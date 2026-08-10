@@ -1,0 +1,2 @@
+- [Trace before polish](feedback_trace_before_polish.md) — write each page's terminal trace the moment it compiles, not at the end of the turn.
+- [Build lock contention](project_build_lock_contention.md) — `next build` is lock-held during fan-out; verify with tsc + eslint and say so in the trace.

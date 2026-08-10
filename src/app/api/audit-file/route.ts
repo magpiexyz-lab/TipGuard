@@ -255,6 +255,33 @@ function cell(value: string | null | undefined): string {
   return value.replace(/\r?\n|\r/g, " ").replace(/\|/g, "\\|");
 }
 
+/**
+ * One interpolated value outside the cover-index table.
+ *
+ * `signerName` is the only field in this document typed by someone other than
+ * the account owner — the employee enters it at /sign. A raw newline lets that
+ * employee close the current section and open a fabricated
+ * `### Name — signed <date>` block, and a raw backtick unbalances the fenced
+ * notice body so genuine acknowledgments render as prose. Either one forges
+ * the evidence this export exists to be trusted as, so every interpolation in
+ * the acknowledgment section is flattened to a single line with fences
+ * neutralised.
+ */
+function inline(value: string | null | undefined): string {
+  if (value === null || value === undefined || value === "") return "—";
+  return value.replace(/\r?\n|\r/g, " ").replace(/`/g, "'");
+}
+
+/**
+ * The frozen notice snapshot, rendered inside a fenced block. The text is
+ * server-generated, but it is concatenated with a fence we control, so a
+ * defensive strip of any embedded fence keeps the block balanced no matter
+ * what a future generator emits.
+ */
+function fencedBody(value: string | null | undefined): string {
+  return (value ?? "").replace(/^```/gm, "'''");
+}
+
 function renderExport(
   restaurantName: string,
   homeState: string,
@@ -296,15 +323,15 @@ function renderExport(
     lines.push("_No signed acknowledgments on file yet._");
   }
   for (const signed of data.signedNotices) {
-    lines.push(`### ${signed.employeeName} — signed ${signed.signedAt}`);
+    lines.push(`### ${inline(signed.employeeName)} — signed ${inline(signed.signedAt)}`);
     lines.push("");
-    lines.push(`- Signer name (typed): ${signed.signerName}`);
-    lines.push(`- Timestamp (UTC): ${signed.signedAt}`);
-    lines.push(`- State / rule version: ${signed.state} / ${signed.ruleVersion}`);
+    lines.push(`- Signer name (typed): ${inline(signed.signerName)}`);
+    lines.push(`- Timestamp (UTC): ${inline(signed.signedAt)}`);
+    lines.push(`- State / rule version: ${inline(signed.state)} / ${inline(signed.ruleVersion)}`);
     lines.push("");
     lines.push("```text");
     // The frozen copy taken at signature time. NOT re-rendered.
-    lines.push(signed.noticeText ?? "");
+    lines.push(fencedBody(signed.noticeText));
     lines.push("```");
     lines.push("");
   }

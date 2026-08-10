@@ -1,18 +1,36 @@
 ---
-name: Crucible Design System
-description: Assayer uses a "Crucible" design system -- warm obsidian dark-first palette with molten gold accents, Instrument Serif + DM Sans typography, noise/gradient/glass depth techniques
-type: project
+name: Night Ledger Design System
+description: TipGuard uses the "Night Ledger" design system — warm oat-paper light-first palette, olive ledger ink, brass seal accent, Fraunces + IBM Plex Sans/Mono typography, paper-grain and ruled-hairline depth
+metadata:
+  type: project
 ---
 
-Assayer's visual identity is the "Crucible" design system, derived from the metallurgical assaying metaphor (testing ore for gold).
+TipGuard's visual identity is the "Night Ledger" design system, derived from the
+physical artifact the product replaces: the signed tip-credit notice and the dated
+audit file.
 
-**Why:** The product delivers high-stakes SCALE/REFINE/PIVOT/KILL verdicts for startup ideas. The visual language must carry that gravity -- warm, rich, precise, not clinical or playful.
+**Why:** the register is fear-led B2B compliance sold to a restaurant operator, not
+an enterprise legal buyer. It must read evidence-grade (this is what you hand a DOL
+investigator) while staying approachable to a non-lawyer running a bar. Cool-neutral
+B2B blue-gray is exactly what every competitor (Gusto, ADP, TipHaus, Toast) ships and
+what this buyer ignores; alarm-red-everywhere reads as a scam. Credible fear is quiet.
 
 **How to apply:**
-- Dark-first with warm hue angle (~55-80 oklch) running through all surfaces
-- Molten gold (`oklch(0.78 0.155 75)`) is the signature accent color
-- Display font: Instrument Serif (editorial authority), Body: DM Sans (geometric clarity)
-- Depth via noise overlay + radial gradient mesh + glassmorphism
-- Verdict colors are semantic: viridian (SCALE), amber (REFINE), copper (PIVOT), cinnabar (KILL)
-- Custom Tailwind tokens: gold, ember, copper, mineral, obsidian, charcoal, ash, parchment, verdict-*
-- All design tokens live in `src/app/globals.css`, visual brief at `.runs/current-visual-brief.md`
+- **Light-first, warm.** Oat paper `#F3F0E6` background; full-bleed olive-ink
+  `#171C13` bands are the structural counter-surface and the dark mode.
+- **Exactly 3 brand colors:** `--ink #171C13` (typography/authority),
+  `--brass #C89230` (CTA + accent + at-risk flag), `--seal #2F6B4E` (signed /
+  compliant). `--ember #A93B24` is `--destructive` only, capped at badges.
+- **Brass is never text on a light surface** (2.42:1) — use `--brass-deep #8A5F14`.
+- **Fonts:** Fraunces (display, variable opsz/SOFT/WONK) + IBM Plex Sans (body) +
+  IBM Plex Mono (all legal/financial figures, dates, §citations, rule versions).
+  The mono-for-evidence rule is the signature texture and is non-negotiable.
+- **Depth:** SVG paper grain, 32px ruled ledger hairlines, brass radial bloom,
+  brass-tinted multi-layer shadows. No gradient meshes, no glassmorphism.
+- **Signature animation:** "The Signature" — signature stroke draws, brass seal
+  stamps, status chip flips DRAFT → SIGNED with a UTC timestamp.
+- **Proof is cited statute, never testimonials or logo walls** — fabricated social
+  proof is disqualifying for a compliance product.
+- Tokens live in `src/app/globals.css`; full brief at `.runs/current-visual-brief.md`
+  (ephemeral — deleted after the bootstrap PR); per-slot image intent at
+  `.runs/slot-intent.json`.

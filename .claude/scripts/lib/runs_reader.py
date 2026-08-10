@@ -100,6 +100,35 @@ def _parse_ts(s) -> Optional[datetime]:
         return None
 
 
+def _liveness_ts(d: dict) -> Optional[datetime]:
+    """Newest activity timestamp for a run context.
+
+    The staleness cap exists to reject ABANDONED runs, so it must measure
+    when the context was last touched -- not when the run started. Long
+    skill runs (a full /bootstrap spans many hours of agent work) update
+    `written_at` on every artifact write while `timestamp` stays pinned to
+    run start, because `run_id` is derived from it and cannot be bumped.
+
+    Keying staleness off `timestamp` alone made any run outliving the cap
+    age itself out mid-flight, so `resolve_active_identity` returned None
+    and every subsequent subagent trace fell back to `provenance:
+    lead-orchestrated` / `partial: true` instead of `self`.
+
+    Returns the later of `written_at` and `timestamp`, or None if neither
+    parses (callers treat None as "no staleness signal", same as before).
+    """
+    return max(
+        (t for t in (_parse_ts(d.get("written_at")), _parse_ts(d.get("timestamp"))) if t),
+        default=None,
+    )
+
+
+def _is_stale(d: dict, now: datetime) -> bool:
+    """True when a context has had no activity within the staleness cap."""
+    ts_dt = _liveness_ts(d)
+    return bool(ts_dt) and (now - ts_dt).total_seconds() > STALENESS_HOURS * 3600
+
+
 def _read_jsonl(path: Path) -> list:
     if not path.exists():
         return []
@@ -184,8 +213,7 @@ def discover_current_run_id(
         for d in _candidates():
             if d.get("completed"):
                 continue
-            ts_dt = _parse_ts(d.get("timestamp"))
-            if ts_dt and (now - ts_dt).total_seconds() > STALENESS_HOURS * 3600:
+            if _is_stale(d, now):
                 continue
             ts = d.get("timestamp", "") or ""
             if ts > best_ts:
@@ -204,8 +232,7 @@ def discover_current_run_id(
             continue
         if d.get("parent"):
             continue
-        ts_dt = _parse_ts(d.get("timestamp"))
-        if ts_dt and (now - ts_dt).total_seconds() > STALENESS_HOURS * 3600:
+        if _is_stale(d, now):
             continue
         ts = d.get("timestamp", "") or ""
         if ts > best_ts:
@@ -222,12 +249,15 @@ def discover_current_run_id(
             continue
         if d.get("parent"):
             continue
-        ts_dt = _parse_ts(d.get("timestamp"))
         if head_commit_timestamp is not None:
+            # HEAD-recency is deliberately keyed to run START (`timestamp`),
+            # not liveness: the question is whether the run predates the PR's
+            # HEAD commit, which `written_at` would wrongly answer.
+            ts_dt = _parse_ts(d.get("timestamp"))
             if not ts_dt or ts_dt < head_commit_timestamp:
                 continue
         else:
-            if ts_dt and (now - ts_dt).total_seconds() > STALENESS_HOURS * 3600:
+            if _is_stale(d, now):
                 continue
         ts = d.get("timestamp", "") or ""
         if ts > best_ts:
@@ -241,8 +271,7 @@ def discover_current_run_id(
     for d in _candidates():
         if d.get("parent") is None:
             continue
-        ts_dt = _parse_ts(d.get("timestamp"))
-        if ts_dt and (now - ts_dt).total_seconds() > STALENESS_HOURS * 3600:
+        if _is_stale(d, now):
             continue
         ts = d.get("timestamp", "") or ""
         if ts > best_ts:
