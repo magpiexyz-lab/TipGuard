@@ -76,20 +76,31 @@ function createDemoClient() {
   } as unknown as ReturnType<typeof createServerClient>;
 }
 
+export const PLACEHOLDER_SUPABASE_URL = "https://placeholder.supabase.co";
+
+/** True on a real deployment target (Vercel / Railway), false on a dev box. */
+function isHostingPlatform(): boolean {
+  return process.env.VERCEL === "1" || !!process.env.RAILWAY_ENVIRONMENT_NAME;
+}
+
+/** True when the Supabase browser-scope config is absent or still the placeholder. */
+function isPlaceholderConfig(): boolean {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  return !url || !anon || url === PLACEHOLDER_SUPABASE_URL;
+}
+
 // Server-side warn-once shares the same intent as the client warning in
-// supabase.ts — they are a parallel pair.
+// supabase.ts — they are a parallel pair. Only reachable off-platform now;
+// on a hosting platform the same condition throws instead (see below).
 let _supabaseServerPlaceholderWarned = false;
 function _warnSupabaseServerPlaceholder() {
   if (_supabaseServerPlaceholderWarned) return;
-  const isHostingPlatform =
-    process.env.VERCEL === "1" || !!process.env.RAILWAY_ENVIRONMENT_NAME;
-  if (!isHostingPlatform) return;
   _supabaseServerPlaceholderWarned = true;
   console.error(
-    "[supabase-server] Server Supabase placeholder fallback was hit — this deployment " +
+    "[supabase-server] Server Supabase placeholder fallback was hit — this process " +
     "is using the demo client with mocked data. Set NEXT_PUBLIC_SUPABASE_URL and " +
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY in your hosting platform (Vercel Supabase " +
-    "Integration auto-injects these) to use a real Supabase project."
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY to use a real Supabase project."
   );
 }
 
@@ -97,14 +108,31 @@ export async function createServerSupabaseClient() {
   if (process.env.DEMO_MODE === "true" && process.env.VERCEL === "1") {
     throw new Error("DEMO_MODE is not allowed in production");
   }
-  // Also fall back to the demo client when env vars are missing or set to the
-  // canonical placeholder. Prevents server-side requests from hitting
-  // placeholder DNS in unconfigured deployments.
+
+  const placeholder = isPlaceholderConfig();
+
+  // SECURITY: the demo client's `auth.getUser()` returns a synthetic
+  // authenticated user. Falling back to it because env vars are MISSING would
+  // make authentication a function of configuration absence — one unset
+  // variable on a real deployment and every anonymous request is treated as
+  // signed in, against a real service-role client. Fail closed instead. The
+  // throw is caught by resolveAccount(), which degrades to `unavailable` (503)
+  // per its documented contract: no user, no data.
+  if (placeholder && isHostingPlatform() && process.env.DEMO_MODE !== "true") {
+    throw new Error(
+      "Supabase is not configured on this deployment. Set NEXT_PUBLIC_SUPABASE_URL " +
+      "and NEXT_PUBLIC_SUPABASE_ANON_KEY (the Vercel Supabase Integration injects " +
+      "both). Refusing to serve the demo client in a hosted environment."
+    );
+  }
+
+  // Off-platform (local dev, CI, e2e) the demo fallback is still what makes the
+  // app runnable with no keys at all, so keep it — but say so loudly.
+  if (placeholder && process.env.DEMO_MODE !== "true") _warnSupabaseServerPlaceholder();
+  if (process.env.DEMO_MODE === "true" || placeholder) return createDemoClient();
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-  const isPlaceholder = !url || !anon || url === "https://placeholder.supabase.co";
-  if (isPlaceholder && process.env.DEMO_MODE !== "true") _warnSupabaseServerPlaceholder();
-  if (process.env.DEMO_MODE === "true" || isPlaceholder) return createDemoClient();
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -132,8 +160,17 @@ export function createServiceRoleClient() {
   if (process.env.DEMO_MODE === "true") return createDemoClient();
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceRoleKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured");
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
-    serviceRoleKey
-  );
+
+  // SECURITY: never point a real service-role key at a host we do not own.
+  // Defaulting the URL to the placeholder would put the key in an Authorization
+  // header addressed to `placeholder.supabase.co` — a domain outside our
+  // control — on any deployment where the key is set but the URL is not.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  if (!url || url === PLACEHOLDER_SUPABASE_URL) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY is set but NEXT_PUBLIC_SUPABASE_URL is missing or " +
+      "still the placeholder. Refusing to send a service-role key to an unowned host."
+    );
+  }
+  return createClient(url, serviceRoleKey);
 }
