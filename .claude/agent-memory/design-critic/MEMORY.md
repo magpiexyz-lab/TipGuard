@@ -1,0 +1,1 @@
+- [Shared prod-server hazard](project_parallel_dev_server_hazard.md) — `next dev` cannot run here (no font egress); the shared :3000 server is a prod build with no HMR, and another agent's syntax error breaks every route.

@@ -330,7 +330,7 @@ try:
     with os.fdopen(fd, "w") as f:
         json.dump(trace, f, indent=2)
         f.write("\n")
-    os.rename(tmp_path, target)
+    os.replace(tmp_path, target)
 except Exception:
     try:
         os.unlink(tmp_path)

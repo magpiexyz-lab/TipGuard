@@ -55,7 +55,12 @@ if os.path.exists(reg_path):
     else:
         verify_cmd = str(entry)
     if verify_cmd and verify_cmd != 'true':
-        r = subprocess.run(verify_cmd, shell=True, capture_output=True)
+        # VERIFY commands in state-registry.json are POSIX shell. On Windows
+        # shell=True dispatches to cmd.exe, which cannot parse them (no
+        # `test`, different quoting -- e.g. grep -q 'a\|b' fails). Run them
+        # through bash explicitly: this script is itself bash, so bash is
+        # guaranteed present, and behaviour is unchanged on POSIX hosts.
+        r = subprocess.run(['bash', '-c', verify_cmd], capture_output=True)
         if r.returncode != 0:
             sys.stderr.write('advance-state: verify failed for $SKILL.' + state + ': ' + verify_cmd + chr(10))
             if r.stderr:

@@ -164,7 +164,9 @@ for state_id, raw in skill_states.items():
         continue
     entry = {'state': state_id, 'passed': True, 'error': None}
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True,
+        # POSIX-shell VERIFY commands — run via bash, not shell=True, which
+        # would dispatch to cmd.exe on Windows and fail spuriously.
+        result = subprocess.run(['bash', '-c', cmd], capture_output=True,
                                 timeout=30, cwd=project_dir)
         if result.returncode != 0:
             stderr = result.stderr.decode().strip()[:200]

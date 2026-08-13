@@ -20,7 +20,10 @@
     ]
   },
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "PYTHONUTF8": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "NODE_OPTIONS": "--max-old-space-size=1024"
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,

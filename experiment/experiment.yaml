@@ -1,154 +1,428 @@
-# experiment.yaml — Describe your experiment
+# experiment.yaml — TipGuard
 #
-# RECOMMENDED: Run `/spec 'your idea'` in Claude Code — it fills this file
-# automatically with hypotheses, behaviors, variants, and stack choices.
+# AI tip-credit compliance & audit-defense platform for restaurants.
+# Schema: .claude/templates/experiment-yaml.md
 #
-# ALTERNATIVE: Fill in manually. Replace every "TODO" value with your content.
-# See idea/experiment.example.yaml for a complete worked example.
-#
-# When you're done (either way), run: make validate → /bootstrap
+# Run: make validate → /bootstrap
 
 # --- 1. Identity ---
-name: my-experiment          # Lowercase slug, hyphens only (e.g., "quick-bill"). Used in analytics.
-# type: web-app               # Product archetype (default: web-app). See .claude/archetypes/
-# level: 2                    # Experiment scope: 1 (Pitch), 2 (Prototype), 3 (Product).
-                               # /spec sets this automatically. Manual: omit to let /bootstrap infer from stack.
+name: tipguard               # Lowercase slug, hyphens only. Used in analytics.
+owner: magpiexyz-lab         # Project owner. Used as project_owner in analytics.
+type: web-app                # Product archetype. See .claude/archetypes/
+level: 3                     # Experiment scope: 3 (Product/Full MVP).
 status: draft
-# quality: production is always active (TDD, per-task implementer, spec review).
-                               # This field is reserved for future use. Do not set quality: mvp.
+quality: production          # TDD, per-task implementer, spec review (Level 3 default).
 
 # --- 2. Intent ---
 description: |
-  TODO: Describe the problem and your proposed solution in 2-3 sentences.
-  Who has this problem? What does the user get that they don't have today?
+  Restaurants pay tipped staff as little as $2.13/hr by claiming the federal
+  tip credit — but the credit is conditional on paperwork. A missing signed
+  per-employee tip-credit notice, a manager sitting in the tip pool, or
+  overtime computed off the $2.13 base voids the credit retroactively for
+  every hour every tipped worker ever logged, converting a filing slip into
+  six-figure back-pay exposure plus liquidated damages.
 
-thesis: "TODO: If [action], then [outcome], as measured by [metric]"
-target_user: "TODO: Be specific (e.g., freelance designers billing <5 clients/month)"
+  Payroll platforms (Gusto, ADP) calculate wages. Tip apps (TipHaus, Kickfin,
+  Toast) distribute payouts. Neither generates the legally required notices,
+  collects signed acknowledgments, or maintains the dated per-employee trail
+  a DOL investigator asks for first.
+
+  TipGuard is a self-serve compliance layer: a restaurant imports its staff
+  roster and hours, TipGuard generates state-specific tip-credit notices,
+  collects e-signed acknowledgments into a dated vault, continuously flags
+  tip-credit violations (overtime off the sub-minimum base, ineligible
+  workers in the tip pool, sub-minimum-wage shortfalls, missing or stale
+  notices), and produces a one-click audit-ready file. Entry hook is a free
+  instant audit-readiness score; conversion is $79/mo.
+
+  Legal constraint carried into the build: notice templates are generated
+  from a per-state rule library and every generated notice carries an
+  explicit "review by your counsel before distribution" disclaimer. The MVP
+  does not claim attorney certification it does not have — that claim is
+  gated behind real outside-counsel review of the template library.
+
+thesis: "If a restaurant owner can go from a free audit-readiness score to state-specific tip-credit notices sent for employee signature in a single session, then >=12% of activated owners will start a paid $79/mo checkout, as measured by Stripe checkout_started events."
+target_user: "Owners, GMs, and bookkeepers of independent full-service restaurants, bars, and cafes (1-10 locations, 10-80 tipped staff) in tip-credit states, who claim the tip credit today, have no signed notice file, and cannot name their state's current tip-credit rules."
 
 distribution: |
-  TODO: How will you get this in front of target users?
-  e.g., Post in r/freelance, Indie Hackers, LinkedIn outreach
+  Phase 1: Post the free audit-readiness score in r/restaurateur, r/bartenders
+  ownership threads, and restaurant-owner Facebook groups.
+  Phase 2: Meta and Google Ads targeting restaurant owner/GM job titles and
+  restaurant-management search intent ("tip credit notice", "DOL tip audit",
+  "tip pooling rules <state>").
+  Phase 3: State restaurant association newsletters and independent-operator
+  bookkeeping/CPA firms that serve multi-unit restaurant clients.
 
-# hypotheses:
-#   - id: h-01
-#     category: demand          # demand | reach | feasibility | monetize | retain
-#     statement: "TODO: Testable prediction with specific numbers"
-#     success_metric: "TODO: What to measure"
-#     threshold: "TODO: Pass/fail number (e.g., > 5% CTR)"
-#     priority_score: 90        # 0-100, higher = test first
-#     experiment_level: 1       # Minimum level needed to test this
-#     depends_on: []
-#     status: pending           # pending | resolved
+hypotheses:
+  - id: h-01
+    category: demand
+    statement: ">=7% of landing visitors click the primary 'Get My Free Audit-Readiness Score' CTA (fear-led B2B compliance landing benchmark: 3-7%)."
+    metric:
+      formula: "cta_click / landing_view"
+      threshold: 0.07
+      operator: gte
+    priority_score: 90
+    experiment_level: 1
+    depends_on: []
+    status: pending
+  - id: h-02
+    category: activate
+    statement: ">=60% of visitors who start the free audit-readiness score finish all questions and see their score — i.e., the fear hook holds attention through an unauthenticated multi-step form."
+    metric:
+      formula: "score_completed / score_started"
+      threshold: 0.60
+      operator: gte
+    priority_score: 88
+    experiment_level: 3
+    depends_on: [h-01]
+    status: pending
+  - id: h-03
+    category: activate
+    statement: ">=40% of visitors who see a failing audit-readiness score create an account to save the score and fix the gaps."
+    metric:
+      formula: "signup_complete / score_completed"
+      threshold: 0.40
+      operator: gte
+    priority_score: 86
+    experiment_level: 3
+    depends_on: [h-02]
+    status: pending
+  - id: h-04
+    category: activate
+    statement: ">=50% of signups send at least one state-specific tip-credit notice to an employee for signature within their first session."
+    metric:
+      formula: "notice_sent / signup_complete"
+      threshold: 0.50
+      operator: gte
+    priority_score: 84
+    experiment_level: 3
+    depends_on: [h-03]
+    status: pending
+  - id: h-05
+    category: activate
+    statement: ">=80% of imported staff rosters produce a complete, state-correct tip-credit notice with zero manual field entry — i.e., roster data alone is sufficient input for the generator."
+    metric:
+      formula: "notice_generated / roster_imported"
+      threshold: 0.80
+      operator: gte
+    priority_score: 82
+    experiment_level: 3
+    depends_on: []
+    status: pending
+  - id: h-06
+    category: monetize
+    statement: ">=12% of owners who send a first notice start a paid checkout, motivated by a $79/mo price anchored against six-figure back-pay exposure."
+    metric:
+      formula: "checkout_started / notice_sent"
+      threshold: 0.12
+      operator: gte
+    priority_score: 80
+    experiment_level: 3
+    depends_on: [h-04]
+    status: pending
+  - id: h-07
+    category: retain
+    statement: ">=35% of owners who sent a first notice return within 7 days to onboard another employee, resolve a flagged violation, or pull the audit file (compliance tools retain above generic B2B benchmarks: 25-40%)."
+    metric:
+      formula: "retain_return / notice_sent"
+      threshold: 0.35
+      operator: gte
+    priority_score: 70
+    experiment_level: 3
+    depends_on: [h-04]
+    status: pending
+  - id: h-08
+    category: reach
+    statement: ">=35% of landing visits come from a qualified restaurant-operator channel (restaurant-owner ad targeting, r/restaurateur referrer, or state restaurant association UTM) — i.e., the ICP is reachable at acceptable cost."
+    metric:
+      formula: "qualified_paid_visit / landing_view"
+      threshold: 0.35
+      operator: gte
+    priority_score: 68
+    experiment_level: 3
+    depends_on: []
+    status: pending
 
 # --- 3. Behaviors ---
-# Given/when/then specifications derived from hypotheses.
-# Each behavior IS a feature requirement — they replace the features list.
-# behaviors:
-#   - id: b-01
-#     hypothesis_id: h-01
-#     given: "TODO: Initial condition"
-#     when: "TODO: User action or trigger"
-#     then: "TODO: Observable, measurable outcome"
-#     tests:
-#       - "TODO: Verification assertion"
-#     level: 1
-#   # System behavior example:
-#   - id: b-05
-#     actor: system             # system | cron (default: user)
-#     trigger: "TODO: What starts this (e.g., stripe webhook checkout.session.completed)"
-#     hypothesis_id: h-03
-#     given: "TODO: Initial condition"
-#     when: "TODO: System event"
-#     then: "TODO: Observable outcome"
-#     tests:
-#       - "TODO: Verification assertion"
-#     level: 3
+# Each behavior IS a feature requirement — observable test of a pending hypothesis.
+behaviors:
+  - id: b-01
+    hypothesis_id: h-01
+    pages: [landing, score]
+    anonymous_allowed: true
+    given: "A restaurant owner lands on TipGuard from an ad, a forum post, or a search for tip-credit rules"
+    when: "They read the exposure framing and click the primary 'Get My Free Audit-Readiness Score' CTA"
+    then: "cta_click fires with the variant slug and the user is routed to /score without being asked to sign up"
+    tests:
+      - "Landing renders headline, subheadline, and a visible primary CTA above the fold"
+      - "landing_view fires on page load with UTM, referrer, and variant properties"
+      - "Clicking the primary CTA fires cta_click and navigates to /score"
+      - "/score is reachable without an authenticated session"
+    level: 3
+  - id: b-02
+    hypothesis_id: h-02
+    pages: [score]
+    anonymous_allowed: true
+    given: "An anonymous visitor is on the free audit-readiness score page"
+    when: "They answer the questionnaire (state, tip credit claimed, signed notices on file, tip pool composition, overtime basis, new-hire process, staff count)"
+    then: "score_started fires on first answer; a 0-100 readiness score, a ranked gap list, and an estimated back-pay exposure range render immediately; score_completed fires once with the score and gap count"
+    tests:
+      - "score_started fires on the first answered question; score_completed fires exactly once on results render"
+      - "Score, ranked gap list, and estimated exposure range render without requiring authentication"
+      - "Scoring logic is a pure function with unit tests covering each gap rule and both score extremes"
+      - "Results state shows a 'Save my score and fix these gaps' CTA routing to /signup"
+    level: 3
+  - id: b-03
+    hypothesis_id: h-03
+    pages: [signup, dashboard]
+    given: "A visitor has just seen a failing audit-readiness score"
+    when: "They create an account with email/password or Google"
+    then: "signup_start fires on form mount; the Supabase account is created; the anonymous score and gap list are attached to the new account; signup_complete fires once; the user lands on /dashboard showing their score and open gaps"
+    tests:
+      - "Signup validates email format and password length and creates a Supabase session"
+      - "signup_start fires on /signup mount; signup_complete fires exactly once after successful auth"
+      - "The pre-signup score and gap list persist onto the new account row and render on /dashboard"
+      - "User is redirected to /dashboard after signup"
+    level: 3
+  - id: b-04
+    hypothesis_id: h-05
+    pages: [staff]
+    given: "A signed-in owner has no staff on file"
+    when: "They upload a roster CSV of tipped staff (name, email, role, hire date, hourly rate, state/location) or click the 'Connect Gusto / Toast' integration button"
+    then: "Each valid row is created as an employee record; invalid rows are reported inline without aborting the import; roster_imported fires with row counts; the integration button records interest and explains that direct payroll sync is next on the roadmap"
+    tests:
+      - "A valid CSV creates one employee row per record, scoped to the owner's restaurant by RLS"
+      - "Rows with a missing required field or malformed rate are listed as errors and skipped, and valid rows still import"
+      - "roster_imported fires with rows_total, rows_imported, and rows_failed"
+      - "The 'Connect Gusto / Toast' fake-door records the click and shows a roadmap explanation rather than a broken flow"
+    level: 3
+  - id: b-05
+    actor: system
+    trigger: "POST /api/notices/generate — notice generation for imported employees"
+    hypothesis_id: h-05
+    given: "Employee records exist for a restaurant whose state has a defined tip-credit rule entry"
+    when: "The generator runs, resolving the state rule set (cash wage floor, maximum tip credit, required notice elements, tip-pool eligibility) and filling a per-employee notice"
+    then: "One notice record per employee is persisted with state, rule-version, cash wage, tip credit claimed, and rendered notice text; every notice carries the counsel-review disclaimer; notice_generated fires per employee"
+    tests:
+      - "Each employee gets exactly one notice row containing all five federally required notice elements"
+      - "The state rule library resolves cash wage and maximum tip credit per state, and states that have eliminated the tip credit generate a no-tip-credit notice instead"
+      - "Rule resolution is a pure function with unit tests covering a tip-credit state, a no-tip-credit state, and an unknown state"
+      - "Every rendered notice includes the counsel-review disclaimer and the rule-version stamp"
+      - "notice_generated fires once per generated notice with state and rule_version"
+    level: 3
+  - id: b-06
+    hypothesis_id: h-04
+    pages: [notices]
+    given: "Notices have been generated for a restaurant's tipped staff"
+    when: "The owner reviews a notice and clicks 'Send for signature' for one or all employees"
+    then: "A signing token is created per notice, an email with the tokenized signing link is sent via Resend, notice status becomes 'sent', and notice_sent fires per notice"
+    tests:
+      - "The notices page lists every employee with notice status (draft | sent | signed) and a preview of the rendered notice"
+      - "Sending creates a single-use signing token with an expiry and dispatches an email to the employee address"
+      - "notice_sent fires once per notice with employee_count and delivery channel"
+      - "Re-sending an already-signed notice is blocked and surfaces a clear message"
+    level: 3
+  - id: b-07
+    hypothesis_id: h-04
+    pages: [sign]
+    anonymous_allowed: true
+    given: "An employee receives the tokenized signing link by email"
+    when: "They open /sign, read the notice, type their legal name, and submit the acknowledgment"
+    then: "The signed acknowledgment is stored in the vault with signer name, UTC timestamp, IP, user agent, and an immutable copy of the exact notice text; notice status becomes 'signed'; notice_signed fires"
+    tests:
+      - "A valid unexpired token renders the exact notice text that was sent; an invalid, expired, or already-used token renders an error state and cannot sign"
+      - "Signing persists signer name, timestamp, IP, user agent, and a frozen copy of the notice text"
+      - "The signed record is immutable — no API path allows editing notice text after signature"
+      - "notice_signed fires once per signature and the owner's dashboard reflects the new signed count"
+    level: 3
+  - id: b-08
+    actor: system
+    trigger: "POST /api/violations/scan — compliance scan over roster, hours, and notice records"
+    hypothesis_id: h-05
+    given: "A restaurant has employees, imported hours/tips, and notice records"
+    when: "The validator runs the tip-credit rule set over the data"
+    then: "One violation record is created per finding across four rule classes (overtime computed off the sub-minimum cash wage, an ineligible manager or back-of-house worker in the tip pool, a sub-minimum-wage shortfall after tips, a missing or unsigned notice), each with severity and estimated exposure; violation_detected fires per finding"
+    tests:
+      - "Each of the four rule classes is a pure function with unit tests covering a violating case and a compliant case"
+      - "Overtime detection flags any overtime premium computed off the cash wage rather than the full minimum wage"
+      - "Shortfall detection flags any workweek where cash wage plus tips falls below the applicable minimum wage"
+      - "Every employee without a signed notice for the current rule version produces a missing-notice finding"
+      - "violation_detected fires once per finding with rule_class, severity, and estimated_exposure_usd"
+    level: 3
+  - id: b-09
+    hypothesis_id: h-05
+    pages: [violations, dashboard]
+    given: "A compliance scan has produced open violation findings"
+    when: "The owner opens the violations list and works a finding — reading the plain-English explanation and taking the prescribed fix action"
+    then: "The finding shows what rule was broken, which employees and pay periods are affected, the estimated exposure, and the fix path; completing the fix marks the finding resolved and violation_resolved fires"
+    tests:
+      - "The violations page lists open findings ordered by estimated exposure, with rule class and affected employees"
+      - "Each finding renders a plain-English explanation and a concrete fix action, not a raw rule citation"
+      - "Resolving a finding updates its status and removes it from the open list without deleting the audit record"
+      - "violation_resolved fires with rule_class and days_open"
+    level: 3
+  - id: b-10
+    hypothesis_id: h-06
+    pages: [pricing, dashboard]
+    given: "An owner has sent at least one notice and is on the dashboard or pricing page"
+    when: "They click 'Protect my tip credit' to start the $79/mo TipGuard Shield subscription"
+    then: "A Stripe Checkout session is created server-side, the user is redirected, and checkout_started fires"
+    tests:
+      - "The pricing page anchors $79/mo against back-pay and defense-cost exposure and states exactly what the free tier keeps"
+      - "The upgrade CTA is visible on the dashboard for free-tier accounts and hidden for paid accounts"
+      - "Clicking upgrade calls /api/checkout, receives a Stripe session URL, and redirects"
+      - "checkout_started fires with notices_sent_at_upgrade and open_violation_count"
+    level: 3
+  - id: b-11
+    actor: system
+    trigger: "stripe webhook checkout.session.completed"
+    hypothesis_id: h-06
+    given: "A Stripe checkout session completes successfully"
+    when: "Stripe delivers the checkout.session.completed webhook"
+    then: "The account is set to plan='shield' with current_period_end and stripe_customer_id persisted, the audit-file export unlocks, checkout_completed fires server-side, and a welcome email is sent"
+    tests:
+      - "The webhook signature is verified against STRIPE_WEBHOOK_SECRET and unsigned requests are rejected"
+      - "accounts.plan becomes 'shield' and stripe_customer_id plus current_period_end are persisted"
+      - "trackServerEvent('checkout_completed', user.id, { plan: 'shield' }) is called exactly once per session id"
+      - "A welcome email is sent via Resend"
+    level: 3
+  - id: b-12
+    hypothesis_id: h-06
+    pages: [audit-file]
+    given: "A paid owner has signed notices, resolved and open findings, and imported pay data"
+    when: "They click 'Build my audit file'"
+    then: "A single dated export is assembled containing every signed notice with its signature metadata, the notice-status roster, the violation log with resolutions, and the applicable state rule versions; audit_file_exported fires"
+    tests:
+      - "The export includes every signed notice with signer name, timestamp, and the frozen notice text"
+      - "The export includes a cover index listing employees, notice status, and the state rule version applied"
+      - "Free-tier accounts see a locked preview with an upgrade prompt instead of a download"
+      - "audit_file_exported fires with employee_count, signed_notice_count, and open_violation_count"
+    level: 3
+  - id: b-13
+    hypothesis_id: h-08
+    pages: [landing]
+    anonymous_allowed: true
+    given: "A landing visit arrives carrying UTM parameters or an HTTP referrer"
+    when: "The page mounts and analytics initializes"
+    then: "The source is classified against the qualified restaurant-operator allowlist (restaurant-owner ad campaigns, reddit.com/r/restaurateur, state restaurant association domains); qualified_paid_visit fires on a match, otherwise landing_view fires alone"
+    tests:
+      - "UTM source/medium/campaign, click id, and document.referrer are captured into analytics properties"
+      - "qualified_paid_visit fires for allowlisted channels and does not fire for direct or generic organic traffic"
+      - "Classification logic lives in src/lib/analytics-attribution.ts and has unit tests for matched and unmatched sources"
+    level: 3
+  - id: b-14
+    hypothesis_id: h-07
+    pages: [dashboard, notices]
+    given: "An owner sent their first notice at least a day earlier"
+    when: "They return to the app between 1 and 7 days later and onboard another employee, resolve a finding, or pull the audit file"
+    then: "retain_return fires once per return window with days_since_first, and the dashboard shows the current compliance state (score, signed notice count, open findings)"
+    tests:
+      - "retain_return fires on a return session at least 24h after first visit and is idempotent within a return window"
+      - "The dashboard renders current readiness score, signed-notice count, and open-finding count for returning users"
+      - "New-hire onboarding from the dashboard reaches notice generation without re-importing the whole roster"
+    level: 3
 
 # --- 4. Journey ---
 # The user journey from landing to value delivery.
-# Drives ux-journeyer, funnel tests, and plan reviews.
 golden_path:
-  - step: "TODO: What happens first (e.g., Visit landing page)"
-    event: visit_landing
+  - step: "Land on TipGuard and see the tip-credit exposure framing"
+    event: landing_view
     page: landing
-  - step: "TODO: What action delivers value?"
-    event: activate
-    page: TODO
-target_clicks: 3
+  - step: "Click 'Get My Free Audit-Readiness Score'"
+    event: cta_click
+    page: landing
+  - step: "Answer the questionnaire and see the readiness score, gap list, and exposure estimate"
+    event: score_completed
+    page: score
+  - step: "Create an account to save the score and fix the gaps"
+    event: signup_complete
+    page: signup
+  - step: "Import the tipped-staff roster"
+    event: roster_imported
+    page: staff
+  - step: "Send state-specific tip-credit notices to staff for signature"
+    event: notice_sent
+    page: notices
+target_clicks: 6
 
-# --- 5. Variants (optional) ---
-# Test different messaging for the same product. Each variant gets its own
-# landing page URL (/v/<slug>) and its own ad group in the distribution channel.
-# Omit this section for a single-variant experiment (the default).
-# variants:
-#   - slug: TODO
-#     headline: "TODO: Value proposition variant A"
-#     subheadline: "TODO: How it works, variant A"
-#     cta: "TODO: Action verb + outcome"
-#     promise: "TODO: Core benefit in one phrase"         # generated by /spec
-#     proof: "TODO: Evidence or credibility signal"       # generated by /spec
-#     urgency: "TODO: Why act now"                        # generated by /spec
-#     pain_points:
-#       - "TODO: Pain point 1"
-#       - "TODO: Pain point 2"
-#       - "TODO: Pain point 3"
-#   - slug: TODO
-#     headline: "TODO: Value proposition variant B"
-#     subheadline: "TODO: How it works, variant B"
-#     cta: "TODO: Action verb + outcome"
-#     promise: "TODO: Core benefit in one phrase"         # generated by /spec
-#     proof: "TODO: Evidence or credibility signal"       # generated by /spec
-#     urgency: "TODO: Why act now"                        # generated by /spec
-#     pain_points:
-#       - "TODO: Pain point 1"
-#       - "TODO: Pain point 2"
-#       - "TODO: Pain point 3"
+# --- 5. Variants ---
+# Each variant gets its own landing URL (/v/<slug>) and its own ad group.
+variants:
+  - slug: audit-risk
+    headline: "One Missing Signature Voids Every Tip Credit You Ever Took"
+    subheadline: "TipGuard generates state-specific tip-credit notices, collects signed acknowledgments, and keeps the dated file a DOL investigator asks for first."
+    cta: "Get My Free Audit-Readiness Score"
+    pain_points:
+      - "The tip credit is conditional — no signed notice means the $2.13 rate was never valid, retroactively, for every tipped hour"
+      - "Food service is the most-audited industry and the missing per-employee notice is the most-cited paperwork failure"
+      - "You will not find out the file is incomplete until an investigator is already asking for it"
+    promise: "Know your exposure in two minutes, then close the gaps the same afternoon."
+    proof: "Score your restaurant against the same items an investigator opens with — notices, tip-pool composition, overtime basis, and sub-minimum shortfalls."
+    urgency: "Back-pay liability accrues on every shift you run without the signed file."
+    pricing_amount: 79
+    pricing_model: subscription
+  - slug: cost-shield
+    headline: "$79 a Month Against a Six-Figure Wage Claim"
+    subheadline: "A single wage-and-hour class action runs past $500K in defense costs before trial. TipGuard keeps the paperwork that makes the claim a non-starter."
+    cta: "Protect My Tip Credit"
+    pain_points:
+      - "One wage-and-hour class action costs more in defense fees than a decade of compliance software"
+      - "Payroll calculates and tip apps distribute — neither generates the notices or keeps the audit trail"
+      - "A bookkeeper cannot track shifting state tip-credit rules across every new hire by hand"
+    promise: "Convert an unbounded legal exposure into a fixed $79 line item."
+    proof: "$79/mo is roughly one hour of wage-and-hour defense counsel. The paperwork it maintains is the first thing that defense would ask you for."
+    urgency: "Every pay period without signed notices widens the back-pay window."
+    pricing_amount: 79
+    pricing_model: subscription
+  - slug: one-click-file
+    headline: "Hand the DOL a Complete File, Not a Panic"
+    subheadline: "Every signed notice, every acknowledgment date, every tip-pool and overtime check — assembled into one export, updated as staff and state rules change."
+    cta: "See My Audit File"
+    pain_points:
+      - "When the notice arrives you have days to assemble records scattered across payroll, POS, and a filing cabinet"
+      - "Staff turnover means the notice file is stale within a month of the last time anyone checked it"
+      - "Several states are changing or phasing out the tip credit and nobody tells the operator when the rules move"
+    promise: "The audit file stays complete on its own — new hires and rule changes fold in automatically."
+    proof: "Signed notices are stored with signer, timestamp, and the exact text acknowledged, so the export is evidence rather than a summary."
+    urgency: "Rebuilding two years of tip-credit records under deadline is not a weekend project."
+    pricing_amount: 79
+    pricing_model: subscription
 
 # --- 6. Funnel ---
-# funnel:
-#   reach:
-#     metric: "TODO: Top-of-funnel metric (e.g., Ad CTR)"
-#     threshold: "TODO: Pass/fail (e.g., > 2%)"
-#     available_from: L1
-#   demand:
-#     metric: "TODO: Signup/interest metric"
-#     threshold: "TODO: Pass/fail (e.g., > 5%)"
-#     available_from: L1
-#   monetize:
-#     metric: "TODO: Revenue/pricing metric"
-#     threshold: "TODO: Pass/fail (e.g., > 7%)"
-#     available_from: L2
-#   retain:
-#     metric: "TODO: Retention metric"
-#     threshold: "TODO: Pass/fail (e.g., > 30%)"
-#     available_from: L3
-# decision_framework:
-#   scale: "TODO: When to scale (e.g., All tested dimensions >= threshold)"
-#   refine: "TODO: When to refine (e.g., Bottleneck ratio >= 0.7)"
-#   pivot: "TODO: When to pivot (e.g., Bottleneck ratio < 0.7)"
-#   kill: "TODO: When to kill (e.g., Top-funnel < 0.5)"
+funnel:
+  available_from:
+    reach: L1
+    demand: L1
+    activate: L2
+    monetize: L2
+    retain: L3
+  decision_framework:
+    scale: "All tested dimensions >= 1.0"
+    kill: "Any top-funnel (REACH or DEMAND) < 0.5"
+    pivot: "2+ dimensions < 0.8"
+    refine: "1+ dimensions < 1.0 but fewer than 2 below 0.8"
 
 # --- 7. Stack + Deploy ---
-# Per-service values (runtime, hosting, ui, testing) live under services[].
-# Shared values (database, auth, analytics, payment) live directly under stack.
-# Each value maps to a stack file at .claude/stacks/<category>/<value>.md
 stack:
   services:
     - name: app
       runtime: nextjs          # Web framework — leave default
-      hosting: vercel           # Where the app is deployed — leave default
+      hosting: vercel          # Where the app is deployed — leave default
       ui: shadcn               # UI component library — leave default
       testing: playwright      # Page-load smoke tests — created by bootstrap
-  database: supabase           # Database and backend — leave default
-  auth: supabase               # Login/signup system — leave default
-  # auth_providers:            # OAuth providers (e.g., [google, github]). Omit for email-only auth.
-  #   - google
-  #   - github
-  analytics: posthog           # Usage tracking — leave default
-  # payment: stripe            # Uncomment if your experiment involves payments
-  # email: resend              # Uncomment for welcome email + activation nudge
+  database: supabase           # Postgres + RLS; accounts, employees, notices, signatures, violations.
+  auth: supabase               # Email/password + Google OAuth.
+  auth_providers:
+    - google
+  analytics: posthog           # Page-level and event-level analytics.
+  payment: stripe              # $79/mo TipGuard Shield subscription (monetize hypothesis h-06).
+  email: resend                # Employee signing-link emails and post-checkout welcome.
+  ai: anthropic                # State-specific notice drafting and plain-English violation explanations.
+
+# --- Target Geography ---
+target_geo: [US]               # Tip credit is a US federal/state wage construct.
 
 deploy:
   url: null
   repo: null
-  domain: null               # Parent domain for hosting + email. Default: draftlabs.org
+  domain: null                 # Parent domain for hosting + email. Default: draftlabs.org

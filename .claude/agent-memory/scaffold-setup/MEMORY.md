@@ -1,0 +1,1 @@
+- [Trace-writing Windows blockers](trace-writing-windows-blockers.md) — three template bugs that break write-agent-trace.sh on win32, and the workarounds

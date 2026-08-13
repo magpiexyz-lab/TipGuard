@@ -1,0 +1,31 @@
+# TipGuard
+
+> Generate state-specific tip-credit notices, collect signed acknowledgments, and keep the dated file a DOL investigator asks for first.
+
+TipGuard is a self-serve tip-credit compliance and audit-defense platform for
+independent restaurants, bars, and cafes in US tip-credit states. Payroll
+platforms calculate wages and tip apps distribute payouts; neither generates the
+legally required per-employee tip-credit notices, collects signed
+acknowledgments, or maintains the dated trail a Department of Labor investigator
+asks for first.
+
+Entry point is a free audit-readiness score. Paid plan is $79/month.
+
+## Features
+
+- Free audit-readiness score: answer a short questionnaire and see a 0-100 readiness score, a ranked gap list, and an estimated back-pay exposure range — no account required.
+- Staff roster import: upload a CSV of tipped staff and get one employee record per valid row, with invalid rows reported inline rather than aborting the import.
+- State-specific notice generation: a per-state rule library resolves cash wage floor, maximum tip credit, required notice elements, and tip-pool eligibility, then fills a per-employee notice stamped with the rule version.
+- E-signature collection: notices are sent to employees by email with a single-use tokenized signing link; signed acknowledgments are stored with signer name, UTC timestamp, IP, user agent, and an immutable copy of the exact notice text.
+- Continuous violation detection: four rule classes are checked over roster, hours, and notice records — overtime computed off the sub-minimum cash wage, ineligible workers in the tip pool, sub-minimum-wage shortfalls after tips, and missing or unsigned notices — each with severity and estimated exposure.
+- Plain-English remediation: every finding explains what rule was broken, which employees and pay periods are affected, the estimated exposure, and the fix path.
+- One-click audit file: a single dated export containing every signed notice with its signature metadata, the notice-status roster, the violation log with resolutions, and the applicable state rule versions.
+
+## Important limitations
+
+- TipGuard is not a law firm and does not provide legal advice. Every generated
+  notice carries an explicit instruction to have counsel review it before
+  distribution.
+- Notice templates are generated from a per-state rule library. TipGuard does
+  not claim attorney certification of those templates.
+- Coverage is limited to United States federal and state tip-credit rules.

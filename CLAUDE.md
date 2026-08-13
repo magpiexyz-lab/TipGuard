@@ -155,3 +155,13 @@ All 16 lifecycle skills use state machines with JIT (Just-In-Time) dispatch (the
 - **VERIFY ownership:** `state-registry.json` owns all VERIFY commands. State files own prose (ACTIONS, POSTCONDITIONS, narrative). When modifying a VERIFY check, edit `state-registry.json` only, then run `make sync-verify` to propagate to state files. Never edit state file VERIFY code fences directly. Run `.claude/scripts/verify-linter.sh` to detect drift (DIVERGED is blocking). States with `"true"` VERIFY must include a `<!-- VERIFY=true: <reason> -->` comment in the state file.
 - **When to split a state:** Split when a state exhibits any of: (a) mixes user-interactive and non-interactive steps (different retry semantics), (b) mixes validation and orchestration concerns (different failure domains), or (c) exceeds 10 execution steps with 0 intermediate artifact writes
 - **Sub-ID convention:** Format is `<number><letter>` (e.g., 3a, 13a). Single depth only -- never `3a1`. Sub-IDs are peers inserted between N and N+1 in the canonical sequence, not hierarchical children of N
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

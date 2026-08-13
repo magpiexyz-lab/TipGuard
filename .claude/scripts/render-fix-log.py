@@ -90,7 +90,7 @@ def atomic_write(content, path=FIX_LOG_PATH):
     try:
         with os.fdopen(tmp_fd, "w") as f:
             f.write(content)
-        os.rename(tmp_path, path)
+        os.replace(tmp_path, path)
     except Exception:
         if os.path.isfile(tmp_path):
             try:
