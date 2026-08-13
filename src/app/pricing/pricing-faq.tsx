@@ -29,7 +29,10 @@ export function PricingFaq() {
         <Accordion defaultValue={["free-tier"]} className="gap-0">
           {PRICING_FAQ.map((entry) => (
             <AccordionItem key={entry.id} value={entry.id} className="border-b border-border">
-              <AccordionTrigger className="py-5 text-base font-medium">
+              {/* The trigger is an <h3>, so it inherits the display serif at
+                  letter-spacing:-1.2px — tuned for 44px+ section heads and far
+                  too tight at UI size. Set the size and tracking explicitly. */}
+              <AccordionTrigger className="py-5 text-lg font-medium tracking-[-0.3px]">
                 {entry.question}
               </AccordionTrigger>
               <AccordionContent>

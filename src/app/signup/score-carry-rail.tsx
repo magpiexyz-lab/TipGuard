@@ -29,11 +29,24 @@ export function ScoreCarryRail({
   pending: PendingScore | null | undefined;
 }) {
   return (
+    // Two things had to change for this panel to render the depth it declares.
+    //
+    // 1. `texture-rule` and `bloom-brass` both write `background-image`, so
+    //    stacking them on one element silently drops whichever the cascade
+    //    orders first — the ruling never painted. They go on separate overlays,
+    //    the same way the audit-file dossier band composes them.
+    // 2. `.texture-rule` paints `var(--rule-color)`, which resolves to a
+    //    near-black hairline in the light scope and is therefore invisible on
+    //    `--ink`. `dark` swaps it for the bone hairline, as on the dashboard
+    //    ink band.
     <aside
       aria-label="Audit-readiness record"
-      className="surface-ink texture-rule bloom-brass relative flex flex-col justify-center px-6 py-16 sm:px-12 lg:min-h-screen lg:px-14"
+      className="dark surface-ink relative flex flex-col justify-center overflow-hidden px-6 py-16 sm:px-12 lg:min-h-screen lg:px-14"
     >
-      <div className="mx-auto w-full max-w-md">
+      <div className="bloom-brass pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div className="texture-rule pointer-events-none absolute inset-0" aria-hidden="true" />
+
+      <div className="relative mx-auto w-full max-w-md">
         {pending === undefined ? (
           <RailSkeleton />
         ) : pending ? (
@@ -84,8 +97,10 @@ function CarriedScore({ pending }: { pending: PendingScore }) {
   return (
     <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
       <div className="flex items-baseline justify-between gap-4">
-        <p className="eyebrow text-brass">Carried from your free score</p>
-        <span className="font-mono text-[11px] tracking-[0.14em] text-[#a8af9b]">
+        <p className="eyebrow min-w-0 text-brass">Carried from your free score</p>
+        {/* A record number that breaks across two lines stops reading as a
+            record number. The label wraps instead. */}
+        <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tracking-[0.14em] text-[#a8af9b]">
           {recordStamp(pending.savedAt)}
         </span>
       </div>
@@ -153,14 +168,18 @@ function CarriedScore({ pending }: { pending: PendingScore }) {
       {pending.gaps.length > 0 ? (
         <ul className="mt-4 divide-y divide-[rgba(243,240,230,0.12)]">
           {pending.gaps.map((gap, index) => (
+            // Three fixed columns, not a flex row: intrinsic-width severity
+            // chips put every gap label on a different left edge, which is the
+            // one thing a ledger cannot do. The severity column is sized to the
+            // widest chip so the labels read as a single ruled column.
             <li
               key={gap.id}
               style={{ animationDelay: `${index * 55}ms` }}
-              className="animate-in fade-in-0 slide-in-from-bottom-1 fill-mode-backwards flex min-h-11 items-start gap-3 py-3 duration-300"
+              className="animate-in fade-in-0 slide-in-from-bottom-1 fill-mode-backwards grid min-h-11 grid-cols-[4.75rem_1fr_auto] items-start gap-x-3 py-3 duration-300"
             >
               <span
                 className={cn(
-                  "mt-0.5 shrink-0 rounded-sm px-1.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.1em]",
+                  "mt-0.5 justify-self-start rounded-sm px-1.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.1em]",
                   SEVERITY_CHIP[gap.severity],
                 )}
               >
@@ -169,7 +188,7 @@ function CarriedScore({ pending }: { pending: PendingScore }) {
               <span className="text-sm leading-[1.5] text-[#ece8da]">
                 {gap.label}
               </span>
-              <span className="ml-auto shrink-0 font-mono text-sm tabular-nums text-[#a8af9b]">
+              <span className="justify-self-end font-mono text-sm tabular-nums text-[#a8af9b]">
                 &minus;{gap.pointsDeducted}
               </span>
             </li>
@@ -288,10 +307,15 @@ function RailSkeleton() {
         <div className="mt-9 h-14 w-32 rounded-sm bg-[rgba(243,240,230,0.14)]" />
         <div className="mt-4 h-2 w-full rounded-full bg-[rgba(243,240,230,0.10)]" />
         <div className="mt-10 divide-y divide-[rgba(243,240,230,0.12)]">
+          {/* Column track matches the live ledger below so the panel does not
+              re-flow when the carried record arrives. */}
           {[0, 1, 2, 3].map((row) => (
-            <div key={row} className="flex h-11 items-center gap-3">
-              <div className="h-4 w-16 rounded-sm bg-[rgba(243,240,230,0.14)]" />
-              <div className="h-4 flex-1 rounded-sm bg-[rgba(243,240,230,0.08)]" />
+            <div
+              key={row}
+              className="grid h-11 grid-cols-[4.75rem_1fr] items-center gap-x-3"
+            >
+              <div className="h-4 w-[3.25rem] rounded-sm bg-[rgba(243,240,230,0.14)]" />
+              <div className="h-4 rounded-sm bg-[rgba(243,240,230,0.08)]" />
             </div>
           ))}
         </div>

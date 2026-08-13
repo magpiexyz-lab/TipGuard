@@ -50,8 +50,10 @@ export function PricingSection({ variant }: { variant: Variant }) {
         </BlurFade>
 
         <div className="mt-12 grid grid-cols-1 gap-6 lg:mt-16 lg:grid-cols-2 lg:gap-8">
-          {/* Left: the exposure, with its working shown. */}
-          <BlurFade className="rounded-xl border border-paper/12 p-7 sm:p-9">
+          {/* Left: the exposure, with its working shown. Flex column so the
+              footnote sits on the floor of the panel rather than leaving the
+              bottom third of a stretched grid cell empty. */}
+          <BlurFade className="flex h-full flex-col rounded-xl border border-paper/12 p-7 sm:p-9">
             <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-ember-soft">
               If the credit is disallowed
             </p>
@@ -84,18 +86,37 @@ export function PricingSection({ variant }: { variant: Variant }) {
               </p>
 
               <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-ember-soft">
-                Plus liquidated damages · 29 U.S.C. §216(b)
+                Plus liquidated damages{" "}
+                {/* normal-case: the subsection letter is part of the cite. */}
+                <span className="normal-case tracking-[0.06em]">
+                  · 29 U.S.C. §216(b)
+                </span>
               </p>
               <p className="mt-2 font-mono text-[44px] font-medium leading-[1.1] tracking-[-0.2px] text-ember-soft tabular-nums sm:text-[56px]">
                 <NumberTicker value={liquidated} prefix="$" />
               </p>
             </div>
 
-            <p className="mt-6 text-xs leading-[1.5] text-paper/60">
-              Illustrative federal-floor arithmetic ($7.25 minimum less the $2.13
-              cash wage), before attorney fees or state penalties. Your state may
-              be stricter.
-            </p>
+            <div className="mt-auto pt-8">
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-paper/45">
+                The claim, against the line item
+              </p>
+              <p className="mt-2 font-mono text-sm leading-[1.5] text-paper/70 tabular-nums">
+                That is{" "}
+                <span className="text-brass">
+                  {Math.round(
+                    liquidated / (variant.pricingAmount * 12)
+                  ).toLocaleString("en-US")}
+                  ×
+                </span>{" "}
+                one year of TipGuard.
+              </p>
+              <p className="mt-5 border-t border-paper/12 pt-5 text-xs leading-[1.5] text-paper/60">
+                Illustrative federal-floor arithmetic ($7.25 minimum less the
+                $2.13 cash wage), before attorney fees or state penalties. Your
+                state may be stricter.
+              </p>
+            </div>
           </BlurFade>
 
           {/* Right: the fixed line item. */}

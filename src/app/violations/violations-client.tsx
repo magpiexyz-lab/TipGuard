@@ -219,12 +219,26 @@ export function ViolationsClient({
         ) : null}
 
         <Tabs defaultValue="open">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <TabsList className="max-w-full overflow-x-auto">
-              <TabsTrigger value="open">Open ({open.length})</TabsTrigger>
-              <TabsTrigger value="resolved">Resolved ({resolved.length})</TabsTrigger>
+          {/* The ledger runs past three screens. The filter and the ranking legend
+              ride along with it so the owner never loses which list they are in —
+              and the bar frosting on scroll is the page's one moving signal that
+              the record continues below. */}
+          <div className="sticky top-0 z-20 -mx-5 flex items-center justify-between gap-3 border-b border-border/70 bg-background/85 px-5 py-3 backdrop-blur-md md:-mx-8 md:px-8">
+            <TabsList className="h-auto! max-w-full overflow-x-auto rounded-full bg-secondary p-1">
+              <TabsTrigger
+                value="open"
+                className="h-11 rounded-full px-5 text-sm data-active:bg-primary data-active:text-primary-foreground data-active:shadow-none"
+              >
+                Open ({open.length})
+              </TabsTrigger>
+              <TabsTrigger
+                value="resolved"
+                className="h-11 rounded-full px-5 text-sm data-active:bg-primary data-active:text-primary-foreground data-active:shadow-none"
+              >
+                Resolved ({resolved.length})
+              </TabsTrigger>
             </TabsList>
-            <p className="eyebrow">Ranked by estimated exposure</p>
+            <p className="eyebrow hidden sm:block">Ranked by estimated exposure</p>
           </div>
 
           <TabsContent value="open" className="mt-6">
@@ -301,6 +315,16 @@ export function ViolationsClient({
                 : ""}
             </DialogDescription>
           </DialogHeader>
+          {/* Closing a finding is a money decision — show the number being retired
+              so the confirmation is not an abstract yes/no. */}
+          {confirming ? (
+            <div className="flex items-center justify-between rounded-md bg-muted/60 px-4 py-3">
+              <span className="eyebrow">Exposure closed</span>
+              <span className="figure text-xl leading-none">
+                {exposureLabel(confirming)}
+              </span>
+            </div>
+          ) : null}
           <DialogFooter className="gap-2">
             <Button
               variant="outline"
@@ -378,9 +402,19 @@ function FindingCard({
             >
               {isResolved ? "Resolved" : severity.label}
             </Badge>
-            <span className="eyebrow">
-              {rank ? `Priority ${rank}` : `Closed after ${finding.daysOpen} days`}
-            </span>
+            {/* Rank is the organizing idea of this page (b-09: ordered by dollar
+                exposure), so it is set as a ledger numeral rather than as one more
+                11px label indistinguishable from "Affected" and "Detected". */}
+            {rank ? (
+              <span className="inline-flex items-baseline gap-1.5">
+                <span className="eyebrow">Priority</span>
+                <span className="figure text-sm text-brass-deep dark:text-primary">
+                  {String(rank).padStart(2, "0")}
+                </span>
+              </span>
+            ) : (
+              <span className="eyebrow">Closed after {finding.daysOpen} days</span>
+            )}
           </div>
 
           <h3 className="mt-3 font-display text-[22px] leading-[1.15] tracking-[-1.2px] md:text-[26px]">
@@ -411,23 +445,34 @@ function FindingCard({
           </dl>
         </div>
 
-        <div className="shrink-0 border-t border-border pt-4 md:min-w-[180px] md:border-t-0 md:pt-0 md:text-right">
+        <div className="shrink-0 border-t border-border pt-4 md:min-w-[200px] md:border-t-0 md:pt-0 md:text-right">
           <p className="eyebrow">Estimated exposure</p>
           <p
             className={cn(
               "figure mt-2 leading-[1.1]",
               finding.estimatedExposureUsd > 0
                 ? "text-3xl md:text-[38px]"
-                : "text-2xl text-muted-foreground md:text-[26px]"
+                : "text-[26px] md:text-[30px]",
+              isResolved && "text-muted-foreground"
             )}
           >
             {exposureLabel(finding)}
           </p>
-          {finding.estimatedExposureUsd > 0 ? null : (
-            <p className="mt-2 max-w-[220px] text-xs leading-[1.5] text-muted-foreground md:ml-auto">
-              No dollar figure is computable here. This finding voids the credit itself,
-              which puts every tipped hour back on the table.
-            </p>
+          {finding.estimatedExposureUsd > 0 || isResolved ? null : (
+            // "Unquantified" in muted grey read as "harmless" — the exact opposite
+            // of what it means. A finding with no computable delta voids the credit
+            // outright, so it carries the severity marker the dollar figure would
+            // otherwise supply.
+            <>
+              <span className="mt-3 inline-flex items-center gap-1.5 rounded-sm bg-destructive/10 px-2 py-1 font-mono text-[11px] tracking-[0.1em] text-destructive uppercase">
+                <TriangleAlert className="size-3" aria-hidden="true" />
+                Credit voided
+              </span>
+              <p className="mt-2 max-w-[264px] text-[13px] leading-[1.5] text-muted-foreground md:ml-auto">
+                No dollar figure is computable here. This finding voids the credit
+                itself, which puts every tipped hour back on the table.
+              </p>
+            </>
           )}
         </div>
       </div>
@@ -446,8 +491,16 @@ function FindingCard({
         </div>
 
         <div>
-          <h4 className="eyebrow">How to fix it</h4>
-          <p className="mt-3 text-sm leading-[1.55]">{meta.fixAction}</p>
+          {/* A closed finding must not present its fix as still-pending work. */}
+          <h4 className="eyebrow">{isResolved ? "The fix that closed it" : "How to fix it"}</h4>
+          <p
+            className={cn(
+              "mt-3 text-sm leading-[1.55]",
+              isResolved && "text-muted-foreground"
+            )}
+          >
+            {meta.fixAction}
+          </p>
 
           {isResolved ? (
             <p className="mt-5 flex items-center gap-2 text-sm text-seal dark:text-seal-soft">

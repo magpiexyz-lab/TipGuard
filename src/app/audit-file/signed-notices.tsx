@@ -24,23 +24,37 @@ import { formatUtc, type SignedNoticeEntry } from "./audit-file-contract";
  */
 export function SignedNotices({ entries }: { entries: SignedNoticeEntry[] }) {
   if (entries.length === 0) {
+    // Deliberately NOT a second centred column. This card sits directly
+    // beneath the illustrated cover-index empty state, and mirroring its
+    // stack made the page read as the same card twice. A seal set against
+    // left-ruled copy breaks that rhythm and halves the dead height.
     return (
-      <div className="rounded-xl bg-card px-6 py-10 text-center ring-1 ring-foreground/10">
-        <h3 className="font-heading text-xl">No acknowledgments in the vault yet</h3>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-[1.55] text-ink-soft">
-          A notice becomes evidence the moment an employee signs it. Send the
-          notices you have generated and each signature lands here with its
-          signer, timestamp, and frozen text.
-        </p>
-        <Link
-          href="/notices"
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "mt-6 h-11 rounded-md px-6 text-base font-medium"
-          )}
+      <div className="rounded-xl bg-card p-8 ring-1 ring-foreground/10 elev-1 sm:flex sm:items-start sm:gap-8 sm:p-10">
+        <span
+          className="mx-auto flex size-20 shrink-0 items-center justify-center rounded-full bg-paper ring-2 ring-brass/45 elev-1 sm:mx-0 sm:-mt-1"
+          aria-hidden="true"
         >
-          Send notices for signature
-        </Link>
+          <PenLine className="size-8 text-brass-deep" strokeWidth={1.25} />
+        </span>
+        <div className="mt-6 text-center sm:mt-0 sm:text-left">
+          <h3 className="font-heading text-xl tracking-[-0.015em] text-balance">
+            No acknowledgments in the vault yet
+          </h3>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-[1.55] text-ink-soft sm:mx-0">
+            A notice becomes evidence the moment an employee signs it. Send the
+            notices you have generated and each signature lands here with its
+            signer, timestamp, and frozen text.
+          </p>
+          <Link
+            href="/notices"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "mt-5 h-11 rounded-full border-brass/45 bg-transparent px-6 text-base font-medium text-brass-deep hover:border-brass hover:bg-brass/10 hover:text-brass-deep dark:border-brass/45 dark:bg-transparent dark:text-brass dark:hover:bg-brass/15"
+            )}
+          >
+            Send notices for signature
+          </Link>
+        </div>
       </div>
     );
   }
@@ -54,7 +68,7 @@ export function SignedNotices({ entries }: { entries: SignedNoticeEntry[] }) {
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="font-heading text-lg leading-[1.15]">
+              <h3 className="font-heading text-lg leading-[1.15] tracking-[-0.012em]">
                 {entry.employeeName}
               </h3>
               <p className="mt-1 flex items-center gap-2 text-sm text-ink-soft">
@@ -127,8 +141,11 @@ export function SignedNotices({ entries }: { entries: SignedNoticeEntry[] }) {
 
 export function SignedNoticesLockNote({ locked }: { locked: boolean }) {
   if (!locked) return null;
+  // A bare full-measure line under the card read as leftover text. Ruled as a
+  // margin note it reads as the aside it is, and echoes the standing caveat
+  // at the foot of the page.
   return (
-    <p className="mt-4 text-sm leading-[1.55] text-ink-soft">
+    <p className="mt-5 max-w-2xl border-l-2 border-brass/35 pl-4 text-sm leading-[1.55] text-ink-soft">
       The index above is yours on the free tier — who signed, when, under which
       rule version. The frozen notice text and the assembled export unlock with
       TipGuard Shield.

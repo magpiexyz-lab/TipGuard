@@ -87,7 +87,7 @@ export default function StaffPage() {
           <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-5 py-10 sm:px-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="eyebrow">Step 05 / 06 &middot; Roster</p>
-              <h1 className="mt-3 font-display text-[34px] leading-[1.06] tracking-[-1.6px] text-[#ECE8DA] sm:text-[44px]">
+              <h1 className="mt-3 font-display text-[34px] leading-[1.06] tracking-[-0.03em] [word-spacing:0.07em] text-[#ECE8DA] sm:text-[44px]">
                 Import your tipped staff
               </h1>
               <p className="mt-4 max-w-xl text-base leading-[1.55] text-[#A8AF9B]">
@@ -132,7 +132,7 @@ export default function StaffPage() {
           <section aria-labelledby="import-heading">
             <h2
               id="import-heading"
-              className="font-display text-2xl tracking-[-1.2px]"
+              className="font-display text-2xl tracking-[-0.02em] [word-spacing:0.04em]"
             >
               Import the roster
             </h2>
@@ -149,7 +149,7 @@ export default function StaffPage() {
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <h2
                 id="roster-heading"
-                className="font-display text-2xl tracking-[-1.2px]"
+                className="font-display text-2xl tracking-[-0.02em] [word-spacing:0.04em]"
               >
                 Staff on file
               </h2>
@@ -173,7 +173,7 @@ export default function StaffPage() {
         <div className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
           <Card className="elev-1 rounded-[10px] bg-card">
             <CardHeader>
-              <h2 className="font-display text-lg tracking-[-1.2px]">
+              <h2 className="font-display text-lg tracking-[-0.01em] [word-spacing:0.04em]">
                 What the roster feeds
               </h2>
             </CardHeader>
@@ -200,7 +200,7 @@ export default function StaffPage() {
           <Card className="elev-1 rounded-[10px] bg-card">
             <CardHeader>
               <p className="eyebrow">Roadmap</p>
-              <h2 className="mt-2 font-display text-lg tracking-[-1.2px]">
+              <h2 className="mt-2 font-display text-lg tracking-[-0.01em] [word-spacing:0.04em]">
                 Skip the CSV
               </h2>
             </CardHeader>

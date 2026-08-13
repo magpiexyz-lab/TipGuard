@@ -130,7 +130,10 @@ export default function ScorePage() {
 
           <p className="eyebrow mt-8">Free audit-readiness score</p>
 
-          <h1 className="mt-4 max-w-3xl text-4xl leading-[1.04] text-[#ECE8DA] sm:text-6xl">
+          {/* globals.css sets h1 tracking in fixed px (-2px), tuned for the 60px
+              desktop size. At the 36px mobile size that is ~-0.056em and the
+              word gaps close up ("Howexposed"). Re-tune per breakpoint here. */}
+          <h1 className="mt-4 max-w-3xl text-4xl leading-[1.04] tracking-[-1.1px] text-[#ECE8DA] sm:text-6xl sm:tracking-[-2px]">
             {showingResults
               ? "Your audit-readiness score"
               : "How exposed is your tip credit?"}
@@ -190,7 +193,9 @@ function ScoringSkeleton() {
   return (
     <div className="mx-auto max-w-[1120px] px-6 pb-24 pt-14" aria-live="polite" aria-busy="true">
       <p className="eyebrow">Scoring</p>
-      <h2 className="mt-3 text-2xl sm:text-3xl">Assembling your file</h2>
+      <h2 className="mt-3 text-2xl tracking-[-0.8px] sm:text-3xl sm:tracking-[-1.6px]">
+        Assembling your file
+      </h2>
 
       <div className="mt-8 grid gap-8 md:grid-cols-[240px_1fr]">
         <div

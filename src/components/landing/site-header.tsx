@@ -52,7 +52,14 @@ export function SiteHeader({
           scrolled ? "h-16" : "h-20"
         )}
       >
-        <a href="#top" className="flex items-center gap-3" aria-label="TipGuard — home">
+        {/* min-h-11: the brand mark is the only tap target on the left of the
+            mobile bar, so it has to clear the 44px touch floor rather than
+            inherit the 36px height of the logo badge. */}
+        <a
+          href="#top"
+          className="-mx-1 flex min-h-11 items-center gap-3 px-1"
+          aria-label="TipGuard — home"
+        >
           <span className="grid size-9 shrink-0 place-items-center rounded-md bg-paper shadow-ledger-1">
             {/* SVG asset — rendered with <img> per the image manifest contract. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -68,8 +75,11 @@ export function SiteHeader({
             <a
               key={item.href}
               href={item.href}
+              style={{ ["--tg-underline" as string]: "10px" }}
               className={cn(
-                "tg-link text-sm transition-colors duration-[140ms]",
+                // min-h-11 clears the pointer-target floor; --tg-underline
+                // re-seats the brass draw under the text, not the padded box.
+                "tg-link inline-flex min-h-11 items-center text-sm transition-colors duration-[140ms]",
                 scrolled ? "text-ink-soft hover:text-ink" : "text-paper/75 hover:text-paper"
               )}
             >

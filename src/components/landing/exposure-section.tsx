@@ -18,7 +18,7 @@ export function ExposureSection({ variant }: { variant: Variant }) {
     >
       <div className="mx-auto grid max-w-[1160px] grid-cols-1 gap-14 px-5 sm:px-8 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-20">
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <BlurFade>
+          <BlurFade reveal="slide">
             <p className="eyebrow">The gap nobody audits until it is audited</p>
             <h2
               id="exposure-heading"
@@ -32,20 +32,26 @@ export function ExposureSection({ variant }: { variant: Variant }) {
               the credit is recomputed backward — not from today.
             </p>
 
-            <div className="relative mt-10 hidden max-w-[280px] lg:block">
+            {/* Filed plate: the engraving prints straight onto the section's
+                paper (multiply) inside a hairline frame, rather than floating
+                in a small shadowed card of a slightly different cream. */}
+            <figure className="relative mt-10 hidden lg:block">
               <div className="tg-tick-rule mb-6" data-align="start" />
-              <Image
-                src="/images/empty-state.webp"
-                alt="Engraved illustration of an open empty file drawer holding one hanging folder with a brass tab"
-                width={400}
-                height={400}
-                sizes="280px"
-                className="w-full rounded-lg shadow-ledger-1"
-              />
-              <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft">
-                Today&rsquo;s notice file, in most kitchens
-              </p>
-            </div>
+              <div className="rounded-lg border border-border bg-paper px-5 pb-4 pt-5 shadow-ledger-1">
+                <Image
+                  src="/images/empty-state.webp"
+                  alt="Engraved illustration of an open empty file drawer holding one hanging folder with a brass tab"
+                  width={400}
+                  height={400}
+                  sizes="360px"
+                  className="w-full"
+                />
+                <figcaption className="mt-4 flex items-center gap-3 border-t border-border pt-4 font-mono text-[11px] uppercase leading-[1.4] tracking-[0.14em] text-ink-soft">
+                  <span aria-hidden="true" className="size-1.5 shrink-0 bg-brass" />
+                  Today&rsquo;s notice file, in most kitchens
+                </figcaption>
+              </div>
+            </figure>
           </BlurFade>
         </div>
 
@@ -54,6 +60,7 @@ export function ExposureSection({ variant }: { variant: Variant }) {
             <BlurFade
               as="li"
               key={point}
+              reveal="slide"
               delay={index * 55}
               className="tg-row group border-t border-border first:border-t-0"
             >
@@ -70,6 +77,7 @@ export function ExposureSection({ variant }: { variant: Variant }) {
 
           <BlurFade
             as="li"
+            reveal="slide"
             delay={165}
             className="mt-10 rounded-xl bg-paper-raised p-7 shadow-ledger-2 sm:p-9"
           >

@@ -63,7 +63,7 @@ export function StatusChip({ status }: { status: NoticeStatus }) {
   return (
     <span
       className={cn(
-        "figure inline-flex items-center rounded-sm px-2 py-1 text-[11px] uppercase tracking-[0.1em]",
+        "figure inline-flex shrink-0 items-center justify-center rounded-sm px-2 py-1 text-[11px] uppercase tracking-[0.1em] sm:w-[68px]",
         STATUS_CHIP[status]
       )}
     >
@@ -131,13 +131,18 @@ export function NoticeList({
     return (
       <Card className="elev-1 rounded-[10px] bg-card">
         <div className="flex flex-col items-center gap-4 px-6 py-10 text-center">
-          <Image
-            src="/images/empty-state.webp"
-            alt="An open, empty file drawer holding a single hanging folder"
-            width={400}
-            height={400}
-            className="h-40 w-40 object-contain"
-          />
+          {/* The illustration ships with a baked #F3F0E6 (--background) plate.
+              Seating it on a `bg-background` medallion makes that plate read as
+              an intentional frame instead of a seam against the lighter card. */}
+          <span className="flex size-44 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
+            <Image
+              src="/images/empty-state.webp"
+              alt="An open, empty file drawer holding a single hanging folder"
+              width={400}
+              height={400}
+              className="size-32 object-contain"
+            />
+          </span>
           <div className="max-w-md">
             <h3 className="font-display text-xl tracking-[-1.2px]">
               No notices drafted yet
@@ -174,7 +179,7 @@ export function NoticeList({
               href="/staff"
               className={cn(
                 buttonVariants({ variant: "ghost" }),
-                "min-h-11 rounded-md px-4 text-base"
+                "min-h-11 rounded-md border-border px-4 text-base"
               )}
             >
               Import the roster first
@@ -208,9 +213,9 @@ export function NoticeList({
                 </p>
               </div>
 
-              <div className="flex shrink-0 items-center gap-3 sm:w-44">
+              <div className="flex shrink-0 items-center gap-3 sm:w-64">
                 <StatusChip status={notice.status} />
-                <span className="figure text-xs text-muted-foreground">
+                <span className="figure truncate text-xs text-muted-foreground">
                   {signed
                     ? "In the vault"
                     : notice.status === "sent"
@@ -221,22 +226,23 @@ export function NoticeList({
                 </span>
               </div>
 
-              <div className="flex shrink-0 flex-wrap items-center gap-2">
+              <div className="flex shrink-0 flex-wrap items-center gap-2 sm:w-[292px] sm:flex-nowrap sm:justify-end">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => onPreview(notice)}
                   aria-label={`Preview the notice for ${notice.employee.name}`}
-                  className="min-h-11 gap-2 rounded-md px-4"
+                  className="min-h-11 gap-2 rounded-md px-4 sm:w-[112px]"
                 >
                   <Eye aria-hidden="true" className="size-4" />
                   Preview
                 </Button>
 
+                <span className="flex items-center sm:w-[172px] sm:justify-end">
                 {signed ? (
                   <span className="figure inline-flex min-h-11 items-center gap-2 px-2 text-xs text-muted-foreground">
                     <Lock aria-hidden="true" className="size-4 text-seal" />
-                    Signed &mdash; cannot be re-sent
+                    Cannot be re-sent
                   </span>
                 ) : (
                   <Button
@@ -262,6 +268,7 @@ export function NoticeList({
                     {notice.status === "sent" ? "Resend" : "Send"}
                   </Button>
                 )}
+                </span>
               </div>
             </li>
           );

@@ -53,11 +53,25 @@ export default function PricingPage() {
       {/* ---------------- 1. Hero (paper) ---------------- */}
       <section
         aria-labelledby="pricing-heading"
-        className="mx-auto max-w-[1120px] px-6 pt-24 pb-20 sm:pt-32"
+        className="relative isolate mx-auto max-w-[1120px] px-6 pt-24 pb-20 sm:pt-32"
       >
+        {/* Ledger rule bleeding out of the top edge — ties the paper hero to the
+            ruled surfaces further down instead of leaving it bare. */}
+        <div
+          className="texture-rule pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 [mask-image:linear-gradient(to_bottom,black,transparent)]"
+          aria-hidden="true"
+        />
+        <div
+          className="bloom-brass-soft pointer-events-none absolute inset-x-0 top-0 -z-10 h-80"
+          aria-hidden="true"
+        />
+
         <p className="eyebrow">Pricing</p>
 
-        <h1 className="mt-6 max-w-4xl text-4xl leading-[1.04] font-bold sm:text-[68px]">
+        <h1
+          id="pricing-heading"
+          className="mt-6 max-w-4xl text-4xl leading-[1.04] font-bold sm:text-[68px]"
+        >
           One fixed line item against an unbounded one
         </h1>
 
@@ -179,7 +193,9 @@ export default function PricingPage() {
             <Link
               href="/score"
               className={cn(
-                "mt-6 inline-flex items-center gap-2 text-sm text-brass underline underline-offset-4"
+                // py-3 keeps the tap target at 44px on mobile; the negative
+                // top margin holds the optical spacing the design asks for.
+                "mt-3 inline-flex items-center gap-2 py-3 text-sm text-brass underline underline-offset-4"
               )}
             >
               Not ready? Score your restaurant first

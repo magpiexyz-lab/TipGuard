@@ -33,6 +33,7 @@ export function BlurFade({
   delay = 0,
   as = "div",
   once = true,
+  reveal = "blur",
 }: {
   children: ReactNode;
   className?: string;
@@ -40,6 +41,15 @@ export function BlurFade({
   delay?: number;
   as?: RevealTag;
   once?: boolean;
+  /**
+   * Motion verb. All three obey the additive-only contract above (transform,
+   * never opacity), they simply differ in direction so adjacent sections do
+   * not reveal with the same gesture:
+   *   blur   — settle out of focus (default)
+   *   slide  — arrive from the left, like a drawer pull
+   *   settle — drop and land flat, like a stamp
+   */
+  reveal?: "blur" | "slide" | "settle";
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [state, setState] = useState<"static" | "hidden" | "visible">("static");
@@ -82,6 +92,7 @@ export function BlurFade({
     <Tag
       ref={ref}
       data-blur-fade=""
+      data-reveal={reveal}
       data-state={state}
       style={delay ? ({ "--bf-delay": `${delay}ms` } as CSSProperties) : undefined}
       className={cn(className)}

@@ -40,7 +40,9 @@ export function CtaButton({
         // Primary CTA is the one soft gesture on the page: a brass pill.
         "rounded-full font-medium tracking-[-0.1px] transition-all duration-[140ms]",
         "focus-visible:ring-brass/50",
-        size === "lg" ? "h-12 px-7 text-base" : "h-10 px-5 text-sm",
+        // 44px minimum on touch viewports; the compact 40px header pill only
+        // applies from sm up, where the pointer is a mouse.
+        size === "lg" ? "h-12 px-7 text-base" : "h-11 px-5 text-sm sm:h-10",
         tone === "brass" &&
           "bg-brass text-ink shadow-ledger-2 hover:bg-brass hover:brightness-95 active:translate-y-px",
         tone === "outline-ink" &&

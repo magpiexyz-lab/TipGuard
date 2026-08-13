@@ -79,32 +79,41 @@ export function SigningLinkError({
     <section aria-labelledby="signing-link-error" className="mt-8">
       <div className="overflow-hidden rounded-xl bg-paper-raised elev-2">
         <div className="flex flex-col items-center px-5 pt-8 text-center sm:px-10 sm:pt-10">
-          <Image
-            src="/images/empty-state.webp"
-            alt=""
-            aria-hidden="true"
-            width={400}
-            height={400}
-            className="h-36 w-36 object-contain sm:h-44 sm:w-44"
-            priority
-          />
-          <p className="eyebrow mt-2 flex items-center gap-1.5">
+          {/* The illustration is rendered on its own inset plate. The asset is
+              matted on --paper (#f3f0e6); dropping it straight onto the
+              --paper-raised card (#fbf9f2) leaves a visible lighter square
+              around it. Matching the plate to the mat turns that seam into a
+              deliberate mounted stamp. */}
+          <div className="rounded-2xl bg-paper p-3 ring-1 ring-foreground/10 shadow-[inset_0_1px_2px_rgba(23,28,19,0.06)]">
+            <Image
+              src="/images/empty-state.webp"
+              alt=""
+              aria-hidden="true"
+              width={400}
+              height={400}
+              className="h-32 w-32 object-contain sm:h-36 sm:w-36"
+              priority
+            />
+          </div>
+          <p className="eyebrow mt-5 flex items-center gap-1.5">
             <Icon className="size-3.5" aria-hidden="true" />
             Nothing was signed
           </p>
-          <h2
+          {/* This is the page's only <h1> in every terminal state — the ready
+              view owns the h1 otherwise, and the two never render together. */}
+          <h1
             id="signing-link-error"
             className="mt-3 font-display text-[26px] leading-[1.15] tracking-[-1.2px] text-foreground sm:text-[32px]"
           >
             {heading}
-          </h2>
+          </h1>
           <p className="mt-3 max-w-[46ch] text-[15px] leading-[1.55] text-ink-soft">
             {lead}
           </p>
         </div>
 
         <div className="px-5 py-8 sm:px-10">
-          <h3 className="eyebrow">What to do next</h3>
+          <h2 className="eyebrow">What to do next</h2>
           <ol className="mt-4 space-y-4">
             {steps.map((step, index) => (
               <li key={step} className="flex gap-3.5">
@@ -127,7 +136,7 @@ export function SigningLinkError({
               <AlertTitle className="text-[14px] text-foreground">
                 Your employer still needs this signature
               </AlertTitle>
-              <AlertDescription className="text-[13px] leading-[1.6] text-ink-soft">
+              <AlertDescription className="text-sm leading-[1.6] text-ink-soft">
                 The notice is a wage-and-hour record your employer is required
                 to keep. Letting them know the link failed is the fastest way to
                 close it out.

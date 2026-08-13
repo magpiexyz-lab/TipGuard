@@ -281,7 +281,14 @@ export default function NoticesPage() {
                     ? "Sending all draft notices"
                     : `Send all ${drafts.length} draft notices for signature`
                 }
-                className="min-h-11 gap-2 rounded-full px-6 text-base"
+                className={cn(
+                  "min-h-11 gap-2 rounded-full px-6 text-base",
+                  // On the ink band a 50%-opacity brass fill still reads as an
+                  // enabled CTA while its label falls to ~2.5:1. With nothing to
+                  // send, present an explicitly inert outline instead.
+                  drafts.length === 0 &&
+                    "border-[rgba(243,240,230,0.24)] bg-transparent text-[#A8AF9B] disabled:opacity-100"
+                )}
               >
                 {sendingAll ? (
                   <>
@@ -310,7 +317,7 @@ export default function NoticesPage() {
         {/* Evidence strip — status distribution on ledger hairlines. */}
         <section aria-label="Notice status summary">
           <Card className="elev-1 rounded-[10px] bg-card p-0">
-            <CardContent className="grid gap-0 p-0 sm:grid-cols-4">
+            <CardContent className="grid grid-cols-2 gap-0 p-0 sm:grid-cols-4">
               {(
                 [
                   ["Employees", counts.total, "text-foreground"],
@@ -323,8 +330,9 @@ export default function NoticesPage() {
                   key={label}
                   className={cn(
                     "px-5 py-4",
-                    index > 0 && "sm:border-l sm:border-border",
-                    index > 0 && "border-t border-border sm:border-t-0"
+                    index % 2 === 1 && "border-l border-border",
+                    index > 1 && "border-t border-border sm:border-t-0",
+                    index > 0 && "sm:border-l sm:border-border"
                   )}
                 >
                   <div>

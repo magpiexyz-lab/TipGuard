@@ -40,6 +40,7 @@ export function EvidenceStrip() {
           {EVIDENCE.map((cell, index) => (
             <BlurFade
               key={cell.citation}
+              reveal="settle"
               delay={index * 55}
               className={
                 "lg:px-8 " +
@@ -47,7 +48,10 @@ export function EvidenceStrip() {
               }
             >
               <dt className="sr-only">{cell.caption}</dt>
-              <dd>
+              {/* Flex column so the citation sits on the floor of every cell:
+                  captions run 3–4 lines, and a citation that floats with its
+                  own caption leaves the strip with a ragged 21px baseline. */}
+              <dd className="flex h-full flex-col">
                 <span className="block font-mono text-[40px] font-medium leading-[1.1] tracking-[-0.2px] text-paper tabular-nums sm:text-[52px]">
                   <NumberTicker
                     value={cell.value}
@@ -64,7 +68,9 @@ export function EvidenceStrip() {
                 <span className="mt-4 block max-w-[34ch] text-sm leading-[1.5] text-paper/75">
                   {cell.caption}
                 </span>
-                <span className="mt-3 block font-mono text-[11px] uppercase tracking-[0.1em] text-brass">
+                {/* Never uppercase: the subsection letter is part of the
+                    citation — §203(m) and §203(M) are not the same cite. */}
+                <span className="mt-auto block pt-4 font-mono text-[11px] normal-case tracking-[0.06em] text-brass">
                   {cell.citation}
                 </span>
               </dd>

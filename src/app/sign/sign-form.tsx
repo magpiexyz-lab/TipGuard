@@ -149,6 +149,10 @@ export function SignForm({
             <Label htmlFor={nameFieldId} className="text-[15px] text-foreground">
               Your full legal name
             </Label>
+            {/* The placeholder is instructional, never a name. A greyed real
+                name in a signature field reads as already filled in, and this
+                is the one control on the page carrying legal weight. The
+                employee's name is already shown in the lead paragraph above. */}
             <Input
               id={nameFieldId}
               name="signer_name"
@@ -163,11 +167,12 @@ export function SignForm({
               maxLength={MAX_NAME_LENGTH}
               aria-describedby={hintId}
               aria-invalid={error ? true : undefined}
-              placeholder={employeeName || "Alex Ramirez"}
-              className="h-12 rounded-lg px-3.5 text-base md:text-base placeholder:text-ink-soft"
+              placeholder="Type your full legal name"
+              className="h-12 rounded-lg px-3.5 text-base md:text-base placeholder:text-ink-soft/60"
             />
             <p id={hintId} className="text-sm leading-[1.5] text-ink-soft">
-              Use the name your employer has on file for you.
+              Use the name your employer has on file for you
+              {employeeName ? `: ${employeeName}` : ""}.
             </p>
           </div>
 
@@ -203,7 +208,7 @@ export function SignForm({
             <AlertTitle className="text-[14px]">
               {error ? "Signature not recorded" : ""}
             </AlertTitle>
-            <AlertDescription className="text-[13px] leading-[1.6] text-destructive">
+            <AlertDescription className="text-sm leading-[1.6] text-destructive">
               {error ?? ""}
             </AlertDescription>
           </Alert>
@@ -220,16 +225,20 @@ export function SignForm({
                 Recording…
               </Button>
             ) : (
+              // The default 50%-opacity disabled treatment ghosts the brass out
+              // to near-invisibility, which reads as "broken" rather than "not
+              // yet". A solid inert fill keeps the control legible while it
+              // waits for a name.
               <Button
                 type="submit"
                 disabled={!canSubmit}
-                className="h-12 w-full rounded-full px-7 text-base transition-all duration-150 hover:opacity-90 sm:w-auto"
+                className="h-12 w-full rounded-full px-7 text-base transition-all duration-150 hover:opacity-90 disabled:bg-muted disabled:text-ink-soft disabled:opacity-100 disabled:ring-1 disabled:ring-foreground/10 sm:w-auto"
               >
                 <PenLine className="size-4" aria-hidden="true" />
                 Sign and acknowledge
               </Button>
             )}
-            <span className="font-mono text-[13px] tabular-nums text-ink-soft">
+            <span className="font-mono text-sm tabular-nums text-ink-soft">
               Takes one tap · nothing else is required of you
             </span>
           </div>
@@ -304,7 +313,7 @@ function SignedConfirmation({
             <AlertTitle className="text-[14px] text-foreground">
               This record cannot be edited
             </AlertTitle>
-            <AlertDescription className="text-[13px] leading-[1.6] text-ink-soft">
+            <AlertDescription className="text-sm leading-[1.6] text-ink-soft">
               An exact copy of the notice text you just read was stored with
               your signature. Later edits to the notice cannot change what your
               signature refers to, and no one — including your employer — has a

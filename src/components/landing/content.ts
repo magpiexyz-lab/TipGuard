@@ -159,7 +159,7 @@ export const EXPOSURE_MATH = {
 export const FAQ: { q: string; a: string }[] = [
   {
     q: "Is TipGuard legal advice?",
-    a: "No, and it never claims to be. TipGuard generates notices from a per-state rule library and stamps each one with the rule version it was written against. Every generated notice carries an explicit line asking you to have your counsel review it before distribution. We do not claim attorney certification we do not have.",
+    a: "No, and it never claims to be. TipGuard generates notices from a per-state rule library and stamps each one with the rule version it was written against. Every generated notice carries an explicit line asking you to have your counsel review it before distribution. We do not claim an attorney certification that we do not have.",
   },
   {
     q: "We already run Gusto, ADP or Toast. Why add this?",

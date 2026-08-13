@@ -8,6 +8,9 @@ import { COUNSEL_DISCLAIMER } from "./content";
  * Closing ask — a raised paper plinth with the brass bloom overhead. The only
  * centred section on the page, which is why it lands: after five asymmetric
  * sections, the sudden symmetry reads as the end of the document.
+ *
+ * Motion: `reveal="settle"` — the block drops the last few pixels and lands
+ * flat, the stamp verb, not the blur used by the two sections above it.
  */
 export function FinalCta({ variant }: { variant: Variant }) {
   return (
@@ -24,7 +27,10 @@ export function FinalCta({ variant }: { variant: Variant }) {
       />
       <div aria-hidden="true" className="bloom-brass absolute inset-0 -z-10" />
 
-      <BlurFade className="mx-auto max-w-[720px] px-5 text-center sm:px-8">
+      <BlurFade
+        reveal="settle"
+        className="mx-auto max-w-[720px] px-5 text-center sm:px-8"
+      >
         <p className="eyebrow">Two minutes, seven questions</p>
         <h2
           id="final-cta-heading"

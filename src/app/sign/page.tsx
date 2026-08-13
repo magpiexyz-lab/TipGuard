@@ -44,7 +44,31 @@ export default async function SignPage({
       : null;
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
+    // No `overflow-x-hidden` here: an overflow clip on this wrapper makes it the
+    // scrollport for everything inside, which silently disables the sticky
+    // evidence strip in NoticeDocument. The only absolutely-positioned child is
+    // `inset-x-0`, so it cannot overflow horizontally on its own.
+    <div className="relative min-h-screen">
+      {/* Scroll-driven reveal for the two explanatory sections. Pure CSS view()
+          timelines — no client component, no observer. Guarded by @supports so
+          browsers without scroll-linked animations simply render the final
+          state, and by prefers-reduced-motion for the same reason. */}
+      <style>{`
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes sign-ledger-in {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .reveal-ledger {
+      animation: sign-ledger-in linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 24%;
+    }
+  }
+}
+      `}</style>
+
       {/* Depth layer 1 — ruled ledger hairlines + brass bar-light bloom,
           faded out down the page so the document sits on paper, not on a grid. */}
       <div
@@ -239,7 +263,7 @@ function AlreadySignedView({
           <AlertTitle className="text-[14px] text-foreground">
             The text below is the copy frozen at signature time
           </AlertTitle>
-          <AlertDescription className="text-[13px] leading-[1.6] text-ink-soft">
+          <AlertDescription className="text-sm leading-[1.6] text-ink-soft">
             It is stored separately from the live notice. If your employer edits
             the notice later, this copy — the one your signature refers to — does
             not change.
@@ -292,7 +316,7 @@ function DemoNotice() {
       <AlertTitle className="text-[14px] text-foreground">
         Demo mode — sample notice
       </AlertTitle>
-      <AlertDescription className="text-[13px] leading-[1.6] text-ink-soft">
+      <AlertDescription className="text-sm leading-[1.6] text-ink-soft">
         This environment has no database connected, so the notice below is
         generated sample data for a fictional restaurant. No real signature can
         be recorded here.
@@ -321,7 +345,7 @@ function Orientation() {
   ];
 
   return (
-    <section aria-labelledby="what-this-is" className="mt-10">
+    <section aria-labelledby="what-this-is" className="reveal-ledger mt-10">
       <h2
         id="what-this-is"
         className="font-display text-[24px] leading-[1.15] tracking-[-1.2px] text-foreground sm:text-[28px]"
@@ -361,7 +385,7 @@ function RecordedFacts() {
   ];
 
   return (
-    <section aria-labelledby="what-is-recorded" className="mt-12">
+    <section aria-labelledby="what-is-recorded" className="reveal-ledger mt-12">
       <h2
         id="what-is-recorded"
         className="font-display text-[24px] leading-[1.15] tracking-[-1.2px] text-foreground sm:text-[28px]"

@@ -13,18 +13,29 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="texture-rule min-h-screen">
-      <div className="mx-auto w-full max-w-[26rem] px-6 py-16 sm:py-24">
-        <p className="eyebrow">Returning operator</p>
-        <h1 className="mt-5 font-display text-4xl leading-[1.04] tracking-[-2px]">
-          Open your file
-        </h1>
-        <p className="mt-4 text-lg leading-[1.55] text-muted-foreground">
-          Pick up where your compliance file left off &mdash; notices, signatures,
-          and open findings.
-        </p>
+    <div className="texture-rule relative min-h-screen">
+      {/* Brass bar-light over the ledger rules — depth technique 3. Ambient
+          only; sits behind content and never intercepts pointer events. */}
+      <div
+        aria-hidden="true"
+        className="bloom-brass pointer-events-none absolute inset-x-0 top-0 h-[28rem]"
+      />
 
-        <div className="mt-10">
+      <div className="relative mx-auto w-full max-w-[26rem] px-6 py-16 sm:py-24">
+        <div className="animate-in fade-in-0 slide-in-from-bottom-3 duration-500">
+          <p className="eyebrow">Returning operator</p>
+          <h1 className="mt-5 font-display text-4xl leading-[1.04] tracking-[-2px]">
+            Open your file
+          </h1>
+          <p className="mt-4 text-lg leading-[1.55] text-muted-foreground">
+            Pick up where your compliance file left off &mdash; notices, signatures,
+            and open findings.
+          </p>
+          {/* Brass hairline seats the header block on the 32px ledger rhythm. */}
+          <div className="mt-7 h-px w-16 bg-brass" />
+        </div>
+
+        <div className="mt-8">
           <Suspense fallback={<LoginFormSkeleton />}>
             <LoginForm />
           </Suspense>
@@ -35,7 +46,7 @@ export default function LoginPage() {
             is token-authorised, not session-authorised. */}
         <section
           aria-labelledby="employee-signing-heading"
-          className="mt-14 border-t border-border pt-8"
+          className="mt-14 animate-in fade-in-0 border-t border-border pt-8 duration-700"
         >
           <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-brass/15">
             <FileSignature className="h-5 w-5 text-brass-deep" aria-hidden="true" />
@@ -75,7 +86,8 @@ function LoginFormSkeleton() {
   return (
     <>
       <p className="sr-only">Loading the sign-in form</p>
-      <div aria-hidden="true" className="animate-pulse">
+      {/* Card chrome mirrors LoginForm's so hydration swaps in place. */}
+      <div aria-hidden="true" className="elev-1 animate-pulse rounded-xl bg-card p-6">
         <div className="h-4 w-16 rounded-sm bg-muted" />
         <div className="mt-2 h-11 w-full rounded-md bg-muted" />
         <div className="mt-5 h-4 w-24 rounded-sm bg-muted" />

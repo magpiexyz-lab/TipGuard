@@ -159,7 +159,7 @@ export function LoginForm() {
       {mode === "forgot" ? (
         resetSentTo ? (
           <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
-            <div className="elev-1 rounded-lg bg-card p-5">
+            <div className="elev-1 rounded-xl bg-card p-6">
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-seal/10">
                 <MailCheck className="h-5 w-5 text-seal" aria-hidden="true" />
               </span>
@@ -184,7 +184,10 @@ export function LoginForm() {
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleForgotPassword} className="animate-in fade-in-0 duration-200">
+          <form
+            onSubmit={handleForgotPassword}
+            className="elev-1 animate-in fade-in-0 rounded-xl bg-card p-6 duration-200"
+          >
             <div className="grid gap-2">
               <Label htmlFor={resetEmailId}>Email on the account</Label>
               <Input
@@ -197,7 +200,7 @@ export function LoginForm() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
-                className="h-11 rounded-md text-base md:text-base"
+                className="h-11 rounded-md bg-background text-base md:text-base"
               />
               <p className="text-sm text-muted-foreground">
                 We send a one-hour link that lets you set a new password.
@@ -234,7 +237,10 @@ export function LoginForm() {
           </form>
         )
       ) : (
-        <form onSubmit={handleLogin}>
+        <form
+          onSubmit={handleLogin}
+          className="elev-1 animate-in fade-in-0 zoom-in-95 rounded-xl bg-card p-6 duration-500"
+        >
           <div className="grid gap-2">
             <Label htmlFor={emailId}>Email</Label>
             <Input
@@ -254,6 +260,8 @@ export function LoginForm() {
           <div className="mt-5 grid gap-2">
             <div className="flex items-center justify-between gap-3">
               <Label htmlFor={passwordId}>Password</Label>
+              {/* -my-3 keeps this label row on its 20px rhythm while the
+                  button itself holds a 44px tap target on touch screens. */}
               <Button
                 type="button"
                 variant="link"
@@ -261,7 +269,7 @@ export function LoginForm() {
                   setMode("forgot");
                   setFormError("");
                 }}
-                className="h-auto p-0 text-sm text-muted-foreground hover:text-brass-deep"
+                className="-my-3 h-11 px-1 text-sm text-muted-foreground hover:text-brass-deep"
               >
                 Forgot password?
               </Button>
@@ -276,7 +284,7 @@ export function LoginForm() {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
-                className="h-11 rounded-md pr-12 text-base md:text-base"
+                className="h-11 rounded-md bg-background pr-12 text-base md:text-base"
               />
               <Button
                 type="button"
@@ -316,7 +324,10 @@ export function LoginForm() {
 
           <div className="relative my-7">
             <Separator />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+            {/* bg must match the card the form sits in, not the page. nowrap
+                because inside the card the column is ~279px on a 375px screen
+                and a wrapped label collides with the rule it sits on. */}
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-card px-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
               Or continue with
             </span>
           </div>

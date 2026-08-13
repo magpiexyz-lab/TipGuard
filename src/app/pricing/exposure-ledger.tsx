@@ -112,7 +112,7 @@ export function ExposureLedger({ children }: { children?: React.ReactNode }) {
             </div>
 
             <dl className="mt-10">
-              <div className="flex items-baseline justify-between gap-6 border-t border-paper/12 py-3">
+              <div className="flex flex-col gap-1 border-t border-paper/12 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <dt className="text-sm text-paper/70">Federal cash wage floor, tipped</dt>
                 <dd className="text-right font-mono text-base tabular-nums">
                   ${FEDERAL_CASH_WAGE_FLOOR.toFixed(2)}/hr
@@ -122,7 +122,7 @@ export function ExposureLedger({ children }: { children?: React.ReactNode }) {
                 </dd>
               </div>
 
-              <div className="flex items-baseline justify-between gap-6 border-t border-paper/12 py-3">
+              <div className="flex flex-col gap-1 border-t border-paper/12 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <dt className="text-sm text-paper/70">Full minimum wage owed if the credit is void</dt>
                 <dd className="text-right font-mono text-base tabular-nums">
                   ${FEDERAL_MINIMUM_WAGE.toFixed(2)}/hr
@@ -132,7 +132,7 @@ export function ExposureLedger({ children }: { children?: React.ReactNode }) {
                 </dd>
               </div>
 
-              <div className="flex items-baseline justify-between gap-6 border-t border-paper/12 py-3">
+              <div className="flex flex-col gap-1 border-t border-paper/12 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <dt className="text-sm text-paper/70">Gap you become liable for, per tipped hour</dt>
                 <dd className="text-right font-mono text-base tabular-nums text-brass">
                   ${FEDERAL_MAX_TIP_CREDIT.toFixed(2)}/hr
@@ -142,7 +142,7 @@ export function ExposureLedger({ children }: { children?: React.ReactNode }) {
                 </dd>
               </div>
 
-              <div className="flex items-baseline justify-between gap-6 border-t border-paper/12 py-3">
+              <div className="flex flex-col gap-1 border-t border-paper/12 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <dt className="text-sm text-paper/70">Tipped hours inside the lookback</dt>
                 <dd className="text-right font-mono text-base tabular-nums">
                   {model.tippedHours.toLocaleString("en-US")} hrs
@@ -152,14 +152,14 @@ export function ExposureLedger({ children }: { children?: React.ReactNode }) {
                 </dd>
               </div>
 
-              <div className="flex items-baseline justify-between gap-6 border-t border-paper/12 py-3">
+              <div className="flex flex-col gap-1 border-t border-paper/12 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <dt className="text-sm text-paper/70">Unpaid wages</dt>
                 <dd className="text-right font-mono text-lg tabular-nums">
                   {formatUsd(model.backPay)}
                 </dd>
               </div>
 
-              <div className="flex items-baseline justify-between gap-6 border-t border-paper/12 py-3">
+              <div className="flex flex-col gap-1 border-t border-paper/12 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <dt className="text-sm text-paper/70">Liquidated damages, equal amount</dt>
                 <dd className="text-right font-mono text-lg tabular-nums">
                   {formatUsd(model.liquidatedDamages)}
@@ -169,7 +169,7 @@ export function ExposureLedger({ children }: { children?: React.ReactNode }) {
                 </dd>
               </div>
 
-              <div className="flex items-baseline justify-between gap-6 border-t border-paper/12 py-3">
+              <div className="flex flex-col gap-1 border-t border-paper/12 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <dt className="text-sm text-paper/70">Plaintiff&rsquo;s attorney fees</dt>
                 <dd className="text-right font-mono text-base tabular-nums text-ember-soft">
                   shifted to you
@@ -179,7 +179,7 @@ export function ExposureLedger({ children }: { children?: React.ReactNode }) {
                 </dd>
               </div>
 
-              <div className="flex items-baseline justify-between gap-6 border-t border-paper/12 py-3">
+              <div className="flex flex-col gap-1 border-t border-paper/12 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <dt className="text-sm text-paper/70">Your own defense counsel</dt>
                 <dd className="text-right font-mono text-base tabular-nums text-ember-soft">
                   hourly, win or lose

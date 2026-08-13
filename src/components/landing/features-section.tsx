@@ -38,14 +38,20 @@ export function FeaturesSection({ variant }: { variant: Variant }) {
           className="mt-12 overflow-hidden rounded-xl bg-paper shadow-ledger-2 lg:mt-16"
         >
           <div className="grid grid-cols-1 items-stretch lg:grid-cols-[minmax(0,44%)_minmax(0,56%)]">
-            <div className="relative min-h-[220px] border-b border-border bg-brass-soft/25 lg:border-b-0 lg:border-r">
+            {/* `bg-paper` (not `brass-soft/25`): the engraving field is drawn
+                on exactly #f3f0e6, so matching the well means the plate bleeds
+                into the card instead of sitting in a warmer letterbox band.
+                `object-contain` because `cover` cropped 35% off the top and
+                bottom of the notice stack at mobile widths — the subject was
+                being decapitated to fill a 1.7:1 box. */}
+            <div className="relative aspect-[4/3] border-b border-border bg-paper lg:aspect-auto lg:min-h-[220px] lg:border-b-0 lg:border-r">
               <Image
                 src={lead.image}
                 alt={lead.alt}
                 width={lead.width}
                 height={lead.height}
                 sizes="(min-width: 1024px) 480px, 100vw"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
               />
             </div>
             <div className="p-7 sm:p-10">
@@ -81,14 +87,19 @@ export function FeaturesSection({ variant }: { variant: Variant }) {
                 "transition-all duration-[140ms] hover:-translate-y-0.5 hover:shadow-ledger-2"
               )}
             >
-              <div className="border-b border-border bg-brass-soft/20">
+              {/* Engraved plate. The well is `bg-paper` because the engravings
+                  are drawn on exactly #f3f0e6 — matching it means the plate
+                  bleeds into the card with no pillarbox band, which is what the
+                  old `brass-soft/20` well produced either side of the artwork. */}
+              <div className="overflow-hidden border-b border-border bg-paper">
                 <Image
                   src={feature.image}
                   alt={feature.alt}
                   width={feature.width}
                   height={feature.height}
                   sizes="(min-width: 768px) 560px, 100vw"
-                  className="h-56 w-full object-contain"
+                  className="h-56 w-full object-contain transition-transform duration-[240ms] group-hover:scale-[1.03]"
+                  style={{ transitionTimingFunction: "var(--ease-ledger)" }}
                 />
               </div>
               <div className="flex flex-1 flex-col p-7">

@@ -31,7 +31,10 @@ export function SiteFooter() {
             </p>
           </div>
 
-          <nav className="flex flex-col gap-3" aria-label="Footer">
+          {/* Links are 44px tall so they clear the mobile touch-target floor;
+              `--tg-underline` re-seats the brass draw under the text rather
+              than under the padded box. */}
+          <nav className="flex flex-col" aria-label="Footer">
             {[
               { href: `#${SECTION_IDS.exposure}`, label: "Exposure" },
               { href: `#${SECTION_IDS.how}`, label: "How it works" },
@@ -41,14 +44,16 @@ export function SiteFooter() {
               <a
                 key={item.href}
                 href={item.href}
-                className="tg-link w-fit text-sm text-paper/75 transition-colors duration-[140ms] hover:text-paper"
+                style={{ ["--tg-underline" as string]: "9px" }}
+                className="tg-link inline-flex min-h-11 w-fit items-center text-sm text-paper/75 transition-colors duration-[140ms] hover:text-paper"
               >
                 {item.label}
               </a>
             ))}
             <Link
               href="/score"
-              className="tg-link w-fit text-sm text-brass transition-colors duration-[140ms]"
+              style={{ ["--tg-underline" as string]: "9px" }}
+              className="tg-link inline-flex min-h-11 w-fit items-center text-sm text-brass transition-colors duration-[140ms]"
             >
               Free audit-readiness score
             </Link>

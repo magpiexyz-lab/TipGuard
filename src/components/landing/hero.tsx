@@ -96,11 +96,30 @@ export function Hero({ variant }: { variant: Variant }) {
               label={variant.cta}
               size="lg"
             />
+            {/* The secondary path needs a standing affordance: next to a solid
+                brass button, unadorned text reads as a caption. The chevron is
+                always drawn and travels down 2px on hover. */}
             <a
               href={`#${SECTION_IDS.how}`}
-              className="tg-link text-sm text-paper/75 transition-colors duration-[140ms] hover:text-paper"
+              style={{ ["--tg-underline" as string]: "11px" }}
+              className="tg-link group inline-flex min-h-11 items-center gap-2 text-sm text-paper/75 transition-colors duration-[140ms] hover:text-paper"
             >
               See what lands in the file
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 16 16"
+                fill="none"
+                className="size-3.5 shrink-0 text-brass transition-transform duration-[240ms] group-hover:translate-y-0.5"
+                style={{ transitionTimingFunction: "var(--ease-ledger)" }}
+              >
+                <path
+                  d="M8 2.5v11M3.5 9.5L8 14l4.5-4.5"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </a>
           </div>
 

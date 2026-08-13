@@ -7,10 +7,11 @@
  */
 
 import Image from "next/image";
-import { RefreshCw, TriangleAlert } from "lucide-react";
+import { RefreshCw, TriangleAlert, Upload } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import type { EmployeeRow } from "@/lib/types";
 
 interface RosterTableProps {
@@ -73,17 +74,22 @@ export function RosterTable({ employees, error, onRetry }: RosterTableProps) {
   if (employees.length === 0) {
     return (
       <Card className="elev-1 rounded-[10px] bg-card">
-        <div className="flex flex-col items-center gap-4 px-6 py-10 text-center">
-          <Image
-            src="/images/empty-state.webp"
-            alt="An open, empty file drawer holding a single hanging folder"
-            width={400}
-            height={400}
-            className="h-40 w-40 object-contain"
-            priority={false}
-          />
+        <div className="flex flex-col items-center gap-5 px-6 py-10 text-center">
+          {/* The asset ships with an opaque --paper ground. Framing it on a
+              matching paper plate turns the seam against --card into an
+              intentional mounted plate instead of a pasted-on square. */}
+          <div className="rounded-[10px] bg-paper p-3 ring-1 ring-border">
+            <Image
+              src="/images/empty-state.webp"
+              alt="An open, empty file drawer holding a single hanging folder"
+              width={400}
+              height={400}
+              className="h-32 w-32 object-contain"
+              priority={false}
+            />
+          </div>
           <div className="max-w-md">
-            <h3 className="font-display text-xl tracking-[-1.2px]">
+            <h3 className="font-display text-xl tracking-[-0.015em] [word-spacing:0.04em]">
               The file is empty
             </h3>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -91,6 +97,17 @@ export function RosterTable({ employees, error, onRetry }: RosterTableProps) {
               and the audit export all read from these rows.
             </p>
           </div>
+          {/* Directive, not decorative — jumps to the import control above. */}
+          <a
+            href="#roster-file"
+            className={cn(
+              buttonVariants(),
+              "h-11 gap-2 rounded-full px-6 text-base transition-[filter] duration-[140ms] hover:brightness-95"
+            )}
+          >
+            <Upload aria-hidden="true" className="size-4" />
+            Import your roster
+          </a>
         </div>
       </Card>
     );
@@ -109,9 +126,13 @@ export function RosterTable({ employees, error, onRetry }: RosterTableProps) {
                 <th
                   key={column}
                   scope="col"
-                  className={`eyebrow border-b border-border bg-accent/40 px-4 py-3 text-left ${
-                    index === 0 ? "pl-5" : ""
-                  }`}
+                  className={cn(
+                    "eyebrow border-b border-border bg-accent/40 px-4 py-3",
+                    index === 0 && "pl-5",
+                    // "Cash wage" is a numeric column — its header must sit on
+                    // the same right edge as the figures beneath it.
+                    column === "Cash wage" ? "text-right" : "text-left"
+                  )}
                 >
                   {column}
                 </th>

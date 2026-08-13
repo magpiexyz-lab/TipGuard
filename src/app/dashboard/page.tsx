@@ -4,6 +4,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, FileSignature, ShieldCheck, TriangleAlert, UserPlus } from "lucide-react";
 
+import { BlurFade } from "@/components/magicui/blur-fade";
+import { MagicEffects } from "@/components/magicui/effects";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -36,6 +38,36 @@ export const metadata: Metadata = {
   title: "Compliance dashboard — TipGuard",
   description:
     "Your current audit-readiness score, signed notice count, and open tip-credit findings in one view.",
+};
+
+/**
+ * One severity ramp for the whole page — the carried-gap ledger and the open
+ * finding cards read the same colour for the same weight, so the eye can rank
+ * exposure by rule colour alone. Ember for critical, brass for high, muted for
+ * medium; never a red/green traffic light.
+ */
+const SEVERITY_ACCENT: Record<
+  GapFinding["severity"],
+  { rule: string; bar: string; chip: string; figure: string }
+> = {
+  critical: {
+    rule: "border-l-destructive/70",
+    bar: "bg-destructive/80",
+    chip: "bg-destructive/10 text-destructive",
+    figure: "text-destructive",
+  },
+  high: {
+    rule: "border-l-primary/70",
+    bar: "bg-primary",
+    chip: "bg-primary/15 text-brass-deep dark:text-primary",
+    figure: "text-brass-deep dark:text-primary",
+  },
+  medium: {
+    rule: "border-l-border",
+    bar: "bg-border",
+    chip: "bg-muted text-muted-foreground",
+    figure: "text-muted-foreground",
+  },
 };
 
 // --- Shapes assembled by the loader (local view models, not API contracts) ---
@@ -212,6 +244,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen">
+      <MagicEffects />
+
       {/* ---------- Authority band ---------- */}
       <div className="dark surface-ink texture-grain bloom-brass border-b border-border">
         <div className="mx-auto max-w-[1180px] px-5 py-10 md:px-8 md:py-14">
@@ -342,32 +376,54 @@ export default async function DashboardPage() {
               </Link>
             </div>
 
-            <ol className="texture-rule mt-5 overflow-hidden rounded-lg bg-card elev-1">
-              {data.gaps.map((gap, index) => (
-                <li
-                  key={`${gap.id}-${index}`}
-                  className="flex min-h-11 flex-col gap-2 border-l-2 border-transparent px-5 py-3 transition-colors duration-150 hover:border-primary sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <span className="flex items-start gap-3 text-sm leading-[1.5]">
-                    <TriangleAlert
-                      className="mt-0.5 size-4 shrink-0 text-chart-2"
-                      aria-hidden="true"
-                    />
-                    {gap.label}
-                  </span>
-                  <span className="shrink-0 sm:pl-6">
-                    <Badge
+            {/* Ledger, not a bare list: a titled deduction column turns the
+                right-hand void into a scannable figure stack. */}
+            <div className="mt-5 overflow-hidden rounded-lg bg-card elev-1">
+              <div className="texture-rule flex items-center justify-between gap-4 border-b border-border px-5 py-2.5">
+                <p className="eyebrow">Carried gap</p>
+                <p className="eyebrow">Deducted</p>
+              </div>
+              <ol>
+                {data.gaps.map((gap, index) => {
+                  const accent = SEVERITY_ACCENT[gap.severity];
+                  return (
+                    <li
+                      key={`${gap.id}-${index}`}
                       className={cn(
-                        "rounded-sm font-mono text-[11px] tracking-[0.1em] uppercase",
-                        SEVERITY_META[gap.severity].chipClass
+                        "grid min-h-14 items-center gap-x-6 gap-y-3 border-t border-border/70 border-l-[3px] py-4 pr-5 pl-[17px] first:border-t-0 sm:grid-cols-[minmax(0,1fr)_auto]",
+                        accent.rule
                       )}
                     >
-                      &minus;{gap.pointsDeducted} pts
-                    </Badge>
-                  </span>
-                </li>
-              ))}
-            </ol>
+                      <span className="flex items-start gap-3">
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            "mt-px flex size-6 shrink-0 items-center justify-center rounded-sm",
+                            accent.chip
+                          )}
+                        >
+                          <TriangleAlert className="size-3.5" />
+                        </span>
+                        <span className="max-w-[54ch] text-[15px] leading-[1.5]">
+                          {gap.label}
+                        </span>
+                      </span>
+                      <span className="flex items-baseline gap-1.5 pl-9 sm:justify-end sm:pl-0">
+                        <span
+                          className={cn(
+                            "figure text-2xl leading-none md:text-[28px]",
+                            accent.figure
+                          )}
+                        >
+                          &minus;{gap.pointsDeducted}
+                        </span>
+                        <span className="eyebrow">pts</span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
           </section>
         ) : null}
 
@@ -399,15 +455,18 @@ export default async function DashboardPage() {
 
           {topFindings.length > 0 ? (
             <ol className="mt-5 grid gap-3">
-              {topFindings.map((finding) => (
-                <li key={finding.id}>
+              {topFindings.map((finding, index) => (
+                <BlurFade as="li" key={finding.id} delay={index * 55}>
                   <Link
                     href="/violations"
                     className="group relative flex flex-col gap-4 overflow-hidden rounded-lg bg-card p-5 pl-6 transition-all duration-150 elev-1 hover:-translate-y-0.5 hover:ring-1 hover:ring-primary/30 md:flex-row md:items-center md:justify-between"
                   >
                     <span
                       aria-hidden="true"
-                      className="absolute inset-y-0 left-0 w-[3px] bg-primary"
+                      className={cn(
+                        "absolute inset-y-0 left-0 w-[3px]",
+                        SEVERITY_ACCENT[finding.severity].bar
+                      )}
                     />
                     <span className="min-w-0">
                       <span className="flex flex-wrap items-center gap-2">
@@ -438,7 +497,7 @@ export default async function DashboardPage() {
                       </span>
                     </span>
                   </Link>
-                </li>
+                </BlurFade>
               ))}
             </ol>
           ) : (
@@ -546,12 +605,14 @@ export default async function DashboardPage() {
           <Separator className="mt-5" />
           <ul className="mt-5 grid gap-4 md:grid-cols-3">
             <ActionCard
+              index={0}
               href="/staff"
               icon={<UserPlus className="size-5" aria-hidden="true" />}
               title="Onboard a new hire"
               body="Add one employee and TipGuard generates their state-specific notice straight away — no need to re-import the whole roster."
             />
             <ActionCard
+              index={1}
               href="/notices"
               icon={<FileSignature className="size-5" aria-hidden="true" />}
               title="Send notices for signature"
@@ -564,6 +625,7 @@ export default async function DashboardPage() {
               }
             />
             <ActionCard
+              index={2}
               href="/audit-file"
               icon={<ShieldCheck className="size-5" aria-hidden="true" />}
               title="Build the audit file"
@@ -615,19 +677,23 @@ function ActionCard({
   icon,
   title,
   body,
+  index,
 }: {
   href: string;
   icon: React.ReactNode;
   title: string;
   body: string;
+  index: number;
 }) {
   return (
-    <li>
+    // `mt-auto` on the Open row pins the three CTAs to one baseline regardless
+    // of body length — the row reads as one system instead of three drafts.
+    <BlurFade as="li" delay={index * 55} className="h-full">
       <Link
         href={href}
-        className="flex h-full flex-col rounded-lg bg-card p-5 transition-all duration-150 elev-1 hover:-translate-y-0.5 hover:ring-1 hover:ring-primary/30"
+        className="group/action flex h-full flex-col rounded-lg bg-card p-5 transition-all duration-150 elev-1 hover:-translate-y-0.5 hover:ring-1 hover:ring-primary/30"
       >
-        <span className="flex size-10 items-center justify-center rounded-md bg-primary/15 text-brass-deep dark:text-primary">
+        <span className="flex size-10 items-center justify-center rounded-md bg-primary/15 text-brass-deep transition-colors duration-150 group-hover/action:bg-primary/25 dark:text-primary">
           {icon}
         </span>
         <span className="mt-4 block font-display text-xl leading-[1.15] tracking-[-1.2px]">
@@ -636,11 +702,14 @@ function ActionCard({
         <span className="mt-2 block text-sm leading-[1.55] text-muted-foreground">
           {body}
         </span>
-        <span className="mt-4 flex items-center gap-1 text-sm font-medium text-brass-deep dark:text-primary">
+        <span className="mt-auto flex items-center gap-1 pt-5 text-sm font-medium text-brass-deep dark:text-primary">
           Open
-          <ArrowRight className="size-4" aria-hidden="true" />
+          <ArrowRight
+            className="size-4 transition-transform duration-150 group-hover/action:translate-x-0.5"
+            aria-hidden="true"
+          />
         </span>
       </Link>
-    </li>
+    </BlurFade>
   );
 }

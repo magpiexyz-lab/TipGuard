@@ -35,6 +35,34 @@ const CSS = `
   transition-delay:var(--bf-delay,0ms);
 }
 
+/* Reveal verbs — same safety contract (transform-only, never opacity), but a
+   different motion word per section so the page does not read as one fade
+   repeated nine times.
+     slide  — the drawer pull: content arrives from the left edge (paired with
+              the brass left-edge rows in the exposure ledger and the FAQ).
+     settle — the stamp: content drops the last few pixels and lands flat
+              (paired with the counting figures and the closing seal).           */
+[data-blur-fade][data-reveal="slide"][data-state="hidden"]{
+  filter:none;
+  transform:translateX(-22px);
+}
+[data-blur-fade][data-reveal="slide"][data-state="visible"]{
+  filter:none;
+  transform:none;
+  transition:transform 460ms var(--ease-ledger, cubic-bezier(.32,.72,.22,1));
+  transition-delay:var(--bf-delay,0ms);
+}
+[data-blur-fade][data-reveal="settle"][data-state="hidden"]{
+  filter:none;
+  transform:translateY(-14px) scale(1.02);
+}
+[data-blur-fade][data-reveal="settle"][data-state="visible"]{
+  filter:none;
+  transform:none;
+  transition:transform 380ms var(--ease-stamp, cubic-bezier(.2,.9,.24,1));
+  transition-delay:var(--bf-delay,0ms);
+}
+
 /* ── Entrance: ledger rise (hero stagger, self-resolving) ────────────────── */
 @keyframes tg-rise{
   from{opacity:.001;transform:translateY(18px);filter:blur(6px)}
@@ -135,7 +163,7 @@ const CSS = `
 /* ── Micro-interaction: brass underline draw ────────────────────────────── */
 .tg-link{position:relative}
 .tg-link::after{
-  content:"";position:absolute;left:0;bottom:-5px;height:1px;width:100%;
+  content:"";position:absolute;left:0;bottom:var(--tg-underline,-5px);height:1px;width:100%;
   background:var(--brass, #c89230);
   transform:scaleX(0);transform-origin:left;
   transition:transform 140ms var(--ease-stamp, cubic-bezier(.2,.9,.24,1));

@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { clearPendingScore, type PendingScore } from "@/app/score/pending-score";
-import { formatUsd } from "./score-format";
+import { formatUsd, scoreBand } from "./score-format";
 
 /**
  * Where the owner lands once a session exists. `/dashboard` is the first
@@ -195,7 +195,10 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
               name="password"
               type={revealPassword ? "text" : "password"}
               autoComplete="new-password"
-              placeholder="At least 8 characters"
+              // Not "At least 8 characters" — the rule already lives in the
+              // hint 8px below, and rendering the same sentence twice inside
+              // one field group reads as a bug.
+              placeholder="Create a password"
               value={password}
               onChange={(event) => {
                 setPassword(event.target.value);
@@ -328,16 +331,54 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
 
 /* -------------------------------------------------------------------------- */
 
-/** Compact confirmation that the carried score survives the signup step. */
+/**
+ * Paper-scope band styling for the carry strip. The ink rail owns the dark
+ * variants; these are the deep tokens, which are the ones that hold contrast
+ * against `--paper`.
+ */
+const CARRY_BAND = {
+  critical: { text: "text-ember", rule: "border-l-ember", label: "Critical exposure" },
+  "at-risk": { text: "text-brass-deep", rule: "border-l-brass", label: "At risk" },
+  clear: { text: "text-seal", rule: "border-l-seal", label: "Largely clear" },
+} as const;
+
+/**
+ * Compact confirmation that the carried score survives the signup step.
+ *
+ * Mobile-only: below `lg` the evidence rail is a full screen away, so this
+ * strip is the only carried-score evidence above the fold — and therefore the
+ * one that has to carry the severity, not just the figure. A neutral "38/100"
+ * reads as a receipt; the banded figure reads as the reason to finish signing
+ * up (b-03 → h-03).
+ */
 function CarrySummary({ pending }: { pending: PendingScore }) {
   const { low, high } = pending.estimatedExposureUsd;
+  const band = CARRY_BAND[scoreBand(pending.readinessScore)];
   return (
-    <div className="elev-1 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg bg-card px-4 py-3 lg:hidden">
-      <span className="font-mono text-2xl font-medium tabular-nums tracking-[-0.2px] text-foreground">
+    <div
+      className={cn(
+        "elev-1 flex flex-wrap items-baseline gap-x-5 gap-y-2 rounded-lg border-l-2 bg-card px-4 py-3 lg:hidden",
+        band.rule,
+      )}
+    >
+      <span
+        className={cn(
+          "font-mono text-2xl font-medium tabular-nums tracking-[-0.2px]",
+          band.text,
+        )}
+      >
         {pending.readinessScore}
         <span className="text-base text-muted-foreground">/100</span>
       </span>
-      <span className="font-mono text-sm tabular-nums text-muted-foreground">
+      <span
+        className={cn(
+          "font-mono text-[11px] font-medium uppercase tracking-[0.1em]",
+          band.text,
+        )}
+      >
+        {band.label}
+      </span>
+      <span className="w-full font-mono text-sm tabular-nums text-muted-foreground">
         {pending.gaps.length} {pending.gaps.length === 1 ? "gap" : "gaps"}
         {high > 0 ? ` · ${formatUsd(low)}–${formatUsd(high)} exposure` : ""}
       </span>

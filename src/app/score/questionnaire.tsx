@@ -24,9 +24,27 @@ import {
   isAnswered,
   visibleQuestions,
   type Answers,
+  type Question,
 } from "./questions";
 
 const ADVANCE_DELAY_MS = 260;
+
+/**
+ * Four of the seven questions are only asked of someone who claims the tip
+ * credit, so before question 2 is answered `visibleQuestions` legitimately
+ * returns 3. Rendering that raw made the form open on "Question 1 of 3" and
+ * "0 / 3" directly beneath a hero promising *seven* questions — then jump to 7
+ * on the next click, which reads as a bait rather than a branch.
+ *
+ * So until the branch resolves we project the full path (the tip-credit answer
+ * is "yes" for anyone this product is for). Answering "no" then *shortens* the
+ * questionnaire, and a path getting shorter reads as relief, never as a trick.
+ */
+function projectedSteps(answers: Answers): Question[] {
+  return visibleQuestions(
+    answers.claimsTipCredit ? answers : { ...answers, claimsTipCredit: "yes" },
+  );
+}
 
 function prefersReducedMotion(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
@@ -49,7 +67,7 @@ export function Questionnaire({
   const headingRef = useRef<HTMLHeadingElement | null>(null);
   const mounted = useRef(false);
 
-  const steps = visibleQuestions(answers);
+  const steps = projectedSteps(answers);
   const safeIndex = Math.min(stepIndex, steps.length - 1);
   const current = steps[safeIndex];
   const answeredCount = steps.filter((question) => isAnswered(question, answers)).length;
@@ -82,7 +100,7 @@ export function Questionnaire({
     commit(next);
     setStaffError(null);
 
-    const nextSteps = visibleQuestions(next);
+    const nextSteps = projectedSteps(next);
     if (safeIndex >= nextSteps.length - 1) return;
 
     if (prefersReducedMotion()) {
@@ -112,7 +130,9 @@ export function Questionnaire({
     <div className="mx-auto grid max-w-[1120px] gap-10 px-6 pb-24 pt-10 lg:grid-cols-[220px_1fr] lg:gap-14">
       {/* --- Left rail: the ledger index of every question ----------------- */}
       <div className="lg:sticky lg:top-10 lg:self-start">
-        <p className="eyebrow">Audit checklist</p>
+        {/* The rail itself is desktop-only, so the label goes with it — below
+            lg it was an "Audit checklist" heading standing over nothing. */}
+        <p className="eyebrow hidden lg:block">Audit checklist</p>
         <ol aria-label="Questionnaire progress" className="mt-4 hidden lg:block">
           {steps.map((question, index) => {
             const answered = isAnswered(question, answers);
@@ -192,7 +212,7 @@ export function Questionnaire({
           <h2
             ref={headingRef}
             tabIndex={-1}
-            className="mt-3 text-2xl leading-tight outline-none sm:text-[32px] sm:leading-[1.12]"
+            className="mt-3 text-2xl leading-tight tracking-[-0.8px] outline-none sm:text-[32px] sm:leading-[1.12] sm:tracking-[-1.4px]"
           >
             {current.prompt}
           </h2>

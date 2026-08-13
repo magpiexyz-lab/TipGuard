@@ -143,9 +143,21 @@ export function RosterImportCard({ onImported }: RosterImportCardProps) {
       <CardContent className="p-5">
         <Tabs defaultValue="upload" className="gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <TabsList>
-              <TabsTrigger value="upload">Upload a CSV</TabsTrigger>
-              <TabsTrigger value="paste">Paste rows</TabsTrigger>
+            {/* Sized to the 44px touch floor (shadcn default is a 32px strip)
+                and re-tinted onto the ledger palette. */}
+            <TabsList className="h-auto rounded-md bg-accent p-1 group-data-horizontal/tabs:h-auto">
+              <TabsTrigger
+                value="upload"
+                className="h-auto min-h-11 rounded-md px-4 data-active:text-brass-deep data-active:ring-1 data-active:ring-brass/30 dark:data-active:text-brass"
+              >
+                Upload a CSV
+              </TabsTrigger>
+              <TabsTrigger
+                value="paste"
+                className="h-auto min-h-11 rounded-md px-4 data-active:text-brass-deep data-active:ring-1 data-active:ring-brass/30 dark:data-active:text-brass"
+              >
+                Paste rows
+              </TabsTrigger>
             </TabsList>
             <a
               href={`data:text/csv;charset=utf-8,${encodeURIComponent(TEMPLATE_CSV)}`}
@@ -162,11 +174,34 @@ export function RosterImportCard({ onImported }: RosterImportCardProps) {
               <Label htmlFor="roster-file" className="text-sm font-medium">
                 Roster file
               </Label>
-              <div className="flex flex-wrap items-center gap-3 rounded-md bg-accent/60 p-4 ring-1 ring-border">
-                <Upload
+              {/* Deposit plinth — the whole dashed frame is the target. The real
+                  <input> is laid over the plinth at opacity 0 (a native file
+                  input is itself a drop target), so the plinth reads as one
+                  designed affordance on a single centre axis instead of bare OS
+                  chrome — "Choose File / No file chosen" — sitting off-axis. */}
+              <div className="group/drop relative flex flex-col items-center gap-3 rounded-md border border-dashed border-brass/45 bg-accent/50 px-4 py-7 text-center transition-colors duration-[140ms] hover:border-brass/75 hover:bg-accent focus-within:border-brass focus-within:ring-2 focus-within:ring-ring">
+                <span className="flex size-11 items-center justify-center rounded-full bg-brass/15 ring-1 ring-brass/25 transition-transform duration-[140ms] group-hover/drop:-translate-y-0.5">
+                  <Upload
+                    aria-hidden="true"
+                    className="size-5 text-brass-deep dark:text-brass"
+                  />
+                </span>
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    Drop your roster CSV here
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    or choose a file from your computer
+                  </p>
+                </div>
+                {/* Decorative twin of the native button — the input above it is
+                    invisible, so this carries the affordance. */}
+                <span
                   aria-hidden="true"
-                  className="size-5 shrink-0 text-brass-deep dark:text-brass"
-                />
+                  className="inline-flex min-h-11 items-center rounded-full bg-card px-5 text-sm font-medium text-foreground ring-1 ring-border transition-colors duration-[140ms] group-hover/drop:ring-brass/50"
+                >
+                  Choose a file
+                </span>
                 <Input
                   ref={fileInputRef}
                   id="roster-file"
@@ -175,7 +210,7 @@ export function RosterImportCard({ onImported }: RosterImportCardProps) {
                   onChange={(event) => {
                     void onFileChange(event);
                   }}
-                  className="h-auto min-h-11 flex-1 border-0 bg-transparent py-2 text-foreground file:mr-3 file:h-9 file:cursor-pointer file:rounded-md file:bg-secondary file:px-3 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-muted"
+                  className="absolute inset-0 h-full w-full cursor-pointer rounded-md border-0 p-0 opacity-0"
                 />
               </div>
               <p className="text-sm text-muted-foreground">
@@ -230,7 +265,7 @@ export function RosterImportCard({ onImported }: RosterImportCardProps) {
         </p>
 
         {parsed ? (
-          <div className="mt-2 flex flex-col gap-4 border-t border-border pt-4 duration-[240ms] animate-in fade-in-0 slide-in-from-bottom-1">
+          <div className="mt-2 flex flex-col gap-4 border-t border-border pt-4 duration-[240ms] animate-in fade-in-0 slide-in-from-top-1">
             <div className="flex flex-wrap items-center gap-3">
               <Badge className="figure rounded-sm bg-seal/15 px-2 py-1 text-seal">
                 {ready} ready
@@ -363,8 +398,10 @@ export function RosterImportCard({ onImported }: RosterImportCardProps) {
           </div>
         ) : null}
 
+        {/* Seal-stamp entrance — deliberately a different motion verb from the
+            parse block (slide-down) and the ledger rows (rise). */}
         {phase === "done" && lastImport ? (
-          <Alert className="mt-4 rounded-md ring-1 ring-seal/30 duration-[240ms] animate-in fade-in-0 slide-in-from-bottom-1">
+          <Alert className="mt-4 rounded-md bg-seal/[0.06] ring-1 ring-seal/30 duration-[240ms] ease-[cubic-bezier(0.2,0.9,0.24,1)] animate-in fade-in-0 zoom-in-95">
             <CircleCheck aria-hidden="true" className="text-seal" />
             <AlertTitle>
               <span className="figure">{lastImport.rowsImported}</span> employee
@@ -381,7 +418,9 @@ export function RosterImportCard({ onImported }: RosterImportCardProps) {
                 href="/notices"
                 className={cn(
                   buttonVariants(),
-                  "mt-3 h-11 gap-2 rounded-full px-6 text-base"
+                  // AlertDescription forces `[&_a]:underline` + `[&_a]:hover:text-foreground`
+                  // on descendant anchors; both corrupt a primary button-link.
+                  "mt-3 h-11 gap-2 rounded-full px-6 text-base no-underline transition-[filter] duration-[140ms] hover:text-primary-foreground hover:brightness-95 hover:no-underline"
                 )}
               >
                 Generate and send notices

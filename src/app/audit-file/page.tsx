@@ -7,6 +7,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";
+import { BlurFade } from "@/components/magicui/blur-fade";
+import { MagicEffects } from "@/components/magicui/effects";
 import { cn } from "@/lib/utils";
 import {
   formatUtc,
@@ -56,6 +58,8 @@ export default function AuditFilePage() {
 
   return (
     <div className="min-h-screen">
+      <MagicEffects />
+
       {/* ---------------- Header (full-bleed ink) ---------------- */}
       <section
         aria-labelledby="audit-file-heading"
@@ -85,7 +89,10 @@ export default function AuditFilePage() {
             ) : null}
           </div>
 
-          <h1 className="mt-5 max-w-3xl text-4xl leading-[1.04] font-bold sm:text-[60px]">
+          {/* The global h1 rule tracks -2px, which is a display measure. At the
+              36px mobile size that is -5.5% and the words close up; scale the
+              tracking with the type instead. */}
+          <h1 className="mt-5 max-w-3xl text-4xl leading-[1.04] font-bold tracking-[-0.02em] sm:text-[60px] sm:tracking-[-0.033em]">
             Your audit file
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-[1.55] text-paper/70">
@@ -95,20 +102,20 @@ export default function AuditFilePage() {
           </p>
 
           {/* Counts strip */}
-          <dl className="mt-12 grid gap-px border-t border-paper/12 pt-8 sm:grid-cols-3">
+          <dl className="mt-12 grid gap-0 border-t border-paper/12 pt-8 sm:grid-cols-3">
             <div className="sm:pr-8">
               <dt className="text-sm text-paper/70">Employees in the file</dt>
               <dd className="mt-2 font-mono text-4xl leading-[1.1] tabular-nums">
                 {counts ? counts.employee_count.toLocaleString("en-US") : "—"}
               </dd>
             </div>
-            <div className="sm:border-l sm:border-paper/12 sm:px-8">
+            <div className="mt-8 border-t border-paper/12 pt-8 sm:mt-0 sm:border-t-0 sm:border-l sm:border-paper/12 sm:px-8 sm:pt-0">
               <dt className="text-sm text-paper/70">Signed acknowledgments</dt>
               <dd className="mt-2 font-mono text-4xl leading-[1.1] tabular-nums text-seal-soft">
                 {counts ? counts.signed_notice_count.toLocaleString("en-US") : "—"}
               </dd>
             </div>
-            <div className="sm:border-l sm:border-paper/12 sm:pl-8">
+            <div className="mt-8 border-t border-paper/12 pt-8 sm:mt-0 sm:border-t-0 sm:border-l sm:border-paper/12 sm:pt-0 sm:pl-8">
               <dt className="text-sm text-paper/70">Open findings</dt>
               <dd
                 className={cn(
@@ -157,7 +164,7 @@ export default function AuditFilePage() {
         {/* Not signed in */}
         {result?.status === "unauthenticated" ? (
           <div className="rounded-xl bg-card p-8 ring-1 ring-foreground/10">
-            <h2 className="font-heading text-2xl leading-[1.15]">
+            <h2 className="font-heading text-2xl leading-[1.15] tracking-[-0.02em]">
               Sign in to open your audit file
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-[1.55] text-ink-soft">
@@ -207,11 +214,15 @@ export default function AuditFilePage() {
               generatedAtLabel={formatUtc(preview.generatedAt)}
             />
 
+            <BlurFade>
             <section aria-labelledby="cover-index-heading">
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p className="eyebrow">Section one</p>
-                  <h2 id="cover-index-heading" className="mt-3 text-3xl">
+                  <h2
+                    id="cover-index-heading"
+                    className="mt-3 text-3xl tracking-[-0.022em]"
+                  >
                     Cover index
                   </h2>
                   <p className="mt-2 max-w-2xl text-sm leading-[1.55] text-ink-soft">
@@ -230,10 +241,15 @@ export default function AuditFilePage() {
                 <CoverIndex entries={preview.coverIndex} />
               </div>
             </section>
+            </BlurFade>
 
+            <BlurFade delay={55}>
             <section aria-labelledby="signed-notices-heading">
               <p className="eyebrow">Section two</p>
-              <h2 id="signed-notices-heading" className="mt-3 text-3xl">
+              <h2
+                id="signed-notices-heading"
+                className="mt-3 text-3xl tracking-[-0.022em]"
+              >
                 Signed acknowledgments
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-[1.55] text-ink-soft">
@@ -247,28 +263,40 @@ export default function AuditFilePage() {
               </div>
               <SignedNoticesLockNote locked={preview.plan === "free"} />
             </section>
+            </BlurFade>
 
+            {/* Legal footnote — deliberately NOT a fourth raised card. A ruled
+                marginal note reads as the caveat it is, and breaks the card
+                stack above it. */}
             <section
               aria-labelledby="disclaimer-heading"
-              className="rounded-xl bg-card p-6 ring-1 ring-foreground/10"
+              className="border-t-2 border-brass/35 pt-8 md:grid md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-10"
             >
-              <h2 id="disclaimer-heading" className="font-heading text-xl leading-[1.15]">
-                What this file is, and what it is not
-              </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-[1.55] text-ink-soft">
-                This export is a record of the notices TipGuard generated from a
-                versioned state rule library and the acknowledgments your staff
-                signed. It has not been reviewed or certified by an attorney and
-                it is not legal advice. Have your counsel review the notice
-                templates and this file before you rely on either.
-              </p>
-              <Link
-                href="/notices"
-                className="mt-4 inline-flex items-center gap-2 text-sm text-brass-deep underline underline-offset-4 dark:text-brass"
-              >
-                Review the notices behind this file
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </Link>
+              <div>
+                <p className="eyebrow">Standing caveat</p>
+                <h2
+                  id="disclaimer-heading"
+                  className="mt-3 font-heading text-xl leading-[1.15] tracking-[-0.015em] text-balance"
+                >
+                  What this file is, and what it is not
+                </h2>
+              </div>
+              <div className="mt-4 md:mt-0">
+                <p className="max-w-3xl text-sm leading-[1.55] text-ink-soft">
+                  This export is a record of the notices TipGuard generated from a
+                  versioned state rule library and the acknowledgments your staff
+                  signed. It has not been reviewed or certified by an attorney and
+                  it is not legal advice. Have your counsel review the notice
+                  templates and this file before you rely on either.
+                </p>
+                <Link
+                  href="/notices"
+                  className="mt-2 inline-flex min-h-11 items-center gap-2 py-2 text-sm text-brass-deep underline underline-offset-4 transition-colors duration-[140ms] hover:text-ink dark:text-brass dark:hover:text-paper"
+                >
+                  Review the notices behind this file
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
+              </div>
             </section>
           </div>
         ) : null}

@@ -18,12 +18,15 @@ export default function Loading() {
       </div>
 
       <div className="mx-auto max-w-[1180px] px-5 py-8 md:px-8 md:py-10">
-        <div className="h-9 w-64 animate-pulse rounded-md bg-muted" />
+        <div className="h-11 w-56 animate-pulse rounded-full bg-muted" />
         <div className="mt-6 grid gap-4">
           {[0, 1, 2].map((row) => (
+            // The stagger has to live on an element that actually animates —
+            // animationDelay on an un-animated wrapper is inert, which made all
+            // three bars pulse in unison instead of reading top-to-bottom.
             <div
               key={row}
-              className="overflow-hidden rounded-lg bg-card p-5 elev-1"
+              className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both overflow-hidden rounded-lg bg-card p-5 duration-300 elev-1"
               style={{ animationDelay: `${row * 55}ms` }}
             >
               <div className="h-5 w-24 animate-pulse rounded-sm bg-muted" />

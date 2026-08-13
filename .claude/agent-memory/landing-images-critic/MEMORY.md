@@ -1,0 +1,2 @@
+- [Step 5.5 evidence gotchas](project_step55_evidence_gotchas.md) — provenance filename mismatch and the ~8KB trace payload cap both fail a correctly-run Step 5.5.
+- [Render surface contention](project_render_surface_contention.md) — in parallel verify runs, swap candidates by Playwright route interception, not by writing to public/images.

@@ -53,7 +53,11 @@ export function PlanComparison({ children }: { children?: React.ReactNode }) {
 
       <div className="mt-12 grid gap-6 lg:grid-cols-2">
         {/* ---------------- Free ---------------- */}
-        <Card className="elev-1 p-2 transition-shadow duration-[140ms] hover:elev-2">
+        {/* NOTE: `ring-*` cannot be used on these cards. `.elev-*` declares
+            `box-shadow` outright in globals.css `@layer utilities`, which lands
+            after Tailwind's ring utilities and wipes `--tw-ring-shadow`. The
+            edge is drawn with `outline-*` (a separate property) so it survives. */}
+        <Card className="elev-1 p-2 outline-1 outline-foreground/10 transition-shadow duration-[140ms] hover:elev-2">
           <CardHeader className="gap-3">
             <div className="flex items-center justify-between gap-4">
               <h3 className="font-heading text-2xl">Free</h3>
@@ -83,7 +87,7 @@ export function PlanComparison({ children }: { children?: React.ReactNode }) {
         </Card>
 
         {/* ---------------- Shield ---------------- */}
-        <Card className="elev-2 p-2 ring-2 ring-brass transition-shadow duration-[140ms] hover:elev-3">
+        <Card className="elev-2 relative p-2 outline-2 outline-brass transition-shadow duration-[140ms] hover:elev-3">
           <CardHeader className="gap-3">
             <div className="flex items-center justify-between gap-4">
               <h3 className="font-heading text-2xl">TipGuard Shield</h3>
