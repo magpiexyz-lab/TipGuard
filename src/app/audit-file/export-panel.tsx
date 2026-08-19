@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Check, CheckCircle2, Download, Loader2, Lock } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { CheckCircle2, Download, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { trackAuditFileExported } from "@/lib/events";
-import { cn } from "@/lib/utils";
 import type { AuditFileCounts, AuditFileExport } from "./audit-file-contract";
 
 type BuildState = "idle" | "building" | "done";
@@ -13,19 +11,18 @@ type BuildState = "idle" | "building" | "done";
 /**
  * The one-click export (b-12).
  *
- * Paid accounts get the real build: `POST /api/audit-file` assembles the dated
- * file and the browser downloads it. `audit_file_exported` fires on a
- * successful build with the three required counts.
+ * `POST /api/audit-file` assembles the dated file and the browser downloads
+ * it; `audit_file_exported` fires on a successful build with the three
+ * required counts.
  *
- * Free accounts get an explicit locked prompt — never a disabled button with
- * no explanation, never a download that 402s in the user's face.
+ * There is no plan gate. Shield is a fake door for this experiment (b-10/b-11)
+ * and the export was the only thing behind the paywall, so gating it would
+ * only manufacture a dead end without producing a data point.
  */
 export function ExportPanel({
-  plan,
   counts,
   generatedAtLabel,
 }: {
-  plan: "free" | "shield";
   counts: AuditFileCounts;
   generatedAtLabel: string;
 }) {
@@ -49,9 +46,9 @@ export function ExportPanel({
         return;
       }
 
-      if (response.status === 402 || response.status === 403) {
+      if (response.status === 409) {
         setError(
-          "The assembled export is a TipGuard Shield feature. Your records are unchanged."
+          "There is nothing to export yet. Import your roster and send a notice first."
         );
         setState("idle");
         return;
@@ -93,88 +90,6 @@ export function ExportPanel({
       );
       setState("idle");
     }
-  }
-
-  if (plan === "free") {
-    // An account with nothing in it must not be told its file "is assembled" —
-    // the two empty sections directly below would contradict the claim on
-    // sight. Same lock, same upgrade prompt, honest framing.
-    const isEmpty =
-      counts.employee_count === 0 && counts.signed_notice_count === 0;
-
-    return (
-      <div className="relative overflow-hidden rounded-xl bg-card p-6 ring-2 ring-brass elev-2 sm:p-8">
-        {/* The locked panel is the one section a free account must feel. A
-            brass wash off the top edge separates it from the plain ruled
-            cards below without a second border treatment. */}
-        <div
-          className="bloom-brass-soft pointer-events-none absolute inset-0"
-          aria-hidden="true"
-        />
-
-        <div className="relative lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-12">
-          <div>
-            <p className="eyebrow flex items-center gap-2">
-              <Lock className="size-3.5" aria-hidden="true" />
-              Locked preview
-            </p>
-            <h2 className="mt-3 max-w-2xl font-heading text-2xl leading-[1.15] tracking-[-0.02em] text-balance">
-              {isEmpty
-                ? "Your file starts the moment your first notice is signed."
-                : "Your file is assembled. The export is the paid part."}
-            </h2>
-            <p className="mt-3 max-w-xl text-sm leading-[1.55] text-ink-soft">
-              {isEmpty
-                ? "Nothing has landed in it yet. Import your roster and send the notices — every signature files itself below, on any plan. TipGuard Shield is what turns that record into one dated export you can hand an auditor."
-                : "Everything below is real and yours — the cover index, every acknowledgment, every rule version. TipGuard Shield builds it into one dated export you can hand over, and keeps rebuilding it as staff and state rules change."}
-            </p>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Link
-                href="/pricing"
-                className={cn(
-                  buttonVariants(),
-                  "h-11 rounded-full px-6 text-base font-medium"
-                )}
-              >
-                <Lock className="size-4" aria-hidden="true" />
-                Unlock the export — $79/mo
-              </Link>
-              <span className="max-w-xs text-sm leading-[1.45] text-ink-soft sm:max-w-none sm:border-l sm:border-foreground/12 sm:pl-4">
-                Month to month · nothing you have already done is taken away
-              </span>
-            </div>
-          </div>
-
-          {/* Ruled manifest — what the sealed export actually contains. Fills
-              the dead right half of a full-width banner card with the one
-              thing that earns the upgrade: the shape of the deliverable. */}
-          <div className="mt-8 border-t border-foreground/10 pt-6 lg:mt-0 lg:border-t-0 lg:border-l lg:border-foreground/10 lg:pt-0 lg:pl-10">
-            <p className="font-mono text-[11px] font-medium tracking-[0.14em] text-ink-soft uppercase">
-              One file contains
-            </p>
-            <ul className="mt-4 grid gap-3">
-              {[
-                "Cover index of every employee",
-                "Every signed acknowledgment",
-                "Frozen notice text, UTC-dated",
-              ].map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-2.5 text-sm leading-[1.45] text-ink-soft"
-                >
-                  <Check
-                    className="mt-0.5 size-4 shrink-0 text-brass-deep dark:text-brass"
-                    aria-hidden="true"
-                  />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (

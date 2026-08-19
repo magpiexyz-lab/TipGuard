@@ -27,7 +27,7 @@ const FAILURE_DESTINATION = "/login?error=auth";
  * header in front of the app. NEXT_PUBLIC_SITE_URL is deploy-time config and
  * therefore trusted; the request origin is only a fallback so that localhost
  * and preview deployments (where it is unset) still work. Same rule as
- * /api/checkout, /api/notices/send and the Stripe webhook.
+ * /api/waitlist and /api/notices/send.
  */
 function siteOrigin(request: Request): string {
   const configured = process.env.NEXT_PUBLIC_SITE_URL;

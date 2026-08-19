@@ -265,37 +265,36 @@ behaviors:
     hypothesis_id: h-06
     pages: [pricing, dashboard]
     given: "An owner has sent at least one notice and is on the dashboard or pricing page"
-    when: "They click 'Protect my tip credit' to start the $79/mo TipGuard Shield subscription"
-    then: "A Stripe Checkout session is created server-side, the user is redirected, and checkout_started fires"
+    when: "They click 'Protect my tip credit' to express intent to buy TipGuard Shield at $79/mo"
+    then: "checkout_started fires on the click and the Shield waitlist panel opens, pre-filled with the account email. Shield is not purchasable during the experiment; h-06 measures the click, which is unchanged by what follows it."
     tests:
       - "The pricing page anchors $79/mo against back-pay and defense-cost exposure and states exactly what the free tier keeps"
-      - "The upgrade CTA is visible on the dashboard for free-tier accounts and hidden for paid accounts"
-      - "Clicking upgrade calls /api/checkout, receives a Stripe session URL, and redirects"
+      - "The upgrade CTA is visible on the dashboard for every account"
+      - "Clicking upgrade opens the waitlist panel and fires checkout_started before any address is entered"
       - "checkout_started fires with notices_sent_at_upgrade and open_violation_count"
     level: 3
   - id: b-11
-    actor: system
-    trigger: "stripe webhook checkout.session.completed"
     hypothesis_id: h-06
-    given: "A Stripe checkout session completes successfully"
-    when: "Stripe delivers the checkout.session.completed webhook"
-    then: "The account is set to plan='shield' with current_period_end and stripe_customer_id persisted, the audit-file export unlocks, checkout_completed fires server-side, and a welcome email is sent"
+    pages: [pricing, dashboard]
+    given: "An owner has clicked the upgrade CTA and the Shield waitlist panel is open"
+    when: "They confirm their email address in the panel"
+    then: "A waitlist row is upserted for the account with the notices-sent count at that moment, waitlist_joined fires, and the panel confirms they are on the list. Nothing is charged."
     tests:
-      - "The webhook signature is verified against STRIPE_WEBHOOK_SECRET and unsigned requests are rejected"
-      - "accounts.plan becomes 'shield' and stripe_customer_id plus current_period_end are persisted"
-      - "trackServerEvent('checkout_completed', user.id, { plan: 'shield' }) is called exactly once per session id"
-      - "A welcome email is sent via Resend"
+      - "POST /api/waitlist derives account_id from the verified session and never from the request body"
+      - "A second confirm upserts on account_id rather than creating a duplicate row"
+      - "waitlist_joined fires with notices_sent_at_join once the write succeeds"
+      - "The waitlist table is readable only by the owning account under RLS"
     level: 3
   - id: b-12
     hypothesis_id: h-06
     pages: [audit-file]
-    given: "A paid owner has signed notices, resolved and open findings, and imported pay data"
+    given: "An owner has signed notices, resolved and open findings, and imported pay data"
     when: "They click 'Build my audit file'"
     then: "A single dated export is assembled containing every signed notice with its signature metadata, the notice-status roster, the violation log with resolutions, and the applicable state rule versions; audit_file_exported fires"
     tests:
       - "The export includes every signed notice with signer name, timestamp, and the frozen notice text"
       - "The export includes a cover index listing employees, notice status, and the state rule version applied"
-      - "Free-tier accounts see a locked preview with an upgrade prompt instead of a download"
+      - "Every signed-in account can build the export — there is no plan gate, so no owner hits a dead end"
       - "audit_file_exported fires with employee_count, signed_notice_count, and open_violation_count"
     level: 3
   - id: b-13
@@ -415,8 +414,9 @@ stack:
   auth_providers:
     - google
   analytics: posthog           # Page-level and event-level analytics.
-  payment: stripe              # $79/mo TipGuard Shield subscription (monetize hypothesis h-06).
-  email: resend                # Employee signing-link emails and post-checkout welcome.
+  # payment: removed — Shield is a fake door for this experiment. h-06 is scored on
+  # checkout_started (the click), which never required a completed charge. See b-10/b-11.
+  email: resend                # Employee signing-link emails.
   ai: anthropic                # State-specific notice drafting and plain-English violation explanations.
 
 # --- Target Geography ---

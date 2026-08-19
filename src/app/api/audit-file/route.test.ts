@@ -301,14 +301,6 @@ async function exported(): Promise<Partial<AuditFileExport> & { error?: string }
 }
 
 /** Every string anywhere in the payload — the free-tier leak hunt. */
-function allStrings(value: unknown, found: string[] = []): string[] {
-  if (typeof value === "string") found.push(value);
-  else if (Array.isArray(value)) value.forEach((item) => allStrings(item, found));
-  else if (value && typeof value === "object") {
-    Object.values(value).forEach((item) => allStrings(item, found));
-  }
-  return found;
-}
 
 /** The data rows of the export's cover-index table. */
 function coverIndexRows(content: string): string[] {
@@ -501,95 +493,58 @@ describe("POST /api/audit-file — the cover index", () => {
 // not merely that one field is null.
 // ===========================================================================
 
-describe("/api/audit-file — the paywall", () => {
-  it("Free-tier accounts see a locked preview with an upgrade prompt instead of a download", async () => {
+describe("/api/audit-file — no plan gate", () => {
+  it("Every signed-in account can build the export — free tier included", async () => {
     givenFreeOwner();
 
-    const locked = await preview();
     const response = await POST();
     const body = (await response.json()) as Partial<AuditFileExport> & { error?: string };
 
-    // The preview is LOCKED, not withheld: the owner can see their file is
-    // real and complete before being asked to pay for it.
-    expect(locked.plan).toBe("free");
-    expect(locked.coverIndex).toHaveLength(EMPLOYEES.length);
-    expect(locked.signedNotices).toHaveLength(SIGNATURES.length);
-    expect(locked.signedNotices.every((entry) => entry.noticeText === null)).toBe(true);
-    expect(locked.signedNotices[0].signerName).toBe("Marisol Vega");
-    // …and the download itself is the paid part.
-    expect(response.status).toBe(402);
-    expect(body.error).toBe("upgrade_required");
-    expect(body.content).toBeUndefined();
-    expect(body.filename).toBeUndefined();
+    // Shield is a fake door for this experiment (b-10/b-11). The export was
+    // the only thing behind the paywall, so a free owner gets the real file.
+    expect(response.status).toBe(200);
+    expect(body.error).toBeUndefined();
+    expect(typeof body.content).toBe("string");
+    expect(body.filename).toMatch(/\.md$/);
   });
 
-  it("never leaks the frozen notice text anywhere in a free-tier payload", async () => {
-    // Not "noticeText is null" — the paid text must not survive under any key,
-    // at any depth, in either response.
+  it("includes the frozen notice text for a free owner", async () => {
+    // The inverse of the old paywall assertion: the text that used to be
+    // withheld is now exactly what the file is for.
     givenFreeOwner();
-
-    const previewResponse = await GET();
-    const previewText = await previewResponse.text();
-    const exportResponse = await POST();
-    const exportText = await exportResponse.text();
-
-    for (const raw of [previewText, exportText]) {
-      expect(raw).not.toContain(FROZEN_FRAGMENT);
-      expect(raw).not.toContain("2.13");
-      for (const value of allStrings(JSON.parse(raw))) {
-        expect(value).not.toContain(FROZEN_FRAGMENT);
-      }
-    }
-  });
-
-  it("assembles nothing at all for a free-tier export request", async () => {
-    // The gate has to close before the work, not after: a route that assembled
-    // first and filtered later is one early return away from shipping the file.
-    const { calls } = givenFreeOwner();
-
-    await POST();
-
-    expect(calls).toEqual([]);
-  });
-
-  it("reads the entitlement from the account row, never from the request", async () => {
-    givenFreeOwner();
-
-    const response = await postWithBody(requestWith({ plan: "shield", account_id: OTHER_ACCOUNT_ID }));
-
-    expect(response.status).toBe(402);
-  });
-
-  it("does not treat a lapsed subscriber's leftover Stripe id as an entitlement", async () => {
-    // `plan` is what the webhook writes on payment; a stripe_customer_id only
-    // says this owner once had a checkout session.
-    const harness = makeDb();
-    givenAccount(harness.db, { plan: "free", stripe_customer_id: "cus_expired" });
-
-    expect((await POST()).status).toBe(402);
-  });
-
-  it("unlocks the frozen text in the preview for a paid owner", async () => {
-    // The same preview endpoint, the same records — only the entitlement moved.
-    givenShieldOwner();
 
     const unlocked = await preview();
 
-    expect(unlocked.plan).toBe("shield");
     expect(unlocked.signedNotices[0].noticeText).toBe(FROZEN_TEXT);
+
+    const exportText = await (await POST()).text();
+    expect(exportText).toContain(FROZEN_FRAGMENT);
   });
 
-  it("shows a free owner the real counts so the locked file is visibly theirs", async () => {
+  it("a plan claim in the request body still changes nothing", async () => {
+    // The gate is gone, but the route must remain uninterested in what the
+    // client asserts about itself — a body-driven read is a body-driven bug
+    // whichever way the entitlement points.
     givenFreeOwner();
 
-    const locked = await preview();
+    const response = await postWithBody(
+      requestWith({ plan: "shield", account_id: OTHER_ACCOUNT_ID })
+    );
 
-    expect(locked.counts).toEqual({
+    expect(response.status).toBe(200);
+  });
+
+  it("shows a free owner the real counts", async () => {
+    givenFreeOwner();
+
+    const file = await preview();
+
+    expect(file.counts).toEqual({
       employee_count: 3,
       signed_notice_count: 1,
       open_violation_count: 2,
     });
-    expect(locked.ruleVersions).toEqual(["tx-2026.01"]);
+    expect(file.ruleVersions).toEqual(["tx-2026.01"]);
   });
 });
 
@@ -720,15 +675,15 @@ describe("/api/audit-file — the auth boundary", () => {
     });
   });
 
-  it("refuses the export with upgrade_required when there is no account row", async () => {
+  it("refuses the export with nothing_to_export when there is no account row", async () => {
     // No account row means no subscription, so this is the paywall, not a 404.
     resolveAccount.mockResolvedValue({ ok: false, reason: "no_account" });
 
     const response = await POST();
     const body = (await response.json()) as { error?: string; content?: string };
 
-    expect(response.status).toBe(402);
-    expect(body.error).toBe("upgrade_required");
+    expect(response.status).toBe(409);
+    expect(body.error).toBe("nothing_to_export");
     expect(body.content).toBeUndefined();
   });
 

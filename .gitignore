@@ -74,3 +74,4 @@ yarn.lock
 .agents/
 AGENTS.md
 .verify-baseline/
+.vercel

@@ -138,17 +138,3 @@ export function SignedNotices({ entries }: { entries: SignedNoticeEntry[] }) {
     </ul>
   );
 }
-
-export function SignedNoticesLockNote({ locked }: { locked: boolean }) {
-  if (!locked) return null;
-  // A bare full-measure line under the card read as leftover text. Ruled as a
-  // margin note it reads as the aside it is, and echoes the standing caveat
-  // at the foot of the page.
-  return (
-    <p className="mt-5 max-w-2xl border-l-2 border-brass/35 pl-4 text-sm leading-[1.55] text-ink-soft">
-      The index above is yours on the free tier — who signed, when, under which
-      rule version. The frozen notice text and the assembled export unlock with
-      TipGuard Shield.
-    </p>
-  );
-}

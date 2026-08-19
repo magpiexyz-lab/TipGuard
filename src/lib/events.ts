@@ -25,7 +25,7 @@ export const EVENT_FUNNEL_MAP: Record<string, string> = {
   violation_resolved: "activate",
   feedback_submitted: "activate",
   checkout_started: "monetize",
-  checkout_completed: "monetize",
+  waitlist_joined: "monetize",
   audit_file_exported: "monetize",
   retain_return: "retain",
 } as const;
@@ -149,7 +149,7 @@ export function trackFeedbackSubmitted(props: {
   track("feedback_submitted", { ...props, funnel_stage: "activate" });
 }
 
-// --- Payment events (only included because stack.payment: stripe is present) ---
+// --- Monetize events (fake-door waitlist; see experiment/EVENTS.yaml) ---
 
 export function trackCheckoutStarted(props: {
   notices_sent_at_upgrade: number;
@@ -159,11 +159,11 @@ export function trackCheckoutStarted(props: {
   track("checkout_started", { ...props, funnel_stage: "monetize" });
 }
 
-export function trackCheckoutCompleted(props: {
-  plan: string;
-  amount_usd: number;
+export function trackWaitlistJoined(props: {
+  notices_sent_at_join: number;
+  variant?: string;
 }) {
-  track("checkout_completed", { ...props, funnel_stage: "monetize" });
+  track("waitlist_joined", { ...props, funnel_stage: "monetize" });
 }
 
 export function trackAuditFileExported(props: {

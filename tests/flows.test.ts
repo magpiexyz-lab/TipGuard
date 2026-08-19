@@ -15,7 +15,6 @@ import { describe, it, expect } from "vitest";
 const HAS_DB = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-const HAS_STRIPE_WEBHOOK_SECRET = Boolean(process.env.STRIPE_WEBHOOK_SECRET);
 
 function jsonRequest(url: string, body: unknown, headers: Record<string, string> = {}) {
   return new Request(url, {
@@ -186,59 +185,37 @@ describe("b-08 compliance scan", () => {
 });
 
 // ===========================================================================
-// b-11 — Stripe checkout.session.completed webhook
+// b-11 — Shield waitlist (fake door; replaced the Stripe webhook)
 // ===========================================================================
 
-describe("b-11 stripe webhook", () => {
-  it("The webhook signature is verified against STRIPE_WEBHOOK_SECRET and unsigned requests are rejected", async () => {
-    const { POST } = await import("@/app/api/webhooks/stripe/route");
-    const unsigned = await POST(
-      jsonRequest("http://localhost/api/webhooks/stripe", {
-        id: "evt_test_unsigned",
-        type: "checkout.session.completed",
-      })
+describe("b-11 shield waitlist", () => {
+  it("POST /api/waitlist derives identity from the session, so an unauthenticated call is rejected", async () => {
+    const { POST } = await import("@/app/api/waitlist/route");
+    const response = await POST(
+      jsonRequest("http://localhost/api/waitlist", { email: "owner@restaurant.test" })
     );
-    // No `stripe-signature` header at all → rejected before any processing.
-    expect(unsigned.status).toBe(400);
-
-    const badSignature = await POST(
-      jsonRequest(
-        "http://localhost/api/webhooks/stripe",
-        { id: "evt_test_bad", type: "checkout.session.completed" },
-        { "stripe-signature": "t=0,v1=deadbeef" }
-      )
-    );
-    // Bad signature → 400 when a secret is configured, 503 when it is not.
-    expect([400, 503]).toContain(badSignature.status);
+    // No session cookie: 401 when the DB answers, 503 when it is unreachable.
+    // Either way the row is not written — the route never trusts the body.
+    expect([401, 503]).toContain(response.status);
   });
 
-  it.skipIf(!HAS_DB || !HAS_STRIPE_WEBHOOK_SECRET)(
-    "accounts.plan becomes 'shield' and stripe_customer_id plus current_period_end are persisted",
-    async () => {
-      // TODO: sign a realistic checkout.session.completed payload with
-      // stripe.webhooks.generateTestHeaderString(), POST it, then assert the
-      // seeded account row has plan='shield', a stripe_customer_id, and a
-      // current_period_end in the future.
-      expect(HAS_STRIPE_WEBHOOK_SECRET).toBe(true);
-    }
-  );
+  it("A body carrying an account_id cannot redirect the write to another tenant", async () => {
+    const { joinWaitlistSchema } = await import("@/app/api/waitlist/route");
+    // The schema accepts an optional email and nothing else. account_id is
+    // stripped, so there is no shape in which a client can name the tenant.
+    const parsed = joinWaitlistSchema.parse({
+      email: "owner@restaurant.test",
+      account_id: "00000000-0000-0000-0000-000000000000",
+    });
+    expect(parsed).toEqual({ email: "owner@restaurant.test" });
+    expect("account_id" in parsed).toBe(false);
+  });
 
-  it.skipIf(!HAS_DB || !HAS_STRIPE_WEBHOOK_SECRET)(
-    "trackServerEvent('checkout_completed', user.id, { plan: 'shield' }) is called exactly once per session id",
-    async () => {
-      // TODO: deliver the SAME signed event twice and assert the second call
-      // short-circuits on the stripe_events unique violation (PG 23505) so the
-      // analytics event is emitted exactly once.
-      expect(HAS_STRIPE_WEBHOOK_SECRET).toBe(true);
-    }
-  );
-
-  it.skipIf(!HAS_DB || !HAS_STRIPE_WEBHOOK_SECRET)(
-    "A welcome email is sent via Resend",
-    async () => {
-      // TODO: assert sendWelcomeEmail was invoked with the session's customer
-      // email and a same-origin /dashboard CTA URL.
-      expect(HAS_STRIPE_WEBHOOK_SECRET).toBe(true);
-    }
-  );
+  it("An invalid email is rejected before any database work", async () => {
+    const { POST } = await import("@/app/api/waitlist/route");
+    const response = await POST(
+      jsonRequest("http://localhost/api/waitlist", { email: "not-an-email" })
+    );
+    expect(response.status).toBe(400);
+  });
 });
