@@ -16,7 +16,7 @@
 //   * THE ORIGIN IT REDIRECTS TO MUST NOT COME FROM A HEADER. In a Next.js
 //     route handler `request.url` is reconstructed from Host/X-Forwarded-Host,
 //     which is client-supplied. NEXT_PUBLIC_SITE_URL is the trusted source —
-//     the same rule /api/checkout, /api/notices/send and the Stripe webhook
+//     the same rule /api/waitlist and /api/notices/send
 //     already follow.
 //   * NOTHING AFTER THE EXCHANGE MAY BREAK THE SIGN-IN. Once
 //     exchangeCodeForSession() resolves, the session cookie is already being

@@ -270,8 +270,7 @@ events:
   # ─── MONETIZE ──────────────────────────────────────────────────────────────
   checkout_started:
     funnel_stage: monetize
-    requires: [payment]
-    trigger: User clicks the upgrade CTA on /pricing or /dashboard; a Stripe Checkout session is created and the user is redirected (h-06 numerator)
+    trigger: User clicks the upgrade CTA on /pricing or /dashboard; the Shield waitlist panel opens (h-06 numerator). Fires on the click itself, before any address is entered, so the metric is unaffected by what follows the click.
     properties:
       variant:
         type: string
@@ -286,19 +285,18 @@ events:
         required: true
         description: Open compliance findings at the moment of the upgrade click
 
-  checkout_completed:
+  waitlist_joined:
     funnel_stage: monetize
-    requires: [payment]
-    trigger: Server-side — Stripe checkout.session.completed webhook processed; account plan set to 'shield'
+    trigger: User confirms their address in the Shield waitlist panel and POST /api/waitlist succeeds. Measures how much of the checkout_started intent survives being asked for something — it is NOT the h-06 metric.
     properties:
-      plan:
+      variant:
         type: string
-        required: true
-        description: Plan activated (always 'shield' in the MVP)
-      amount_usd:
+        required: false
+        description: Variant slug the user originally arrived from
+      notices_sent_at_join:
         type: number
         required: true
-        description: Amount charged in USD (79 baseline)
+        description: Count of notices sent at the moment of joining the waitlist
 
   audit_file_exported:
     funnel_stage: monetize

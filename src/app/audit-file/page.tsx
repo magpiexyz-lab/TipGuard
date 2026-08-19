@@ -18,7 +18,7 @@ import {
 import { CoverIndex } from "./cover-index";
 import { ExportPanel } from "./export-panel";
 import { LedgerSkeleton } from "./ledger-skeleton";
-import { SignedNotices, SignedNoticesLockNote } from "./signed-notices";
+import { SignedNotices } from "./signed-notices";
 
 /**
  * `/audit-file` — behavior b-12, hypothesis h-06.
@@ -26,9 +26,8 @@ import { SignedNotices, SignedNoticesLockNote } from "./signed-notices";
  * Authenticated and owner-scoped. Shows the file exactly as it will export:
  * a cover index of every employee with notice status and the state rule
  * version applied, then every signed acknowledgment with signer, UTC
- * timestamp, and the frozen notice text. Paid accounts build and download it;
- * free accounts see the same real preview with the export locked behind an
- * explicit upgrade prompt.
+ * timestamp, and the frozen notice text. Every signed-in account can build
+ * and download it — there is no plan gate (see b-10/b-11).
  *
  * Wire dependency (scaffold-wire, STATE 14): `GET`/`POST /api/audit-file` —
  * the full contract is documented in `./audit-file-contract.ts`.
@@ -79,12 +78,10 @@ export default function AuditFilePage() {
                 variant="outline"
                 className={cn(
                   "h-6 rounded-md border-transparent font-mono text-[11px] tracking-[0.1em] uppercase",
-                  preview.plan === "shield"
-                    ? "bg-seal/20 text-seal-soft"
-                    : "bg-brass/20 text-brass"
+                  "bg-seal/20 text-seal-soft"
                 )}
               >
-                {preview.plan === "shield" ? "Shield" : "Free — export locked"}
+                Export ready
               </Badge>
             ) : null}
           </div>
@@ -209,7 +206,6 @@ export default function AuditFilePage() {
         {preview ? (
           <div className="flex flex-col gap-14">
             <ExportPanel
-              plan={preview.plan}
               counts={preview.counts}
               generatedAtLabel={formatUtc(preview.generatedAt)}
             />
@@ -261,7 +257,6 @@ export default function AuditFilePage() {
               <div className="mt-6">
                 <SignedNotices entries={preview.signedNotices} />
               </div>
-              <SignedNoticesLockNote locked={preview.plan === "free"} />
             </section>
             </BlurFade>
 

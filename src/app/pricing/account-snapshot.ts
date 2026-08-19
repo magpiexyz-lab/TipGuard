@@ -16,6 +16,8 @@ export interface AccountSnapshot {
   noticesSent: number;
   /** `open_violation_count` — findings still open at the moment of the click. */
   openViolations: number;
+  /** Pre-fills the waitlist panel so joining is one click (b-11). */
+  email: string | null;
 }
 
 export const ANONYMOUS_SNAPSHOT: AccountSnapshot = {
@@ -23,6 +25,7 @@ export const ANONYMOUS_SNAPSHOT: AccountSnapshot = {
   plan: "free",
   noticesSent: 0,
   openViolations: 0,
+  email: null,
 };
 
 function rowCount(value: unknown): number {
@@ -50,6 +53,7 @@ export async function loadAccountSnapshot(): Promise<AccountSnapshot> {
       plan: plan === "shield" ? "shield" : "free",
       noticesSent: rowCount(noticeResult?.data),
       openViolations: rowCount(violationResult?.data),
+      email: user.email ?? null,
     };
   } catch {
     // The pricing argument does not depend on account state — degrade to the

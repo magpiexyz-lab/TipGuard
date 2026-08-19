@@ -87,6 +87,8 @@ interface DashboardData {
   employeeCount: number;
   notices: NoticeTally;
   findings: FindingView[];
+  /** Pre-fills the Shield waitlist panel (b-11). */
+  email: string | null;
 }
 
 /** The questionnaire snapshot is stored as JSON — narrow it before rendering. */
@@ -116,6 +118,7 @@ function demoDashboard(now: number): DashboardData {
     restaurantName: "Ember & Rail",
     homeState: "TX",
     plan: "free",
+    email: "owner@emberandrail.test",
     readinessScore: 47,
     gaps: [
       {
@@ -176,6 +179,7 @@ async function loadDashboard(now: number): Promise<DashboardData> {
     employeeCount: 0,
     notices: { total: 0, sent: 0, signed: 0 },
     findings: [],
+    email: user.email ?? null,
   };
 
   // Account row not provisioned yet (signup callback still in flight): render
@@ -556,42 +560,12 @@ export default async function DashboardPage() {
           <h2 id="plan-heading" className="sr-only">
             Your TipGuard plan
           </h2>
-          {data.plan === "shield" ? (
-            <div className="rounded-xl bg-card p-6 elev-1 md:p-10">
-              <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-start gap-4">
-                  <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-seal/10">
-                    <ShieldCheck
-                      className="size-6 text-seal dark:text-seal-soft"
-                      aria-hidden="true"
-                    />
-                  </span>
-                  <div>
-                    <h3 className="font-display text-2xl tracking-[-1.2px]">
-                      TipGuard Shield is active
-                    </h3>
-                    <p className="mt-2 max-w-xl text-sm leading-[1.55] text-muted-foreground">
-                      Notices stay current as staff and state rules change, scans run
-                      continuously, and the dated audit file is unlocked.
-                    </p>
-                  </div>
-                </div>
-                <Link
-                  href="/audit-file"
-                  className={cn(buttonVariants(), "h-11 rounded-full px-6 text-base")}
-                >
-                  Build my audit file
-                  <ArrowRight className="size-4" aria-hidden="true" />
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <UpgradeCta
-              noticesSent={data.notices.sent}
-              openViolationCount={data.findings.length}
-              exposureLabel={formatUsd(openExposure)}
-            />
-          )}
+          <UpgradeCta
+            noticesSent={data.notices.sent}
+            openViolationCount={data.findings.length}
+            exposureLabel={formatUsd(openExposure)}
+            accountEmail={data.email}
+          />
         </section>
 
         {/* ---------- Next actions ---------- */}

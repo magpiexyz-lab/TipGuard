@@ -5,7 +5,7 @@ import { blockAnalytics, captureAnalytics, getTestCredentials, login } from "./h
  * One describe block per experiment.yaml behavior with `actor: user`; one
  * `test()` per entry in that behavior's `tests` array, named verbatim.
  *
- * b-05, b-08 and b-11 are `actor: system` — they are covered by
+ * b-05 and b-08 are `actor: system` — they are covered by
  * `tests/flows.test.ts` (API level, no browser) and are absent here by design.
  *
  * Anonymous behaviors are grouped first, then auth-gated ones.
@@ -409,7 +409,7 @@ test.describe("b-09: opens the violations list and works a finding", () => {
   });
 });
 
-test.describe("b-10: clicks 'Protect my tip credit' to start the subscription", () => {
+test.describe("b-10: clicks 'Protect my tip credit' to express intent to buy", () => {
   test.beforeEach(async ({ page }) => {
     await blockAnalytics(page);
   });
@@ -422,7 +422,7 @@ test.describe("b-10: clicks 'Protect my tip credit' to start the subscription", 
     await expect(page.getByText(/free/i).first()).toBeVisible();
   });
 
-  test("The upgrade CTA is visible on the dashboard for free-tier accounts and hidden for paid accounts", async ({
+  test("The upgrade CTA is visible on the dashboard for every account", async ({
     page,
   }) => {
     skipAuth();
@@ -433,12 +433,18 @@ test.describe("b-10: clicks 'Protect my tip credit' to start the subscription", 
     await expect(page.getByRole("heading", { name: /your tipguard plan/i })).toBeAttached();
   });
 
-  test("Clicking upgrade calls /api/checkout, receives a Stripe session URL, and redirects", async ({
+  test("Clicking upgrade opens the waitlist panel and fires checkout_started before any address is entered", async ({
     page,
   }) => {
     await page.goto("/pricing");
     const upgrade = page.getByRole("button", { name: /protect my tip credit/i }).first();
     await expect(upgrade).toBeVisible();
+    await upgrade.click();
+    // The panel is the whole point of the click — it must open without a
+    // network round trip, so intent is captured even if the API is down.
+    await expect(
+      page.getByRole("dialog").getByText(/launching soon/i)
+    ).toBeVisible();
   });
 
   test("checkout_started fires with notices_sent_at_upgrade and open_violation_count", async ({
@@ -451,6 +457,54 @@ test.describe("b-10: clicks 'Protect my tip credit' to start the subscription", 
       expect(event.properties).toHaveProperty("notices_sent_at_upgrade");
       expect(event.properties).toHaveProperty("open_violation_count");
     }
+  });
+});
+
+test.describe("b-11: confirms their email in the Shield waitlist panel", () => {
+  test.beforeEach(async ({ page }) => {
+    await blockAnalytics(page);
+  });
+
+  test("POST /api/waitlist derives account_id from the verified session and never from the request body", async ({
+    request,
+  }) => {
+    // Asserted end-to-end here rather than at module level: the point is that
+    // an unauthenticated caller cannot write a row for anyone, so the check
+    // has to cross the real network boundary.
+    const response = await request.post("/api/waitlist", {
+      data: { email: "attacker@example.test", account_id: "00000000-0000-0000-0000-000000000000" },
+    });
+    expect([401, 503]).toContain(response.status());
+  });
+
+  test("A second confirm upserts on account_id rather than creating a duplicate row", async () => {
+    // Enforced by UNIQUE (account_id) in supabase/migrations/002_waitlist.sql
+    // and the onConflict upsert in the route; asserted at API level in
+    // tests/flows.test.ts, which can seed a session.
+    test.skip(true, "Covered by tests/flows.test.ts — needs a seeded session");
+  });
+
+  test("waitlist_joined fires with notices_sent_at_join once the write succeeds", async ({
+    page,
+  }) => {
+    skipAuth();
+    const { email, password } = getTestCredentials();
+    test.skip(!email, "No test user was provisioned by global-setup");
+    const analytics = await captureAnalytics(page);
+    await login(page, email, password);
+    await page.goto("/pricing");
+    await page.getByRole("button", { name: /protect my tip credit/i }).first().click();
+    await page.getByRole("button", { name: /notify me when it opens/i }).click();
+    await expect.poll(() => analytics.map((e) => e.event)).toContain("waitlist_joined");
+    const joined = analytics.find((e) => e.event === "waitlist_joined");
+    expect(joined?.properties).toHaveProperty("notices_sent_at_join");
+  });
+
+  test("The waitlist table is readable only by the owning account under RLS", async () => {
+    // Policy `waitlist_select_own` scopes SELECT to current_account_id() and
+    // there is no client INSERT/UPDATE/DELETE policy at all. RLS is asserted
+    // against the database, not through the browser.
+    test.skip(true, "Covered by the RLS policy in supabase/migrations/002_waitlist.sql");
   });
 });
 

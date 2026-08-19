@@ -196,7 +196,7 @@ export async function GET() {
   }
 
   const { account, db } = resolved.ctx;
-  const data = await assemble(db, account.id, account.plan, account.plan === "shield");
+  const data = await assemble(db, account.id, account.plan, true);
   if (!data) {
     return NextResponse.json({ error: "Could not assemble your file" }, { status: 500 });
   }
@@ -204,7 +204,7 @@ export async function GET() {
   return NextResponse.json(data satisfies AuditFilePreview);
 }
 
-/** POST — build the dated export. Shield only. */
+/** POST — build the dated export. Available to every signed-in account. */
 export async function POST() {
   const resolved = await resolveAccount();
   if (!resolved.ok) {
@@ -212,20 +212,18 @@ export async function POST() {
       return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
     }
     if (resolved.reason === "no_account") {
-      return NextResponse.json({ error: "upgrade_required" }, { status: 402 });
+      // Signed in with nothing filed yet — an empty file, not a payment wall.
+      return NextResponse.json({ error: "nothing_to_export" }, { status: 409 });
     }
     return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
   }
 
   const { account, db } = resolved.ctx;
 
-  // The paywall is enforced HERE, on the server, from the account row the
-  // Stripe webhook writes — not from anything the client sent.
-  if (account.plan !== "shield") {
-    return NextResponse.json({ error: "upgrade_required" }, { status: 402 });
-  }
-
-  const data = await assemble(db, account.id, "shield", true);
+  // No plan gate. Shield is a fake door for this experiment (b-10/b-11), so
+  // gating the export would only manufacture a dead end for every owner
+  // without producing a single extra data point for h-06.
+  const data = await assemble(db, account.id, account.plan, true);
   if (!data) {
     return NextResponse.json({ error: "Could not assemble your file" }, { status: 500 });
   }

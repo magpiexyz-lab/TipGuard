@@ -166,7 +166,7 @@ import type { generateNoticesSchema } from "@/app/api/notices/generate/route";
 import type { sendNoticesSchema } from "@/app/api/notices/send/route";
 import type { signNoticeSchema } from "@/app/api/notices/sign/route";
 import type { resolveViolationSchema } from "@/app/api/violations/resolve/route";
-import type { createCheckoutSchema } from "@/app/api/checkout/route";
+import type { joinWaitlistSchema } from "@/app/api/waitlist/route";
 import type { submitFeedbackSchema } from "@/app/api/feedback/route";
 
 export type AttachScoreRequest = z.infer<typeof attachScoreSchema>;
@@ -175,7 +175,7 @@ export type GenerateNoticesRequest = z.infer<typeof generateNoticesSchema>;
 export type SendNoticesRequest = z.infer<typeof sendNoticesSchema>;
 export type SignNoticeRequest = z.infer<typeof signNoticeSchema>;
 export type ResolveViolationRequest = z.infer<typeof resolveViolationSchema>;
-export type CreateCheckoutRequest = z.infer<typeof createCheckoutSchema>;
+export type JoinWaitlistRequest = z.infer<typeof joinWaitlistSchema>;
 export type SubmitFeedbackRequest = z.infer<typeof submitFeedbackSchema>;
 
 export type { AttachScoreResponse } from "@/app/api/account/score/route";
@@ -190,7 +190,7 @@ export type { SendNoticesResponse } from "@/app/api/notices/send/route";
 export type { SignNoticeResponse } from "@/app/api/notices/sign/route";
 export type { ScanViolationsResponse } from "@/app/api/violations/scan/route";
 export type { ResolveViolationResponse } from "@/app/api/violations/resolve/route";
-export type { CreateCheckoutResponse } from "@/app/api/checkout/route";
+export type { JoinWaitlistResponse } from "@/app/api/waitlist/route";
 export type { SubmitFeedbackResponse } from "@/app/api/feedback/route";
 export type {
   AuditFilePreview,

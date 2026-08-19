@@ -71,15 +71,6 @@ export async function GET() {
     checks.analytics = message.includes("abort") ? "degraded" : "error";
   }
 
-  // --- payment config (non-critical) ---
-  const stripeKey = process.env.STRIPE_SECRET_KEY ?? "";
-  if (stripeKey.startsWith("sk_")) {
-    checks.payment = "ok";
-  } else {
-    console.error("Health check payment error: STRIPE_SECRET_KEY missing or malformed");
-    checks.payment = "error";
-  }
-
   const critical = Object.entries(checks).filter(([key]) =>
     ["database", "auth"].includes(key)
   );

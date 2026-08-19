@@ -34,31 +34,32 @@ function safeUrl(url: string): string {
 const FROM_ADDRESS = process.env.RESEND_FROM || "onboarding@resend.dev";
 
 /**
- * Post-checkout welcome email (b-11) — sent by the Stripe webhook handler
- * after `checkout.session.completed` confirms the account is on Shield.
- * `to` and `ctaUrl` MUST be derived server-side (session email / static
- * origin path) — never accept either from client-controlled input, or this
- * becomes an open phishing relay from your verified Resend domain.
+ * Shield waitlist confirmation (b-11) — sent after POST /api/waitlist writes
+ * the row. Shield is a fake door for this experiment, so this confirms a place
+ * in the queue and promises nothing that has been paid for.
+ * `to` MUST be derived server-side (session email) — never accept it from
+ * client-controlled input, or this becomes an open relay from your verified
+ * Resend domain.
  */
-export async function sendWelcomeEmail(to: string, restaurantName: string, ctaUrl: string) {
+export async function sendWaitlistEmail(to: string, restaurantName: string) {
   if (process.env.DEMO_MODE === "true" && process.env.VERCEL === "1") {
     throw new Error("DEMO_MODE is not allowed in production");
   }
   if (process.env.DEMO_MODE === "true") return;
   const safeName = escapeHtml(restaurantName);
-  const safeCtaUrl = safeUrl(ctaUrl);
   const { error } = await getResend().emails.send({
     from: FROM_ADDRESS,
     to,
-    subject: `Welcome to TipGuard Shield, ${sanitizeSubject(restaurantName)}!`,
+    subject: `You are on the TipGuard Shield list, ${sanitizeSubject(restaurantName)}`,
     html: `
-      <h1>Welcome to TipGuard Shield, ${safeName}</h1>
-      <p>Your account is protected — the audit-file export is unlocked and your tip-credit notice and violation history are now tracked continuously.</p>
-      <p><a href="${safeCtaUrl}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;border-radius:6px;text-decoration:none;">Go to your dashboard</a></p>
+      <h1>You are on the list, ${safeName}</h1>
+      <p>TipGuard Shield is not open yet. When it is, you will hear from us first — nothing has been charged and there is nothing else for you to do.</p>
+      <p>Your signed acknowledgments and audit file stay exactly where they are, and the export is free to build any time.</p>
     `,
   });
   if (error) throw error;
 }
+
 
 /**
  * Per-employee tip-credit notice signing-link email (b-06). `to` is the
