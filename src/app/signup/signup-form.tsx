@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Check, Eye, EyeOff, LoaderCircle, MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase";
+import { GOOGLE_SIGN_IN_ENABLED } from "@/lib/auth-providers";
 import { trackSignupComplete } from "@/lib/events";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -291,6 +292,11 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
         </p>
       </form>
 
+      {/* Rendered only when the provider is actually enabled on Supabase —
+          see src/lib/auth-providers.ts. A button that 400s is worse than no
+          button at all on the primary auth path. */}
+      {GOOGLE_SIGN_IN_ENABLED ? (
+        <>
       <div className="relative my-8">
         <Separator />
         <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
@@ -315,6 +321,8 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
           </>
         )}
       </Button>
+        </>
+      ) : null}
 
       <p className="mt-8 text-sm text-muted-foreground">
         Already have an account?{" "}
