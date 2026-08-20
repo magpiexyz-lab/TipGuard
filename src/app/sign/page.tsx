@@ -19,7 +19,7 @@ import { SignForm } from "./sign-form";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Sign your tip-credit notice — TipGuard",
+  title: "Sign notice · TipGuard",
   description:
     "Read the tip-credit notice your employer sent you and confirm you received it. Your signature is stored with the date and the exact text you read.",
 };

@@ -90,14 +90,6 @@ export function SiteHeader({
         </nav>
 
         <div className={cn("flex items-center gap-4", "md:ml-0 ml-auto")}>
-          <span
-            className={cn(
-              "hidden font-mono text-[11px] uppercase tracking-[0.14em] lg:inline",
-              scrolled ? "text-brass-deep" : "text-brass"
-            )}
-          >
-            Free · No account
-          </span>
           {/* Two named doors. The score CTA beside them is still the measured
               funnel entrance (h-01 -> h-03), so both of these stay quiet text
               links rather than competing buttons — but a visitor who already
