@@ -21,7 +21,7 @@ export function PricingSection({ variant }: { variant: Variant }) {
   return (
     <section
       id={SECTION_IDS.pricing}
-      className="surface-ink relative isolate scroll-mt-24 overflow-hidden py-20 sm:py-28 lg:py-32"
+      className="surface-ink relative isolate scroll-mt-24 overflow-hidden py-12 sm:py-14 lg:py-16"
       aria-labelledby="pricing-heading"
     >
       <GridPattern
@@ -43,13 +43,13 @@ export function PricingSection({ variant }: { variant: Variant }) {
           </AnimatedShinyText>
           <h2
             id="pricing-heading"
-            className="mt-5 font-display text-[30px] font-semibold leading-[1.1] tracking-[-1.6px] text-paper sm:text-[38px] lg:text-[44px]"
+            className="mt-4 font-display text-[28px] font-semibold leading-[1.1] tracking-[-1.6px] text-paper sm:text-[34px] lg:text-[38px]"
           >
             Price the paperwork, or price the claim.
           </h2>
         </BlurFade>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 lg:mt-16 lg:grid-cols-2 lg:gap-8">
+        <div className="mt-6 grid grid-cols-1 gap-5 lg:mt-8 lg:grid-cols-2 lg:gap-6">
           {/* Left: the exposure, with its working shown. Flex column so the
               footnote sits on the floor of the panel rather than leaving the
               bottom third of a stretched grid cell empty. */}
@@ -58,7 +58,7 @@ export function PricingSection({ variant }: { variant: Variant }) {
               If the credit is disallowed
             </p>
 
-            <dl className="mt-7">
+            <dl className="mt-5">
               {[
                 { k: "Tipped staff", v: String(staff) },
                 { k: "Tipped hours each", v: `${hoursPerWeek} / wk` },
@@ -77,7 +77,7 @@ export function PricingSection({ variant }: { variant: Variant }) {
               ))}
             </dl>
 
-            <div className="mt-7 border-t border-paper/12 pt-7">
+            <div className="mt-5 border-t border-paper/12 pt-5">
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-paper/60">
                 Back wages recomputed
               </p>
@@ -85,19 +85,19 @@ export function PricingSection({ variant }: { variant: Variant }) {
                 <NumberTicker value={backWages} prefix="$" />
               </p>
 
-              <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-ember-soft">
+              <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-ember-soft">
                 Plus liquidated damages{" "}
                 {/* normal-case: the subsection letter is part of the cite. */}
                 <span className="normal-case tracking-[0.06em]">
                   · 29 U.S.C. §216(b)
                 </span>
               </p>
-              <p className="mt-2 font-mono text-[44px] font-medium leading-[1.1] tracking-[-0.2px] text-ember-soft tabular-nums sm:text-[56px]">
+              <p className="mt-2 font-mono text-[34px] font-medium leading-[1.1] tracking-[-0.2px] text-ember-soft tabular-nums sm:text-[40px]">
                 <NumberTicker value={liquidated} prefix="$" />
               </p>
             </div>
 
-            <div className="mt-auto pt-8">
+            <div className="mt-auto pt-5">
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-paper/45">
                 The claim, against the line item
               </p>
@@ -111,7 +111,7 @@ export function PricingSection({ variant }: { variant: Variant }) {
                 </span>{" "}
                 one year of TipGuard.
               </p>
-              <p className="mt-5 border-t border-paper/12 pt-5 text-xs leading-[1.5] text-paper/60">
+              <p className="mt-4 border-t border-paper/12 pt-4 text-xs leading-[1.5] text-paper/60">
                 Illustrative federal-floor arithmetic ($7.25 minimum less the
                 $2.13 cash wage), before attorney fees or state penalties. Your
                 state may be stricter.
@@ -131,13 +131,13 @@ export function PricingSection({ variant }: { variant: Variant }) {
               </span>
             </div>
 
-            <p className="mt-6 flex items-baseline gap-2">
-              <span className="font-mono text-[56px] font-medium leading-[1.1] tracking-[-0.2px] text-ink tabular-nums">
+            <p className="mt-4 flex items-baseline gap-2">
+              <span className="font-mono text-[40px] font-medium leading-[1.1] tracking-[-0.2px] text-ink tabular-nums">
                 ${variant.pricingAmount}
               </span>
               <span className="font-mono text-sm text-ink-soft">/ month</span>
             </p>
-            <p className="mt-3 max-w-[46ch] text-base leading-[1.55] text-ink-soft">
+            <p className="mt-3 max-w-[46ch] text-[15px] leading-[1.5] text-ink-soft">
               Every employee, every state, every rule update — and the export.
               One line item on the books, sitting next to the POS subscription.
             </p>
@@ -147,7 +147,7 @@ export function PricingSection({ variant }: { variant: Variant }) {
             <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft">
               What the audit file contains
             </p>
-            <ul className="mt-4 space-y-3">
+            <ul className="mt-3 space-y-2">
               {FILE_CONTENTS.map((item) => (
                 <li key={item} className="flex gap-3 text-sm leading-[1.5] text-ink">
                   <svg
@@ -169,7 +169,7 @@ export function PricingSection({ variant }: { variant: Variant }) {
               ))}
             </ul>
 
-            <div className="mt-8 flex flex-col items-start gap-4">
+            <div className="mt-6 flex flex-col items-start gap-3">
               <CtaButton
                 variantSlug={variant.slug}
                 position="pricing"
