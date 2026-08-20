@@ -74,6 +74,23 @@ export function SiteFooter() {
             >
               Sign in
             </Link>
+            {/* Google's OAuth consent screen will not publish an app without
+                reachable privacy and terms URLs, and a product that asks for a
+                payroll roster should be linking these anyway. */}
+            <Link
+              href="/privacy"
+              style={{ ["--tg-underline" as string]: "9px" }}
+              className="tg-link inline-flex min-h-11 w-fit items-center text-sm text-paper/60 transition-colors duration-[140ms] hover:text-paper"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              style={{ ["--tg-underline" as string]: "9px" }}
+              className="tg-link inline-flex min-h-11 w-fit items-center text-sm text-paper/60 transition-colors duration-[140ms] hover:text-paper"
+            >
+              Terms
+            </Link>
           </nav>
         </div>
 
