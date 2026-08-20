@@ -360,6 +360,11 @@ export function LoginForm() {
         </form>
       )}
 
+      {/* Two doors, deliberately ordered. The score is the funnel we measure
+          (h-03 is signup_complete / score_completed), so it stays the
+          emphasised route. But a visitor who already knows they want an
+          account should not have to walk a seven-question form to find the
+          signup form — that was reachable from exactly one page before. */}
       <p className="mt-8 text-sm text-muted-foreground">
         No account yet?{" "}
         <Link
@@ -369,6 +374,16 @@ export function LoginForm() {
           Get your free audit-readiness score
         </Link>{" "}
         &mdash; it takes two minutes and needs no account.
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Or{" "}
+        <Link
+          href="/signup"
+          className="font-medium text-foreground underline decoration-border decoration-2 underline-offset-4 transition-colors duration-[140ms] hover:text-brass-deep"
+        >
+          create an account directly
+        </Link>
+        .
       </p>
     </div>
   );

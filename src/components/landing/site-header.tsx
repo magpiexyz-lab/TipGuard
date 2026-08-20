@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { ScrollProgress } from "@/components/magicui/scroll-progress";
 import { cn } from "@/lib/utils";
 import type { VariantSlug } from "@/lib/variants";
@@ -97,6 +98,19 @@ export function SiteHeader({
           >
             Free · No account
           </span>
+          {/* The score CTA is the measured funnel entrance and stays primary.
+              This is the door for someone who already has an account (or wants
+              one) — before it existed, /login was unreachable from the landing
+              page and /signup from anywhere but the score results. */}
+          <Link
+            href="/login"
+            className={cn(
+              "hidden min-h-11 items-center text-sm transition-colors duration-[140ms] sm:inline-flex",
+              scrolled ? "text-ink-soft hover:text-ink" : "text-paper/75 hover:text-paper"
+            )}
+          >
+            Sign in
+          </Link>
           <CtaButton
             variantSlug={variantSlug}
             position="header"
