@@ -176,7 +176,7 @@ behaviors:
     hypothesis_id: h-03
     pages: [signup, dashboard]
     given: "A visitor has just seen a failing audit-readiness score"
-    when: "They create an account with email/password or Google"
+    when: "They create an account with email/password (Google sign-in is built but gated off until the provider is enabled)"
     then: "signup_start fires on form mount; the Supabase account is created; the anonymous score and gap list are attached to the new account; signup_complete fires once; the user lands on /dashboard showing their score and open gaps"
     tests:
       - "Signup validates email format and password length and creates a Supabase session"
@@ -410,9 +410,13 @@ stack:
       ui: shadcn               # UI component library — leave default
       testing: playwright      # Page-load smoke tests — created by bootstrap
   database: supabase           # Postgres + RLS; accounts, employees, notices, signatures, violations.
-  auth: supabase               # Email/password + Google OAuth.
+  auth: supabase               # Email/password. Google OAuth is built but not enabled.
   auth_providers:
-    - google
+    # Google sign-in is implemented in login-form.tsx / signup-form.tsx but the
+    # provider is NOT enabled on the Supabase project, so the button is gated
+    # behind NEXT_PUBLIC_GOOGLE_SIGN_IN_ENABLED and does not render. Supply a
+    # Google Cloud OAuth client, enable it in Supabase, set the flag to "true".
+    # - google
   analytics: posthog           # Page-level and event-level analytics.
   # payment: removed — Shield is a fake door for this experiment. h-06 is scored on
   # checkout_started (the click), which never required a completed charge. See b-10/b-11.

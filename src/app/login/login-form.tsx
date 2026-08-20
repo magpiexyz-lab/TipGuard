@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, LoaderCircle, MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase";
+import { GOOGLE_SIGN_IN_ENABLED } from "@/lib/auth-providers";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -322,6 +323,11 @@ export function LoginForm() {
             )}
           </Button>
 
+          {/* Rendered only when the provider is actually enabled on Supabase —
+              see src/lib/auth-providers.ts. A button that 400s is worse than no
+              button at all on the primary auth path. */}
+          {GOOGLE_SIGN_IN_ENABLED ? (
+            <>
           <div className="relative my-7">
             <Separator />
             {/* bg must match the card the form sits in, not the page. nowrap
@@ -349,6 +355,8 @@ export function LoginForm() {
               </>
             )}
           </Button>
+            </>
+          ) : null}
         </form>
       )}
 
