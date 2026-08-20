@@ -11,9 +11,14 @@ const publicPaths = [
   "/auth/reset-password",
   "/landing",
   "/login",
+  // Reachable signed-out by necessity: Google's OAuth consent screen fetches
+  // these URLs to publish the app, and a visitor deciding whether to hand over
+  // a payroll roster must be able to read them before creating an account.
+  "/privacy",
   "/score",
   "/sign",
   "/signup",
+  "/terms",
 ];
 
 export async function proxy(request: NextRequest) {

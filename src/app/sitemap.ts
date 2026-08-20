@@ -18,10 +18,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${b}/login`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${b}/notices`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${b}/pricing`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${b}/privacy`, lastModified: now, changeFrequency: 'yearly' as const, priority: 0.3 },
     { url: `${b}/score`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${b}/sign`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${b}/signup`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${b}/staff`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${b}/terms`, lastModified: now, changeFrequency: 'yearly' as const, priority: 0.3 },
     { url: `${b}/v/demo-fixture-variant`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${b}/violations`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
   ];
