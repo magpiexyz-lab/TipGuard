@@ -57,6 +57,23 @@ export function SiteFooter() {
             >
               Free audit-readiness score
             </Link>
+            {/* The header's Sign in / Sign up links are sm-and-up only, so on a
+                phone this footer is the only place an account is reachable
+                without first completing the questionnaire. */}
+            <Link
+              href="/signup"
+              style={{ ["--tg-underline" as string]: "9px" }}
+              className="tg-link inline-flex min-h-11 w-fit items-center text-sm text-paper/75 transition-colors duration-[140ms] hover:text-paper"
+            >
+              Create an account
+            </Link>
+            <Link
+              href="/login"
+              style={{ ["--tg-underline" as string]: "9px" }}
+              className="tg-link inline-flex min-h-11 w-fit items-center text-sm text-paper/75 transition-colors duration-[140ms] hover:text-paper"
+            >
+              Sign in
+            </Link>
           </nav>
         </div>
 

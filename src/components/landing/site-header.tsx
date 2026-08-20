@@ -98,10 +98,13 @@ export function SiteHeader({
           >
             Free · No account
           </span>
-          {/* The score CTA is the measured funnel entrance and stays primary.
-              This is the door for someone who already has an account (or wants
-              one) — before it existed, /login was unreachable from the landing
-              page and /signup from anywhere but the score results. */}
+          {/* Two named doors. The score CTA beside them is still the measured
+              funnel entrance (h-01 -> h-03), so both of these stay quiet text
+              links rather than competing buttons — but a visitor who already
+              knows what they want must be able to say so. "Sign in" alone was
+              not enough: it is the wrong word for someone who has no account
+              yet, and /signup was otherwise reachable only from the score
+              results page. */}
           <Link
             href="/login"
             className={cn(
@@ -110,6 +113,15 @@ export function SiteHeader({
             )}
           >
             Sign in
+          </Link>
+          <Link
+            href="/signup"
+            className={cn(
+              "hidden min-h-11 items-center text-sm font-medium transition-colors duration-[140ms] sm:inline-flex",
+              scrolled ? "text-ink hover:text-brass-deep" : "text-paper hover:text-brass"
+            )}
+          >
+            Sign up
           </Link>
           <CtaButton
             variantSlug={variantSlug}
