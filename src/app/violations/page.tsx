@@ -18,7 +18,7 @@ import { ViolationsClient } from "./violations-client";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Open findings — TipGuard",
+  title: "Findings · TipGuard",
   description:
     "Every open tip-credit finding against your restaurant, ranked by estimated back-pay exposure, with the plain-English explanation and the fix that closes it.",
 };

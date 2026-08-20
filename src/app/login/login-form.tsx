@@ -417,11 +417,28 @@ function ErrorRegion({ message, className }: { message: string; className?: stri
  * four-colour brand mark is rendered in `currentColor` rather than dropped.
  */
 function GoogleGlyph() {
+  // Google's four-colour mark, per their branding guidelines for "Continue
+  // with Google" buttons — the identity is meant to be recognisable at a
+  // glance, which a monochrome trace is not. This is the one place the
+  // project's warm palette gives way, because it is someone else's trademark
+  // and not ours to restyle.
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" focusable="false">
+    <svg viewBox="0 0 48 48" className="h-4 w-4" aria-hidden="true" focusable="false">
       <path
-        fill="currentColor"
-        d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81Z"
+        fill="#4285F4"
+        d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17Z"
+      />
+      <path
+        fill="#34A853"
+        d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7A21.99 21.99 0 0 0 24 46Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M11.69 28.18A13.2 13.2 0 0 1 11 24c0-1.45.25-2.86.69-4.18v-5.7H4.34A21.99 21.99 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07Z"
       />
     </svg>
   );

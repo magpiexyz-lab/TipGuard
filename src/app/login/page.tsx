@@ -5,7 +5,7 @@ import { FileSignature } from "lucide-react";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
-  title: "Log in to TipGuard",
+  title: "Log in · TipGuard",
   description:
     "Sign in to your tip-credit compliance file — notices, signed acknowledgments, open findings, and your audit export.",
   robots: { index: false, follow: true },

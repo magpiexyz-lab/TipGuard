@@ -35,7 +35,7 @@ import { UpgradeCta } from "./upgrade-cta";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Compliance dashboard — TipGuard",
+  title: "Dashboard · TipGuard",
   description:
     "Your current audit-readiness score, signed notice count, and open tip-credit findings in one view.",
 };
