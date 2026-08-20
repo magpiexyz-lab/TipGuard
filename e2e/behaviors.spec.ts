@@ -123,7 +123,7 @@ test.describe("b-02: answers the questionnaire and sees the readiness score", ()
   });
 });
 
-test.describe("b-03: creates an account with email/password (Google gated off)", () => {
+test.describe("b-03: creates an account with email/password or Google", () => {
   test.beforeEach(async ({ page }) => {
     await blockAnalytics(page);
   });
