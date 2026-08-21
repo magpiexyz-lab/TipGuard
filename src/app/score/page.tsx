@@ -115,7 +115,7 @@ export default function ScorePage() {
     <div className="min-h-screen">
       {/* --- Ink authority band ------------------------------------------- */}
       <div className="surface-ink texture-rule bloom-brass">
-        <div className="mx-auto max-w-[1120px] px-6 pb-8 pt-6">
+        <div className="mx-auto max-w-[1120px] px-6 pb-4 pt-4">
           <Link
             href="/"
             className={cn(
@@ -128,13 +128,13 @@ export default function ScorePage() {
             TipGuard
           </Link>
 
-          <p className="eyebrow mt-5">Free audit-readiness score</p>
+          <p className="eyebrow mt-4">Free audit-readiness score</p>
 
           {/* globals.css sets h1 tracking in fixed px (-2px), tuned for a 60px
               display size. Every hero h1 overrides it in em instead, so the
               tracking scales with the type rather than closing the word gaps
               up ("Howexposed") once the size drops. */}
-          <h1 className="mt-2 max-w-3xl text-3xl leading-[1.04] tracking-[-0.028em] text-[#ECE8DA] sm:text-[40px]">
+          <h1 className="mt-2 max-w-3xl text-[26px] leading-[1.06] tracking-[-0.025em] text-[#ECE8DA] sm:text-[32px]">
             {showingResults
               ? "Your audit-readiness score"
               : "How exposed is your tip credit?"}
@@ -146,7 +146,7 @@ export default function ScorePage() {
               : "Seven questions about how you actually run tipped pay. No account, no email, no sales call — you get the number, the ranked gaps, and an exposure range at the end."}
           </p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
             {["About 2 minutes", "No account required", "Nothing sent to your staff"].map(
               (item) => (
                 <span key={item} data-evidence className="text-xs text-[#A8AF9B]">

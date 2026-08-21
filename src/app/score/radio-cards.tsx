@@ -73,7 +73,7 @@ export function RadioCards({
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className={cn("grid gap-3", columns === 2 && "sm:grid-cols-2")}
+      className={cn("grid gap-2", columns === 2 && "sm:grid-cols-2")}
     >
       {options.map((option, index) => {
         const selected = value === option.value;
@@ -87,7 +87,7 @@ export function RadioCards({
             onClick={() => onChange(option.value)}
             onKeyDown={(event) => handleRadioGroupKey(event, values, value, onChange)}
             className={cn(
-              "group/option relative flex min-h-11 w-full items-start gap-3 rounded-lg bg-card p-4 text-left",
+              "group/option relative flex min-h-11 w-full items-start gap-3 rounded-lg bg-card p-3 text-left",
               "ring-1 ring-foreground/10 outline-none",
               "transition-[box-shadow,transform,background-color] duration-[var(--duration-fast)] ease-[var(--ease-stamp)]",
               "hover:-translate-y-0.5 hover:shadow-[var(--shadow-ledger-2)]",

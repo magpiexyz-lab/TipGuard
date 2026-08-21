@@ -127,13 +127,13 @@ export function Questionnaire({
   }
 
   return (
-    <div className="mx-auto grid max-w-[1120px] gap-10 px-6 pb-24 pt-10 lg:grid-cols-[220px_1fr] lg:gap-14">
+    <div className="mx-auto grid max-w-[1120px] gap-8 px-6 pb-16 pt-4 lg:grid-cols-[210px_1fr] lg:gap-10">
       {/* --- Left rail: the ledger index of every question ----------------- */}
-      <div className="lg:sticky lg:top-10 lg:self-start">
+      <div className="lg:sticky lg:top-6 lg:self-start">
         {/* The rail itself is desktop-only, so the label goes with it — below
             lg it was an "Audit checklist" heading standing over nothing. */}
         <p className="eyebrow hidden lg:block">Audit checklist</p>
-        <ol aria-label="Questionnaire progress" className="mt-4 hidden lg:block">
+        <ol aria-label="Questionnaire progress" className="mt-3 hidden lg:block">
           {steps.map((question, index) => {
             const answered = isAnswered(question, answers);
             const active = index === safeIndex;
@@ -148,7 +148,7 @@ export function Questionnaire({
                     setStepIndex(index);
                   }}
                   className={cn(
-                    "flex w-full items-start gap-3 py-3 pl-3 pr-1 text-left",
+                    "flex w-full items-start gap-2.5 py-2 pl-3 pr-1 text-left",
                     "border-l-2 transition-colors duration-[var(--duration-fast)]",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass",
                     active ? "border-l-brass" : "border-l-transparent",
@@ -187,7 +187,7 @@ export function Questionnaire({
           })}
         </ol>
 
-        <div className="mt-4 lg:mt-8">
+        <div className="mt-4 lg:mt-5">
           <div className="flex items-baseline justify-between">
             <span className="eyebrow">Progress</span>
             <span data-evidence className="text-sm text-muted-foreground">
@@ -204,7 +204,7 @@ export function Questionnaire({
 
       {/* --- Question card ------------------------------------------------- */}
       <div>
-        <div className="rounded-xl bg-card p-6 ring-1 ring-foreground/10 sm:p-8">
+        <div className="rounded-xl bg-card p-5 ring-1 ring-foreground/10 sm:p-6">
           <p className="eyebrow">
             Question {safeIndex + 1} of {steps.length}
           </p>
@@ -212,16 +212,16 @@ export function Questionnaire({
           <h2
             ref={headingRef}
             tabIndex={-1}
-            className="mt-3 text-2xl leading-tight tracking-[-0.8px] outline-none sm:text-[32px] sm:leading-[1.12] sm:tracking-[-1.4px]"
+            className="mt-2 text-xl leading-tight tracking-[-0.025em] outline-none sm:text-[26px] sm:leading-[1.12]"
           >
             {current.prompt}
           </h2>
 
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
+          <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
             {current.help}
           </p>
 
-          <div className="mt-7">
+          <div className="mt-5">
             {current.kind === "choice" && current.options ? (
               <RadioCards
                 options={current.options}
@@ -273,7 +273,7 @@ export function Questionnaire({
           </div>
 
           {/* Evidence note — the statutory grounding for the question asked. */}
-          <div className="mt-8 border-t border-border pt-5">
+          <div className="mt-5 border-t border-border pt-4">
             <p className="text-sm leading-relaxed text-muted-foreground">{current.note}</p>
             <p data-evidence className="mt-2 text-xs text-brass-deep dark:text-brass">
               {current.citation}
@@ -281,7 +281,7 @@ export function Questionnaire({
           </div>
         </div>
 
-        <div className="mt-5 flex items-center justify-between">
+        <div className="mt-4 flex items-center justify-between">
           <Button
             type="button"
             variant="ghost"
