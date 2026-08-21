@@ -59,7 +59,11 @@ export function Hero({ variant }: { variant: Variant }) {
         className="-z-10 opacity-[0.07]"
       />
 
-      <div className="mx-auto grid max-w-[1160px] grid-cols-1 items-center gap-14 px-5 pb-24 pt-32 sm:px-8 sm:pb-28 sm:pt-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,430px)] lg:gap-16 lg:pb-36 lg:pt-44">
+      {/* site-header.tsx is `fixed top-0` at h-20 (80px), so the top padding
+          here is doing two jobs: clearing that header and setting the hero's
+          breathing room. pt-24 (96px) is the floor — anything less slides the
+          headline under the header. The bottom side has no such constraint. */}
+      <div className="mx-auto grid max-w-[1160px] grid-cols-1 items-center gap-14 px-5 pb-14 pt-24 sm:px-8 sm:pb-16 sm:pt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,430px)] lg:gap-16 lg:pb-20 lg:pt-32">
         <div className="min-w-0">
           <div className="tg-rise flex items-center gap-3">
             <span aria-hidden="true" className="h-px w-8 shrink-0 bg-brass" />

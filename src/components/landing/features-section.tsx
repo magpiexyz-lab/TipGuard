@@ -19,7 +19,7 @@ export function FeaturesSection({ variant }: { variant: Variant }) {
   return (
     <section
       id={SECTION_IDS.how}
-      className="relative scroll-mt-24 bg-paper-raised py-20 shadow-[inset_0_1px_0_0_var(--border),inset_0_-1px_0_0_var(--border)] sm:py-28 lg:py-32"
+      className="relative scroll-mt-24 bg-paper-raised py-14 shadow-[inset_0_1px_0_0_var(--border),inset_0_-1px_0_0_var(--border)] sm:py-18 lg:py-20"
       aria-labelledby="how-heading"
     >
       <div className="mx-auto max-w-[1160px] px-5 sm:px-8">

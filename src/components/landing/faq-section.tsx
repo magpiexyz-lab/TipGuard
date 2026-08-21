@@ -35,7 +35,7 @@ export function FaqSection() {
   return (
     <section
       id={SECTION_IDS.faq}
-      className="relative scroll-mt-24 bg-paper py-20 sm:py-28 lg:py-32"
+      className="relative scroll-mt-24 bg-paper py-14 sm:py-18 lg:py-20"
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto grid max-w-[1160px] grid-cols-1 gap-12 px-5 sm:px-8 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:gap-20">

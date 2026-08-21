@@ -21,10 +21,10 @@ export default function LoginPage() {
         className="bloom-brass pointer-events-none absolute inset-x-0 top-0 h-[28rem]"
       />
 
-      <div className="relative mx-auto w-full max-w-[26rem] px-6 py-16 sm:py-24">
+      <div className="relative mx-auto w-full max-w-[26rem] px-6 py-8 sm:py-10">
         <div className="animate-in fade-in-0 slide-in-from-bottom-3 duration-500">
           <p className="eyebrow">Returning operator</p>
-          <h1 className="mt-5 font-display text-4xl leading-[1.04] tracking-[-2px]">
+          <h1 className="mt-2 font-display text-3xl leading-[1.04] tracking-[-0.028em] sm:text-[40px]">
             Open your file
           </h1>
           <p className="mt-4 text-lg leading-[1.55] text-muted-foreground">

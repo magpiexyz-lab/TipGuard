@@ -41,7 +41,7 @@ export function ScoreCarryRail({
     //    ink band.
     <aside
       aria-label="Audit-readiness record"
-      className="dark surface-ink relative flex flex-col justify-center overflow-hidden px-6 py-16 sm:px-12 lg:min-h-screen lg:px-14"
+      className="dark surface-ink relative flex flex-col justify-start overflow-hidden px-6 pt-10 pb-10 sm:px-12 lg:min-h-screen lg:px-14 lg:pt-12"
     >
       <div className="bloom-brass pointer-events-none absolute inset-0" aria-hidden="true" />
       <div className="texture-rule pointer-events-none absolute inset-0" aria-hidden="true" />
@@ -105,7 +105,7 @@ function CarriedScore({ pending }: { pending: PendingScore }) {
         </span>
       </div>
 
-      <h2 className="mt-5 font-display text-3xl leading-[1.1] tracking-[-1.2px] text-[#ece8da]">
+      <h2 className="mt-2 font-display text-2xl leading-[1.1] tracking-[-0.025em] text-[#ece8da]">
         This record attaches to your account
       </h2>
 
@@ -249,7 +249,7 @@ function FileContents() {
   return (
     <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
       <p className="eyebrow text-brass">What your file holds</p>
-      <h2 className="mt-5 font-display text-3xl leading-[1.1] tracking-[-1.2px] text-[#ece8da]">
+      <h2 className="mt-2 font-display text-2xl leading-[1.1] tracking-[-0.025em] text-[#ece8da]">
         Your account is the file you hand over
       </h2>
       <p className="mt-4 text-sm leading-[1.55] text-[#a8af9b]">

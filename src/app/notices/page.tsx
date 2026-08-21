@@ -243,16 +243,16 @@ export default function NoticesPage() {
           most consequential control in the product. */}
       <div className="surface-ink texture-rule">
         <div className="bloom-brass">
-          <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-5 py-10 sm:px-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mx-auto flex max-w-[1180px] flex-col gap-4 px-5 py-6 sm:px-8 md:py-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="eyebrow">Step 06 / 06 &middot; Notices</p>
-              <h1 className="mt-3 font-display text-[34px] leading-[1.06] tracking-[-1.6px] text-[#ECE8DA] sm:text-[44px]">
+              <h1 className="mt-2 font-display text-[26px] leading-[1.06] tracking-[-0.025em] text-[#ECE8DA] sm:text-[32px]">
                 Send the notices for signature
               </h1>
-              <p className="mt-4 max-w-xl text-base leading-[1.55] text-[#A8AF9B]">
-                Each employee gets a single-use signing link that expires. When
-                they acknowledge, the exact text they read is frozen into your
-                vault with their name, the UTC timestamp, and their IP.
+              <p className="mt-3 max-w-xl text-base leading-[1.55] text-[#A8AF9B]">
+                Each employee gets a single-use, expiring link. The exact text
+                they acknowledge is frozen into your vault with their name, UTC
+                timestamp, and IP.
               </p>
             </div>
 
@@ -313,7 +313,7 @@ export default function NoticesPage() {
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-[1180px] flex-col gap-8 px-5 py-8 sm:px-8">
+      <div className="mx-auto flex max-w-[1180px] flex-col gap-8 px-5 py-6 sm:px-8">
         {/* Evidence strip — status distribution on ledger hairlines. */}
         <section aria-label="Notice status summary">
           <Card className="elev-1 rounded-[10px] bg-card p-0">

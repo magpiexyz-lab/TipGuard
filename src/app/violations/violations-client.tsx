@@ -142,11 +142,11 @@ export function ViolationsClient({
     <div className="min-h-screen">
       {/* ---------- Authority band: total exposure + scan control ---------- */}
       <div className="dark surface-ink texture-grain bloom-brass border-b border-border">
-        <div className="mx-auto max-w-[1180px] px-5 py-10 md:px-8 md:py-14">
+        <div className="mx-auto max-w-[1180px] px-5 py-6 md:px-8 md:py-8">
           <p className="eyebrow">Compliance findings &middot; Live scan</p>
           <div className="mt-4 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <h1 className="font-display text-4xl leading-[1.04] tracking-[-2px] md:text-[56px]">
+              <h1 className="font-display text-3xl leading-[1.04] tracking-[-0.028em] md:text-[40px]">
                 {open.length > 0
                   ? "Findings open against your file"
                   : "Your file has no open findings"}
@@ -201,7 +201,7 @@ export function ViolationsClient({
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1180px] px-5 py-8 md:px-8 md:py-10">
+      <div className="mx-auto max-w-[1180px] px-5 py-6 md:px-8 md:py-8">
         {error ? (
           <Alert variant="destructive" className="mb-6">
             <TriangleAlert aria-hidden="true" />

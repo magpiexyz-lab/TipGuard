@@ -38,7 +38,7 @@ export function PlanComparison({ children }: { children?: React.ReactNode }) {
   return (
     <section
       aria-labelledby="plans-heading"
-      className="texture-rule mx-auto max-w-[1120px] px-6 py-20 sm:py-28"
+      className="texture-rule mx-auto max-w-[1120px] px-6 py-12 sm:py-16"
     >
       <p className="eyebrow">The two plans</p>
       <h2 id="plans-heading" className="mt-4 max-w-3xl text-3xl sm:text-[44px]">

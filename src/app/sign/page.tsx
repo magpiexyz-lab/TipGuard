@@ -80,7 +80,7 @@ export default async function SignPage({
         }}
       />
 
-      <div className="relative mx-auto w-full max-w-[760px] px-5 pt-10 pb-20 sm:px-8 sm:pt-16">
+      <div className="relative mx-auto w-full max-w-[760px] px-5 pt-6 pb-12 sm:px-8 sm:pt-8">
         <Masthead employerName={employerName} status={link.status} />
 
         {link.status === "ready" ? (

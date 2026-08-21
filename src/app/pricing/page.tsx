@@ -53,7 +53,7 @@ export default function PricingPage() {
       {/* ---------------- 1. Hero (paper) ---------------- */}
       <section
         aria-labelledby="pricing-heading"
-        className="relative isolate mx-auto max-w-[1120px] px-6 pt-24 pb-20 sm:pt-32"
+        className="relative isolate mx-auto max-w-[1120px] px-6 pt-12 pb-10 sm:pt-16"
       >
         {/* Ledger rule bleeding out of the top edge — ties the paper hero to the
             ruled surfaces further down instead of leaving it bare. */}
@@ -70,12 +70,12 @@ export default function PricingPage() {
 
         <h1
           id="pricing-heading"
-          className="mt-6 max-w-4xl text-4xl leading-[1.04] font-bold sm:text-[68px]"
+          className="mt-2 max-w-4xl text-3xl leading-[1.04] font-bold tracking-[-0.028em] sm:text-[40px]"
         >
           One fixed line item against an unbounded one
         </h1>
 
-        <p className="mt-8 max-w-2xl text-xl leading-[1.55] text-ink-soft">
+        <p className="mt-3 max-w-2xl text-base leading-[1.55] text-ink-soft">
           TipGuard Shield is{" "}
           <span className="font-mono tabular-nums">${SHIELD_MONTHLY_PRICE}</span>{" "}
           a month. Below is the arithmetic it stands against — worked from the
@@ -83,7 +83,7 @@ export default function PricingPage() {
           statement of what stays yours for free.
         </p>
 
-        <div className="mt-12 grid gap-10 border-t border-border pt-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
+        <div className="mt-6 grid gap-8 border-t border-border pt-6 lg:grid-cols-[1fr_1fr] lg:gap-16">
           <div className="max-w-md">
             <PricingCta snapshot={snapshot} />
           </div>
@@ -125,7 +125,7 @@ export default function PricingPage() {
 
       {/* ---------------- 4. What Shield does, on a clock (raised inset) ---------------- */}
       <section aria-labelledby="timeline-heading" className="bg-card">
-        <div className="mx-auto max-w-[1120px] px-6 py-20 sm:py-24">
+        <div className="mx-auto max-w-[1120px] px-6 py-12 sm:py-14">
           <p className="eyebrow">After you turn it on</p>
           <h2 id="timeline-heading" className="mt-4 max-w-3xl text-3xl sm:text-[44px]">
             What the subscription actually does between audits
@@ -164,7 +164,7 @@ export default function PricingPage() {
       >
         <div className="bloom-brass pointer-events-none absolute inset-0" aria-hidden="true" />
 
-        <div className="relative mx-auto grid max-w-[1120px] gap-10 px-6 py-20 sm:py-24 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
+        <div className="relative mx-auto grid max-w-[1120px] gap-10 px-6 py-12 sm:py-14 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
           <div>
             <p className="eyebrow text-brass">The decision</p>
             <h2 id="closing-heading" className="mt-4 max-w-2xl text-3xl sm:text-[44px]">

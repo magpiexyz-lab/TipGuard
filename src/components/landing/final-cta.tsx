@@ -15,7 +15,7 @@ import { COUNSEL_DISCLAIMER } from "./content";
 export function FinalCta({ variant }: { variant: Variant }) {
   return (
     <section
-      className="relative isolate overflow-hidden bg-paper-raised py-20 sm:py-28 lg:py-32"
+      className="relative isolate overflow-hidden bg-paper-raised py-14 sm:py-18 lg:py-20"
       aria-labelledby="final-cta-heading"
     >
       <GridPattern
