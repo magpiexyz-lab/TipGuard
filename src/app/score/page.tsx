@@ -115,7 +115,7 @@ export default function ScorePage() {
     <div className="min-h-screen">
       {/* --- Ink authority band ------------------------------------------- */}
       <div className="surface-ink texture-rule bloom-brass">
-        <div className="mx-auto max-w-[1120px] px-6 pb-4 pt-4">
+        <div className="mx-auto max-w-[1120px] px-6 pb-3 pt-3">
           <Link
             href="/"
             className={cn(
@@ -134,19 +134,19 @@ export default function ScorePage() {
               display size. Every hero h1 overrides it in em instead, so the
               tracking scales with the type rather than closing the word gaps
               up ("Howexposed") once the size drops. */}
-          <h1 className="mt-2 max-w-3xl text-[26px] leading-[1.06] tracking-[-0.025em] text-[#ECE8DA] sm:text-[32px]">
+          <h1 className="mt-2 max-w-3xl text-[24px] leading-[1.06] tracking-[-0.025em] text-[#ECE8DA] sm:text-[28px]">
             {showingResults
               ? "Your audit-readiness score"
               : "How exposed is your tip credit?"}
           </h1>
 
-          <p className="mt-3 max-w-2xl text-base leading-[1.55] text-[#A8AF9B]">
+          <p className="mt-2 max-w-3xl text-[15px] leading-[1.5] text-[#A8AF9B]">
             {showingResults
               ? "Scored against the items a wage-and-hour investigator opens with: signed notices, tip-pool composition, overtime basis, and new-hire process."
-              : "Seven questions about how you actually run tipped pay. No account, no email, no sales call — you get the number, the ranked gaps, and an exposure range at the end."}
+              : "Seven questions. You get a score, your ranked gaps, and an exposure range."}
           </p>
 
-          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5">
             {["About 2 minutes", "No account required", "Nothing sent to your staff"].map(
               (item) => (
                 <span key={item} data-evidence className="text-xs text-[#A8AF9B]">
