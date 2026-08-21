@@ -59,11 +59,17 @@ export function Hero({ variant }: { variant: Variant }) {
         className="-z-10 opacity-[0.07]"
       />
 
-      {/* site-header.tsx is `fixed top-0` at h-20 (80px), so the top padding
-          here is doing two jobs: clearing that header and setting the hero's
-          breathing room. pt-24 (96px) is the floor — anything less slides the
-          headline under the header. The bottom side has no such constraint. */}
-      <div className="mx-auto grid max-w-[1160px] grid-cols-1 items-center gap-14 px-5 pb-14 pt-24 sm:px-8 sm:pb-16 sm:pt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,430px)] lg:gap-16 lg:pb-20 lg:pt-32">
+      {/* site-header.tsx is `fixed top-0` at h-20 (80px) and paints no
+          background over the hero, so pt-24 (96px) is the floor: it clears the
+          header with ~15px to spare. Anything less slides the eyebrow under the
+          nav. Held flat across breakpoints — the old sm:pt-28/lg:pt-32 ramp put
+          a visible empty band under the header at desktop widths.
+
+          items-start, not items-center: the two columns are near enough in
+          height that whichever is taller flips with the headline length, and
+          centring the shorter one drops it down the page. Top-aligning keeps
+          the eyebrow on the padding line whatever the variant renders. */}
+      <div className="mx-auto grid max-w-[1160px] grid-cols-1 items-start gap-14 px-5 pb-12 pt-24 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,430px)] lg:gap-16">
         <div className="min-w-0">
           <div className="tg-rise flex items-center gap-3">
             <span aria-hidden="true" className="h-px w-8 shrink-0 bg-brass" />
@@ -77,21 +83,21 @@ export function Hero({ variant }: { variant: Variant }) {
 
           <h1
             id="hero-headline"
-            className="tg-rise mt-7 max-w-[15ch] font-display text-[38px] font-bold leading-[1.04] tracking-[-1.4px] text-paper sm:text-[52px] sm:tracking-[-1.8px] lg:text-[62px] lg:tracking-[-2px] xl:text-[72px]"
+            className="tg-rise mt-5 max-w-[15ch] font-display text-[38px] font-bold leading-[1.04] tracking-[-0.03em] text-paper sm:text-[52px] lg:text-[58px] xl:text-[64px]"
             style={{ animationDelay: "70ms" }}
           >
             {variant.headline}
           </h1>
 
           <p
-            className="tg-rise mt-7 max-w-xl text-lg leading-[1.55] text-paper/80 sm:text-xl"
+            className="tg-rise mt-5 max-w-xl text-lg leading-[1.55] text-paper/80"
             style={{ animationDelay: "140ms" }}
           >
             {variant.subheadline}
           </p>
 
           <div
-            className="tg-rise mt-9 flex flex-col items-start gap-4 sm:flex-row sm:items-center"
+            className="tg-rise mt-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center"
             style={{ animationDelay: "210ms" }}
           >
             <CtaButton
@@ -128,7 +134,7 @@ export function Hero({ variant }: { variant: Variant }) {
           </div>
 
           <ul
-            className="tg-rise mt-8 flex flex-wrap items-center gap-x-6 gap-y-2"
+            className="tg-rise mt-6 flex flex-wrap items-center gap-x-6 gap-y-2"
             style={{ animationDelay: "280ms" }}
           >
             {ASSURANCES.map((item) => (
@@ -143,7 +149,7 @@ export function Hero({ variant }: { variant: Variant }) {
           </ul>
 
           <p
-            className="tg-rise mt-8 max-w-md border-l-2 border-brass pl-4 text-sm leading-[1.55] text-paper/70"
+            className="tg-rise mt-6 max-w-md border-l-2 border-brass pl-4 text-sm leading-[1.55] text-paper/70"
             style={{ animationDelay: "350ms" }}
           >
             {variant.urgency}
