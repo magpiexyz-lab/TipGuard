@@ -14,7 +14,7 @@ export function PricingFaq() {
       aria-labelledby="faq-heading"
       className="border-t border-border"
     >
-      <div className="mx-auto grid max-w-[1120px] gap-10 px-6 py-20 sm:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <div className="mx-auto grid max-w-[1120px] gap-10 px-6 py-12 sm:py-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
         <div className="lg:sticky lg:top-8 lg:self-start">
           <p className="eyebrow">Before you decide</p>
           <h2 id="faq-heading" className="mt-4 text-3xl sm:text-[44px]">

@@ -102,7 +102,7 @@ export default function ResetPasswordPage() {
     <div className="texture-rule relative min-h-screen">
       <div aria-hidden="true" className="bloom-brass pointer-events-none absolute inset-0" />
 
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-16 sm:px-8">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-start px-5 pt-10 pb-10 sm:px-8">
         <div className="duration-[420ms] animate-in fade-in slide-in-from-bottom-2 fill-mode-both">
           {/* Entry point is an emailed link — the operator arrives with no
               navigation context, so the page has to identify itself. */}
@@ -116,7 +116,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <p className="eyebrow mt-8">Account access</p>
-          <h1 className="mt-3 font-display text-[34px] leading-[1.06] tracking-[-1.6px]">
+          <h1 className="mt-2 font-display text-[26px] leading-[1.06] tracking-[-0.025em] sm:text-[32px]">
             Set a new password
           </h1>
           <p className="mt-4 text-base leading-[1.55] text-muted-foreground">

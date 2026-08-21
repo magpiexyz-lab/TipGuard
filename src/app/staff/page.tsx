@@ -84,16 +84,16 @@ export default function StaffPage() {
           paper body below), ruled + brass bloom per the visual brief. */}
       <div className="surface-ink texture-rule">
         <div className="bloom-brass">
-          <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-5 py-10 sm:px-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mx-auto flex max-w-[1180px] flex-col gap-4 px-5 py-6 sm:px-8 md:py-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="eyebrow">Step 05 / 06 &middot; Roster</p>
-              <h1 className="mt-3 font-display text-[34px] leading-[1.06] tracking-[-0.03em] [word-spacing:0.07em] text-[#ECE8DA] sm:text-[44px]">
+              <h1 className="mt-2 font-display text-[26px] leading-[1.06] tracking-[-0.025em] [word-spacing:0.07em] text-[#ECE8DA] sm:text-[32px]">
                 Import your tipped staff
               </h1>
-              <p className="mt-4 max-w-xl text-base leading-[1.55] text-[#A8AF9B]">
-                Every notice, every violation check, and the audit file are built
-                from this roster. Import it once &mdash; malformed rows are
-                reported back to you, they never block the rest of the file.
+              <p className="mt-3 max-w-xl text-base leading-[1.55] text-[#A8AF9B]">
+                Every notice, violation check, and the audit file is built from
+                this roster. Import it once &mdash; malformed rows are reported
+                back and never block the rest.
               </p>
             </div>
 
@@ -127,7 +127,7 @@ export default function StaffPage() {
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-[1180px] gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="mx-auto grid max-w-[1180px] gap-8 px-5 py-6 sm:px-8 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex flex-col gap-8">
           <section aria-labelledby="import-heading">
             <h2

@@ -70,7 +70,7 @@ export default function AuditFilePage() {
           aria-hidden="true"
         />
 
-        <div className="relative mx-auto max-w-[1120px] px-6 py-16 sm:py-20">
+        <div className="relative mx-auto max-w-[1120px] px-6 py-8 sm:py-10">
           <div className="flex flex-wrap items-center gap-3">
             <p className="eyebrow text-brass">Dossier — tip-credit compliance</p>
             {preview ? (
@@ -86,37 +86,37 @@ export default function AuditFilePage() {
             ) : null}
           </div>
 
-          {/* The global h1 rule tracks -2px, which is a display measure. At the
-              36px mobile size that is -5.5% and the words close up; scale the
-              tracking with the type instead. */}
-          <h1 className="mt-5 max-w-3xl text-4xl leading-[1.04] font-bold tracking-[-0.02em] sm:text-[60px] sm:tracking-[-0.033em]">
+          {/* The global h1 rule tracks -2px, which is a display measure. At these
+              sizes that is far too tight and the words close up; the em value
+              below scales the tracking with the type instead. */}
+          <h1 className="mt-2 max-w-3xl text-3xl leading-[1.04] font-bold tracking-[-0.028em] sm:text-[40px]">
             Your audit file
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-[1.55] text-paper/70">
+          <p className="mt-3 max-w-2xl text-base leading-[1.55] text-paper/70">
             One dated export holding every signed tip-credit notice, its signer
             and UTC timestamp, the exact text acknowledged, and a cover index of
             who is covered under which state rule version.
           </p>
 
           {/* Counts strip */}
-          <dl className="mt-12 grid gap-0 border-t border-paper/12 pt-8 sm:grid-cols-3">
+          <dl className="mt-6 grid gap-0 border-t border-paper/12 pt-5 sm:grid-cols-3">
             <div className="sm:pr-8">
               <dt className="text-sm text-paper/70">Employees in the file</dt>
-              <dd className="mt-2 font-mono text-4xl leading-[1.1] tabular-nums">
+              <dd className="mt-1 font-mono text-3xl leading-[1.1] tabular-nums">
                 {counts ? counts.employee_count.toLocaleString("en-US") : "—"}
               </dd>
             </div>
-            <div className="mt-8 border-t border-paper/12 pt-8 sm:mt-0 sm:border-t-0 sm:border-l sm:border-paper/12 sm:px-8 sm:pt-0">
+            <div className="mt-5 border-t border-paper/12 pt-5 sm:mt-0 sm:border-t-0 sm:border-l sm:border-paper/12 sm:px-8 sm:pt-0">
               <dt className="text-sm text-paper/70">Signed acknowledgments</dt>
-              <dd className="mt-2 font-mono text-4xl leading-[1.1] tabular-nums text-seal-soft">
+              <dd className="mt-1 font-mono text-3xl leading-[1.1] tabular-nums text-seal-soft">
                 {counts ? counts.signed_notice_count.toLocaleString("en-US") : "—"}
               </dd>
             </div>
-            <div className="mt-8 border-t border-paper/12 pt-8 sm:mt-0 sm:border-t-0 sm:border-l sm:border-paper/12 sm:pt-0 sm:pl-8">
+            <div className="mt-5 border-t border-paper/12 pt-5 sm:mt-0 sm:border-t-0 sm:border-l sm:border-paper/12 sm:pt-0 sm:pl-8">
               <dt className="text-sm text-paper/70">Open findings</dt>
               <dd
                 className={cn(
-                  "mt-2 font-mono text-4xl leading-[1.1] tabular-nums",
+                  "mt-1 font-mono text-3xl leading-[1.1] tabular-nums",
                   counts && counts.open_violation_count > 0
                     ? "text-ember-soft"
                     : "text-paper"
@@ -149,7 +149,7 @@ export default function AuditFilePage() {
       </section>
 
       {/* ---------------- Body ---------------- */}
-      <div className="mx-auto max-w-[1120px] px-6 py-14 sm:py-20">
+      <div className="mx-auto max-w-[1120px] px-6 py-10 sm:py-12">
         {/* Loading */}
         {result === null ? (
           <div className="flex flex-col gap-10">

@@ -252,7 +252,7 @@ export default async function DashboardPage() {
 
       {/* ---------- Authority band ---------- */}
       <div className="dark surface-ink texture-grain bloom-brass border-b border-border">
-        <div className="mx-auto max-w-[1180px] px-5 py-10 md:px-8 md:py-14">
+        <div className="mx-auto max-w-[1180px] px-5 py-6 md:px-8 md:py-8">
           <div className="flex flex-wrap items-center gap-3">
             <p className="eyebrow">Compliance file &middot; {data.homeState}</p>
             <Badge
@@ -267,12 +267,12 @@ export default async function DashboardPage() {
             </Badge>
           </div>
 
-          <div className="mt-4 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mt-3 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <h1 className="font-display text-4xl leading-[1.04] tracking-[-2px] md:text-[56px]">
+              <h1 className="font-display text-3xl leading-[1.04] tracking-[-0.028em] md:text-[40px]">
                 {data.restaurantName}
               </h1>
-              <p className="mt-5 text-lg leading-[1.55] text-muted-foreground">
+              <p className="mt-3 text-base leading-[1.55] text-muted-foreground">
                 Where your tip-credit file stands today, measured against the{" "}
                 <span className="figure">{data.homeState}</span> rule set, version{" "}
                 <span className="figure">{RULE_VERSION}</span>.
@@ -292,7 +292,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1180px] px-5 py-8 md:px-8 md:py-10">
+      <div className="mx-auto max-w-[1180px] px-5 py-6 md:px-8 md:py-8">
         {/* ---------- Where you stand ---------- */}
         <section aria-labelledby="standing-heading">
           <h2

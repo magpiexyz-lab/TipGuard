@@ -11,7 +11,7 @@ const YEAR = 2026;
 export function SiteFooter() {
   return (
     <footer className="surface-ink border-t border-paper/10">
-      <div className="mx-auto max-w-[1160px] px-5 py-14 sm:px-8">
+      <div className="mx-auto max-w-[1160px] px-5 py-10 sm:px-8">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex items-center gap-3">

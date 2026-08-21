@@ -115,7 +115,7 @@ export default function ScorePage() {
     <div className="min-h-screen">
       {/* --- Ink authority band ------------------------------------------- */}
       <div className="surface-ink texture-rule bloom-brass">
-        <div className="mx-auto max-w-[1120px] px-6 pb-14 pt-10">
+        <div className="mx-auto max-w-[1120px] px-6 pb-8 pt-6">
           <Link
             href="/"
             className={cn(
@@ -128,24 +128,25 @@ export default function ScorePage() {
             TipGuard
           </Link>
 
-          <p className="eyebrow mt-8">Free audit-readiness score</p>
+          <p className="eyebrow mt-5">Free audit-readiness score</p>
 
-          {/* globals.css sets h1 tracking in fixed px (-2px), tuned for the 60px
-              desktop size. At the 36px mobile size that is ~-0.056em and the
-              word gaps close up ("Howexposed"). Re-tune per breakpoint here. */}
-          <h1 className="mt-4 max-w-3xl text-4xl leading-[1.04] tracking-[-1.1px] text-[#ECE8DA] sm:text-6xl sm:tracking-[-2px]">
+          {/* globals.css sets h1 tracking in fixed px (-2px), tuned for a 60px
+              display size. Every hero h1 overrides it in em instead, so the
+              tracking scales with the type rather than closing the word gaps
+              up ("Howexposed") once the size drops. */}
+          <h1 className="mt-2 max-w-3xl text-3xl leading-[1.04] tracking-[-0.028em] text-[#ECE8DA] sm:text-[40px]">
             {showingResults
               ? "Your audit-readiness score"
               : "How exposed is your tip credit?"}
           </h1>
 
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[#A8AF9B]">
+          <p className="mt-3 max-w-2xl text-base leading-[1.55] text-[#A8AF9B]">
             {showingResults
               ? "Scored against the items a wage-and-hour investigator opens with: signed notices, tip-pool composition, overtime basis, and new-hire process."
               : "Seven questions about how you actually run tipped pay. No account, no email, no sales call — you get the number, the ranked gaps, and an exposure range at the end."}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
+          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
             {["About 2 minutes", "No account required", "Nothing sent to your staff"].map(
               (item) => (
                 <span key={item} data-evidence className="text-xs text-[#A8AF9B]">
@@ -191,13 +192,13 @@ function ScoringSkeleton() {
   ];
 
   return (
-    <div className="mx-auto max-w-[1120px] px-6 pb-24 pt-14" aria-live="polite" aria-busy="true">
+    <div className="mx-auto max-w-[1120px] px-6 pb-16 pt-8" aria-live="polite" aria-busy="true">
       <p className="eyebrow">Scoring</p>
       <h2 className="mt-3 text-2xl tracking-[-0.8px] sm:text-3xl sm:tracking-[-1.6px]">
         Assembling your file
       </h2>
 
-      <div className="mt-8 grid gap-8 md:grid-cols-[240px_1fr]">
+      <div className="mt-6 grid gap-8 md:grid-cols-[240px_1fr]">
         <div
           className="aspect-square w-full max-w-[240px] animate-pulse rounded-full bg-muted"
           aria-hidden="true"

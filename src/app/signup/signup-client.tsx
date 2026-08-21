@@ -35,15 +35,15 @@ export function SignupClient() {
 
   return (
     <div className="grid lg:grid-cols-[1fr_minmax(24rem,44%)]">
-      <div className="flex flex-col justify-center px-6 py-16 sm:px-12 lg:px-14 lg:py-24">
+      <div className="flex flex-col justify-start px-6 pt-10 pb-10 sm:px-12 lg:px-14 lg:pt-12 lg:pb-12">
         <div className="mx-auto w-full max-w-md">
           <p className="eyebrow">Step 4 of 6 &middot; Create account</p>
-          <h1 className="mt-5 font-display text-4xl leading-[1.04] tracking-[-2px] sm:text-5xl">
+          <h1 className="mt-2 font-display text-3xl leading-[1.04] tracking-[-0.028em] sm:text-[40px]">
             {pending
               ? "Keep your score. Close the gaps."
               : "Open your tip-credit file"}
           </h1>
-          <p className="mt-5 text-lg leading-[1.55] text-muted-foreground">
+          <p className="mt-3 text-base leading-[1.55] text-muted-foreground">
             {pending
               ? "Your account holds the score, the gap list, and every notice you send from here — dated, signed, and exportable."
               : "One account holds your roster, your state-specific notices, the signed acknowledgments, and the export you hand an investigator."}

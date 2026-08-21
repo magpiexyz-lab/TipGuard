@@ -26,7 +26,7 @@ export function EvidenceStrip() {
         className="-z-10 opacity-[0.05]"
       />
 
-      <div className="mx-auto max-w-[1160px] px-5 py-14 sm:px-8 sm:py-16">
+      <div className="mx-auto max-w-[1160px] px-5 py-10 sm:px-8 sm:py-12">
         <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
           <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-brass">
             The arithmetic of a disallowed credit
