@@ -8,6 +8,8 @@
  * sequence like a printer, not like a bubble field"). Global reduced-motion
  * handling in globals.css collapses the animation to a static final state.
  */
+
+import { BrandHeader } from "@/components/brand-header";
 export default function SignLoading() {
   const rows = [0, 1, 2, 3, 4, 5];
 
@@ -22,6 +24,8 @@ export default function SignLoading() {
       />
 
       <div className="relative mx-auto w-full max-w-[760px] px-5 pt-6 pb-12 sm:px-8 sm:pt-8">
+        <BrandHeader className="mb-6" />
+
         <div className="flex items-start justify-between gap-4">
           <div className="w-full max-w-[16rem] space-y-2.5">
             <div className="h-2.5 w-40 animate-pulse rounded-sm bg-foreground/10" />

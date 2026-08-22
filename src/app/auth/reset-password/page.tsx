@@ -105,15 +105,19 @@ export default function ResetPasswordPage() {
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-start px-5 pt-10 pb-10 sm:px-8">
         <div className="duration-[420ms] animate-in fade-in slide-in-from-bottom-2 fill-mode-both">
           {/* Entry point is an emailed link — the operator arrives with no
-              navigation context, so the page has to identify itself. */}
-          <div className="flex items-center gap-3">
+              navigation context, so the page has to identify itself. The mark
+              is also the only route out of here, so it links home. */}
+          <Link
+            href="/"
+            className="-mx-1 inline-flex items-center gap-3 rounded-sm px-1 transition-opacity duration-[var(--duration-fast)] hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass"
+          >
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-brass/15 ring-1 ring-brass/25">
               <ShieldCheck className="h-5 w-5 text-brass-deep" aria-hidden="true" />
             </span>
             <span className="font-display text-lg leading-none tracking-[-0.6px]">
               TipGuard
             </span>
-          </div>
+          </Link>
 
           <p className="eyebrow mt-8">Account access</p>
           <h1 className="mt-2 font-display text-[26px] leading-[1.06] tracking-[-0.025em] sm:text-[32px]">

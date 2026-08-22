@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { formatUtcStamp } from "./format";
+import { BrandHeader } from "@/components/brand-header";
 import { SigningLinkError } from "./link-error";
 import { loadSigningLink, type SigningLinkState } from "./notice-lookup";
 import { NoticeDocument } from "./notice-document";
@@ -81,6 +82,8 @@ export default async function SignPage({
       />
 
       <div className="relative mx-auto w-full max-w-[760px] px-5 pt-6 pb-12 sm:px-8 sm:pt-8">
+        <BrandHeader className="mb-6" />
+
         <Masthead employerName={employerName} status={link.status} />
 
         {link.status === "ready" ? (
