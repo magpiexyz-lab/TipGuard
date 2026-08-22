@@ -21,7 +21,7 @@ export function PricingSection({ variant }: { variant: Variant }) {
   return (
     <section
       id={SECTION_IDS.pricing}
-      className="surface-ink relative isolate scroll-mt-24 overflow-hidden py-8 sm:py-8 lg:py-10"
+      className="dark surface-ink relative isolate scroll-mt-24 overflow-hidden py-8 sm:py-8 lg:py-10"
       aria-labelledby="pricing-heading"
     >
       <GridPattern

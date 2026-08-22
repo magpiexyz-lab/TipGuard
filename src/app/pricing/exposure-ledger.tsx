@@ -43,7 +43,7 @@ export function ExposureLedger({ children }: { children?: React.ReactNode }) {
   return (
     <section
       aria-labelledby="exposure-heading"
-      className="surface-ink texture-grain relative overflow-hidden"
+      className="dark surface-ink texture-grain relative overflow-hidden"
     >
       <div className="bloom-brass pointer-events-none absolute inset-0" aria-hidden="true" />
       <div

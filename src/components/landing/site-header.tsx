@@ -12,7 +12,6 @@ const NAV = [
   { href: `#${SECTION_IDS.exposure}`, label: "Exposure" },
   { href: `#${SECTION_IDS.how}`, label: "How it works" },
   { href: `#${SECTION_IDS.pricing}`, label: "Pricing" },
-  { href: `#${SECTION_IDS.faq}`, label: "FAQ" },
 ];
 
 /**

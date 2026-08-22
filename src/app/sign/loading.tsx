@@ -24,7 +24,7 @@ export default function SignLoading() {
       />
 
       <div className="relative mx-auto w-full max-w-[760px] px-5 pt-6 pb-12 sm:px-8 sm:pt-8">
-        <BrandHeader className="mb-6" />
+        <BrandHeader className="mb-6" hideWhenSignedIn />
 
         <div className="flex items-start justify-between gap-4">
           <div className="w-full max-w-[16rem] space-y-2.5">

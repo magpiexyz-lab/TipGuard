@@ -10,7 +10,7 @@ const YEAR = 2026;
  */
 export function SiteFooter() {
   return (
-    <footer className="surface-ink border-t border-paper/10">
+    <footer className="dark surface-ink border-t border-paper/10">
       <div className="mx-auto max-w-[1160px] px-5 py-10 sm:px-8">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -34,12 +34,11 @@ export function SiteFooter() {
           {/* Links are 44px tall so they clear the mobile touch-target floor;
               `--tg-underline` re-seats the brass draw under the text rather
               than under the padded box. */}
-          <nav className="flex flex-col" aria-label="Footer">
+          <nav className="grid grid-cols-2 gap-x-10 sm:grid-cols-3 sm:gap-x-12" aria-label="Footer">
             {[
               { href: `#${SECTION_IDS.exposure}`, label: "Exposure" },
               { href: `#${SECTION_IDS.how}`, label: "How it works" },
               { href: `#${SECTION_IDS.pricing}`, label: "Pricing" },
-              { href: `#${SECTION_IDS.faq}`, label: "FAQ" },
             ].map((item) => (
               <a
                 key={item.href}
@@ -94,7 +93,7 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-paper/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-4 border-t border-paper/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-[70ch] text-xs leading-[1.5] text-paper/70">
             {COUNSEL_DISCLAIMER}
           </p>

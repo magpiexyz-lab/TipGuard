@@ -19,7 +19,7 @@ const STATUS_STYLE: Record<string, string> = {
  */
 export function EvidenceTape() {
   return (
-    <section className="surface-ink relative overflow-hidden py-10" aria-label="What the vault stores">
+    <section className="dark surface-ink relative overflow-hidden py-10" aria-label="What the vault stores">
       <div className="mx-auto mb-6 max-w-[1160px] px-5 sm:px-8">
         <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-brass">
           What the vault stores · record format
