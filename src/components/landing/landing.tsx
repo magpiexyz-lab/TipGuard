@@ -3,9 +3,7 @@ import type { Variant } from "@/lib/variants";
 import { EvidenceStrip } from "./evidence-strip";
 import { EvidenceTape } from "./evidence-tape";
 import { ExposureSection } from "./exposure-section";
-import { FaqSection } from "./faq-section";
 import { FeaturesSection } from "./features-section";
-import { FinalCta } from "./final-cta";
 import { Hero } from "./hero";
 import { LandingAnalytics } from "./landing-analytics";
 import { PricingSection } from "./pricing-section";
@@ -54,8 +52,6 @@ export function Landing({ variant }: { variant: Variant }) {
       <FeaturesSection variant={variant} />
       <EvidenceTape />
       <PricingSection variant={variant} />
-      <FaqSection />
-      <FinalCta variant={variant} />
 
       <SiteFooter />
     </>

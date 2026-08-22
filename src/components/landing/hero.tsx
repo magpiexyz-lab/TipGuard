@@ -21,7 +21,7 @@ export function Hero({ variant }: { variant: Variant }) {
   return (
     <section
       id="top"
-      className="surface-ink relative isolate overflow-hidden"
+      className="dark surface-ink relative isolate overflow-hidden"
       aria-labelledby="hero-headline"
     >
       <Image
