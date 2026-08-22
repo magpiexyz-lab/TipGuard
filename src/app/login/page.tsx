@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FileSignature } from "lucide-react";
+import { BrandHeader } from "@/components/brand-header";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
@@ -22,6 +23,8 @@ export default function LoginPage() {
       />
 
       <div className="relative mx-auto w-full max-w-[26rem] px-6 py-8 sm:py-10">
+        <BrandHeader className="mb-6" />
+
         <div className="animate-in fade-in-0 slide-in-from-bottom-3 duration-500">
           <p className="eyebrow">Returning operator</p>
           <h1 className="mt-2 font-display text-3xl leading-[1.04] tracking-[-0.028em] sm:text-[40px]">

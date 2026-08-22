@@ -48,7 +48,7 @@ export interface Question {
   kind: "choice" | "number";
   options?: ChoiceOption[];
   /** Grid density for the option cluster. */
-  columns?: 1 | 2;
+  columns?: 1 | 2 | 3;
   /** Questions only asked when this predicate holds. */
   when?: (answers: Answers) => boolean;
 }
@@ -84,7 +84,10 @@ export const QUESTIONS: Question[] = [
     note: "Several states have eliminated the tip credit outright. Claiming it there is a wage violation on every tipped hour, not a paperwork gap.",
     citation: "29 U.S.C. §203(m)(2)(A)",
     kind: "choice",
-    columns: 2,
+    // The only question with many short-labelled options. Three columns at lg
+    // renders its seven states in three rows instead of four, which is what
+    // keeps the whole question reachable without scrolling on a 768p laptop.
+    columns: 3,
     options: STATE_OPTIONS,
   },
   {

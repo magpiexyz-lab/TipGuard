@@ -204,7 +204,7 @@ export function Questionnaire({
 
       {/* --- Question card ------------------------------------------------- */}
       <div>
-        <div className="rounded-xl bg-card p-5 ring-1 ring-foreground/10 sm:p-6">
+        <div className="rounded-xl bg-card p-5 ring-1 ring-foreground/10">
           <p className="eyebrow">
             Question {safeIndex + 1} of {steps.length}
           </p>
@@ -221,7 +221,7 @@ export function Questionnaire({
             {current.help}
           </p>
 
-          <div className="mt-5">
+          <div className="mt-4">
             {current.kind === "choice" && current.options ? (
               <RadioCards
                 options={current.options}
