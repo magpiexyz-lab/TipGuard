@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { trackSignupStart } from "@/lib/events";
+import { BrandHeader } from "@/components/brand-header";
 import { ScoreCarryRail } from "./score-carry-rail";
 import { SignupForm } from "./signup-form";
 import { readPendingScore, type PendingScore } from "@/app/score/pending-score";
@@ -37,6 +38,8 @@ export function SignupClient() {
     <div className="grid lg:grid-cols-[1fr_minmax(24rem,44%)]">
       <div className="flex flex-col justify-start px-6 pt-10 pb-10 sm:px-12 lg:px-14 lg:pt-12 lg:pb-12">
         <div className="mx-auto w-full max-w-md">
+          <BrandHeader className="mb-6" />
+
           <p className="eyebrow">Step 4 of 6 &middot; Create account</p>
           <h1 className="mt-2 font-display text-3xl leading-[1.04] tracking-[-0.028em] sm:text-[40px]">
             {pending
