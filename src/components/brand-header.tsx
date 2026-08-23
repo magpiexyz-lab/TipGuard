@@ -1,6 +1,12 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+
+import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 /**
@@ -20,11 +26,36 @@ import { cn } from "@/lib/utils";
 export function BrandHeader({
   tone = "paper",
   className,
+  hideWhenSignedIn = false,
 }: {
   /** `ink` for dark surfaces, `paper` for light ones. */
   tone?: "paper" | "ink";
   className?: string;
+  /**
+   * Set on /sign. NavBar suppresses itself there only for signed-out visitors,
+   * so once an owner is authenticated the full nav returns and this mark would
+   * be a second TipGuard wordmark stacked under the first.
+   */
+  hideWhenSignedIn?: boolean;
 }) {
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    if (!hideWhenSignedIn) return;
+    const supabase = createClient();
+    supabase.auth
+      .getUser()
+      .then((res: { data: { user: unknown | null } }) => setSignedIn(res.data.user !== null))
+      .catch(() => setSignedIn(false));
+    const { data } = supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) =>
+        setSignedIn(session?.user != null),
+    );
+    return () => data.subscription.unsubscribe();
+  }, [hideWhenSignedIn]);
+
+  if (hideWhenSignedIn && signedIn) return null;
+
   return (
     <div className={cn("flex items-center", className)}>
       <Link

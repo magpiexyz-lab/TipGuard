@@ -114,7 +114,7 @@ export default function ScorePage() {
   return (
     <div className="min-h-screen">
       {/* --- Ink authority band ------------------------------------------- */}
-      <div className="surface-ink texture-rule bloom-brass">
+      <div className="dark surface-ink texture-rule bloom-brass">
         <div className="mx-auto max-w-[1120px] px-6 pb-3 pt-3">
           <Link
             href="/"

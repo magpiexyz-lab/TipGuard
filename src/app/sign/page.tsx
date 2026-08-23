@@ -82,7 +82,7 @@ export default async function SignPage({
       />
 
       <div className="relative mx-auto w-full max-w-[760px] px-5 pt-6 pb-12 sm:px-8 sm:pt-8">
-        <BrandHeader className="mb-6" />
+        <BrandHeader className="mb-6" hideWhenSignedIn />
 
         <Masthead employerName={employerName} status={link.status} />
 

@@ -241,7 +241,7 @@ export default function NoticesPage() {
     <div className="min-h-screen">
       {/* Authority band — the send action lives here because it is the single
           most consequential control in the product. */}
-      <div className="surface-ink texture-rule">
+      <div className="dark surface-ink texture-rule">
         <div className="bloom-brass">
           <div className="mx-auto flex max-w-[1180px] flex-col gap-4 px-5 py-6 sm:px-8 md:py-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">

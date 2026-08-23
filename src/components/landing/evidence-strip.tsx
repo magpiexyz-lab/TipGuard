@@ -15,7 +15,7 @@ export function EvidenceStrip() {
   return (
     <section
       id={SECTION_IDS.exposure}
-      className="surface-ink relative isolate scroll-mt-24 border-t border-paper/10"
+      className="dark surface-ink relative isolate scroll-mt-24 border-t border-paper/10"
       aria-label="What the statute says"
     >
       <GridPattern

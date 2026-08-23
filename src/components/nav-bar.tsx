@@ -22,18 +22,25 @@ import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
  * the global bar on top of them doubles the brand mark and stacks two navs
  * above the fold (framework/nextjs.md, fix #1072).
  */
-const CHROMELESS_EXACT = ["/", "/sign", "/login", "/signup"];
+// Always chromeless: landing owns its own SiteHeader, and the auth screens
+// should not advertise the app they are gating.
+const CHROMELESS_EXACT = ["/", "/login", "/signup"];
+// Chromeless only for signed-out visitors. /sign is reached two ways: an
+// employee opening an emailed token link (no account -- app links would be dead
+// ends, so stay chromeless), or an owner clicking "Sign a notice" in this very
+// nav. Suppressing it unconditionally stranded that owner with no way back.
+const CHROMELESS_WHEN_SIGNED_OUT = ["/sign"];
 const CHROMELESS_PREFIXES = ["/v/", "/auth/"];
 
 const NAV_LINKS = [
   // Golden-path pages first, in funnel sequence.
-  { href: "/score", label: "Readiness score" },
+  { href: "/score", label: "Readiness score", public: true },
   { href: "/staff", label: "Staff" },
   { href: "/notices", label: "Notices" },
   // Behavior-only pages, alphabetical.
   { href: "/audit-file", label: "Audit file" },
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/pricing", label: "Pricing", public: true },
   { href: "/sign", label: "Sign a notice" },
   { href: "/violations", label: "Findings" },
 ];
@@ -73,9 +80,15 @@ export function NavBar() {
     router.refresh();
   }
 
+  const path = pathname ?? "";
+  // While auth is still resolving, treat the visitor as signed out. That is the
+  // safe default: an employee never sees a flash of owner navigation, and the
+  // owner gets the nav a beat later rather than never.
+  const signedIn = !loading && user !== null;
   const suppressed =
-    CHROMELESS_EXACT.includes(pathname ?? "") ||
-    CHROMELESS_PREFIXES.some((prefix) => (pathname ?? "").startsWith(prefix));
+    CHROMELESS_EXACT.includes(path) ||
+    CHROMELESS_PREFIXES.some((prefix) => path.startsWith(prefix)) ||
+    (!signedIn && CHROMELESS_WHEN_SIGNED_OUT.includes(path));
   if (suppressed) return null;
 
   const navLinks = (
@@ -86,7 +99,11 @@ export function NavBar() {
           signup and the /auth/* routes. Ordering: golden_path pages first in
           funnel sequence, behavior-only pages appended alphabetically.
           See .claude/procedures/wire.md Step 5b.3. */}
-      {NAV_LINKS.map((link) => (
+      {/* Signed-out visitors only ever see the pages they can actually open.
+          /score is anonymous by design (b-01/b-02) and /pricing is public;
+          Staff, Notices, Audit file, Dashboard, Findings and Sign a notice all
+          need a session, so offering them before login is a row of dead ends. */}
+      {NAV_LINKS.filter((link) => signedIn || link.public).map((link) => (
         <Link
           key={link.href}
           href={link.href}

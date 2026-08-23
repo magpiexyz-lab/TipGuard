@@ -13,7 +13,7 @@ import type { Variant } from "@/lib/variants";
 export function ExposureSection({ variant }: { variant: Variant }) {
   return (
     <section
-      className="texture-rule relative bg-paper py-14 sm:py-18 lg:py-20"
+      className="texture-rule relative bg-paper py-10 sm:py-12 lg:py-14"
       aria-labelledby="exposure-heading"
     >
       <div className="mx-auto grid max-w-[1160px] grid-cols-1 gap-14 px-5 sm:px-8 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-20">

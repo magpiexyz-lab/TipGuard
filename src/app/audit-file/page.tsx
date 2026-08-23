@@ -62,7 +62,7 @@ export default function AuditFilePage() {
       {/* ---------------- Header (full-bleed ink) ---------------- */}
       <section
         aria-labelledby="audit-file-heading"
-        className="surface-ink texture-grain relative overflow-hidden"
+        className="dark surface-ink texture-grain relative overflow-hidden"
       >
         <div className="bloom-brass pointer-events-none absolute inset-0" aria-hidden="true" />
         <div
