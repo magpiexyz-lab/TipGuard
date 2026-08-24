@@ -134,7 +134,7 @@ export default function ScorePage() {
               display size. Every hero h1 overrides it in em instead, so the
               tracking scales with the type rather than closing the word gaps
               up ("Howexposed") once the size drops. */}
-          <h1 className="mt-2 max-w-3xl text-[24px] leading-[1.06] tracking-[-0.025em] text-[#ECE8DA] sm:text-[28px]">
+          <h1 className="mt-2 max-w-3xl text-[24px] leading-[1.06] tracking-[-0.025em] [word-spacing:0.06em] text-[#ECE8DA] sm:text-[28px]">
             {showingResults
               ? "Your audit-readiness score"
               : "How exposed is your tip credit?"}
@@ -194,7 +194,7 @@ function ScoringSkeleton() {
   return (
     <div className="mx-auto max-w-[1120px] px-6 pb-16 pt-8" aria-live="polite" aria-busy="true">
       <p className="eyebrow">Scoring</p>
-      <h2 className="mt-3 text-2xl tracking-[-0.8px] sm:text-3xl sm:tracking-[-1.6px]">
+      <h2 className="mt-3 text-2xl tracking-[-0.8px] [word-spacing:0.06em] sm:text-3xl sm:tracking-[-1.6px]">
         Assembling your file
       </h2>
 

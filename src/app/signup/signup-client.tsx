@@ -41,7 +41,7 @@ export function SignupClient() {
           <BrandHeader className="mb-6" />
 
           <p className="eyebrow">Step 4 of 6 &middot; Create account</p>
-          <h1 className="mt-2 font-display text-3xl leading-[1.04] tracking-[-0.028em] sm:text-[40px]">
+          <h1 className="mt-2 font-display text-3xl leading-[1.04] tracking-[-0.028em] [word-spacing:0.067em] sm:text-[40px]">
             {pending
               ? "Keep your score. Close the gaps."
               : "Open your tip-credit file"}

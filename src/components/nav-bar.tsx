@@ -147,7 +147,7 @@ export function NavBar() {
         {/* Decorative: the brand name is announced by the adjacent <span>.
             unoptimized: next/image rejects SVG by default (HTTP 400). */}
         <Image src="/images/logo.svg" alt="" aria-hidden width={32} height={32} unoptimized />
-        <span className="font-display text-xl tracking-[-0.8px]">TipGuard</span>
+        <span className="font-display text-xl tracking-[-0.8px] [word-spacing:0.06em]">TipGuard</span>
       </Link>
 
       {/* Desktop nav */}

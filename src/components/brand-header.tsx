@@ -78,7 +78,7 @@ export function BrandHeader({
         />
         <span
           className={cn(
-            "font-display text-lg tracking-[-0.6px]",
+            "font-display text-lg tracking-[-0.6px] [word-spacing:0.06em]",
             tone === "ink" ? "text-[#ECE8DA]" : "text-foreground",
           )}
         >

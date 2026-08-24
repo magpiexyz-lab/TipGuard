@@ -43,7 +43,7 @@ export function FaqSection() {
           <p className="eyebrow">Straight answers</p>
           <h2
             id="faq-heading"
-            className="mt-5 font-display text-[30px] font-semibold leading-[1.1] tracking-[-1.6px] text-ink sm:text-[38px] lg:text-[44px]"
+            className="mt-5 font-display text-[30px] font-semibold leading-[1.1] tracking-[-1.6px] [word-spacing:0.072em] text-ink sm:text-[38px] lg:text-[44px]"
           >
             The questions an operator actually asks.
           </h2>
@@ -91,7 +91,7 @@ export function FaqSection() {
                   value={`faq-${index}`}
                   className="tg-row group border-b border-border"
                 >
-                  <AccordionTrigger className="items-center gap-6 py-6 pl-4 text-left font-display text-lg font-semibold leading-[1.25] tracking-[-0.6px] text-ink transition-colors duration-[140ms] hover:no-underline hover:text-brass-deep sm:text-xl **:data-[slot=accordion-trigger-icon]:size-5 **:data-[slot=accordion-trigger-icon]:text-brass-deep">
+                  <AccordionTrigger className="items-center gap-6 py-6 pl-4 text-left font-display text-lg font-semibold leading-[1.25] tracking-[-0.6px] [word-spacing:0.06em] text-ink transition-colors duration-[140ms] hover:no-underline hover:text-brass-deep sm:text-xl **:data-[slot=accordion-trigger-icon]:size-5 **:data-[slot=accordion-trigger-icon]:text-brass-deep">
                     <span className="flex min-w-0 items-baseline gap-5">
                       <span
                         aria-hidden="true"

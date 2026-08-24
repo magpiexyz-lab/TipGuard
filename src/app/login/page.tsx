@@ -27,7 +27,7 @@ export default function LoginPage() {
 
         <div className="animate-in fade-in-0 slide-in-from-bottom-3 duration-500">
           <p className="eyebrow">Returning operator</p>
-          <h1 className="mt-2 font-display text-3xl leading-[1.04] tracking-[-0.028em] sm:text-[40px]">
+          <h1 className="mt-2 font-display text-3xl leading-[1.04] tracking-[-0.028em] [word-spacing:0.067em] sm:text-[40px]">
             Open your file
           </h1>
           <p className="mt-4 text-lg leading-[1.55] text-muted-foreground">
@@ -56,7 +56,7 @@ export default function LoginPage() {
           </span>
           <h2
             id="employee-signing-heading"
-            className="mt-4 font-display text-xl leading-[1.15] tracking-[-1.2px]"
+            className="mt-4 font-display text-xl leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em]"
           >
             Signing a notice, not managing one?
           </h2>

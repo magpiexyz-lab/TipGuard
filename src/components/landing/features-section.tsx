@@ -27,7 +27,7 @@ export function FeaturesSection({ variant }: { variant: Variant }) {
           <p className="eyebrow">Roster in, audit file out</p>
           <h2
             id="how-heading"
-            className="mt-5 font-display text-[30px] font-semibold leading-[1.1] tracking-[-1.6px] text-ink sm:text-[38px] lg:text-[44px]"
+            className="mt-5 font-display text-[30px] font-semibold leading-[1.1] tracking-[-1.6px] [word-spacing:0.072em] text-ink sm:text-[38px] lg:text-[44px]"
           >
             Three moving parts. None of them are your evening.
           </h2>
@@ -59,7 +59,7 @@ export function FeaturesSection({ variant }: { variant: Variant }) {
                 <span className="figure text-sm text-brass-deep">{lead.index}</span>
                 <span className="eyebrow">{lead.eyebrow}</span>
               </div>
-              <h3 className="mt-5 max-w-[22ch] font-display text-2xl font-semibold leading-[1.15] tracking-[-1.2px] text-ink sm:text-[28px]">
+              <h3 className="mt-5 max-w-[22ch] font-display text-2xl font-semibold leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em] text-ink sm:text-[28px]">
                 {lead.title}
               </h3>
               <p className="mt-4 max-w-[54ch] text-base leading-[1.55] text-ink-soft">
@@ -107,7 +107,7 @@ export function FeaturesSection({ variant }: { variant: Variant }) {
                   <span className="figure text-sm text-brass-deep">{feature.index}</span>
                   <span className="eyebrow">{feature.eyebrow}</span>
                 </div>
-                <h3 className="mt-4 font-display text-xl font-semibold leading-[1.15] tracking-[-1.2px] text-ink sm:text-2xl">
+                <h3 className="mt-4 font-display text-xl font-semibold leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em] text-ink sm:text-2xl">
                   {feature.title}
                 </h3>
                 <p className="mt-3 text-sm leading-[1.55] text-ink-soft">{feature.body}</p>

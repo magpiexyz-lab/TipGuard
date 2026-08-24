@@ -37,7 +37,7 @@ export function SignedNotices({ entries }: { entries: SignedNoticeEntry[] }) {
           <PenLine className="size-8 text-brass-deep" strokeWidth={1.25} />
         </span>
         <div className="mt-6 text-center sm:mt-0 sm:text-left">
-          <h3 className="font-heading text-xl tracking-[-0.015em] text-balance">
+          <h3 className="font-heading text-xl tracking-[-0.015em] [word-spacing:0.036em] text-balance">
             No acknowledgments in the vault yet
           </h3>
           <p className="mx-auto mt-2 max-w-md text-sm leading-[1.55] text-ink-soft sm:mx-0">
@@ -68,7 +68,7 @@ export function SignedNotices({ entries }: { entries: SignedNoticeEntry[] }) {
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="font-heading text-lg leading-[1.15] tracking-[-0.012em]">
+              <h3 className="font-heading text-lg leading-[1.15] tracking-[-0.012em] [word-spacing:0.03em]">
                 {entry.employeeName}
               </h3>
               <p className="mt-1 flex items-center gap-2 text-sm text-ink-soft">

@@ -269,7 +269,7 @@ export default async function DashboardPage() {
 
           <div className="mt-3 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <h1 className="font-display text-3xl leading-[1.04] tracking-[-0.028em] md:text-[40px]">
+              <h1 className="font-display text-3xl leading-[1.04] tracking-[-0.028em] [word-spacing:0.067em] md:text-[40px]">
                 {data.restaurantName}
               </h1>
               <p className="mt-3 text-base leading-[1.55] text-muted-foreground">
@@ -297,7 +297,7 @@ export default async function DashboardPage() {
         <section aria-labelledby="standing-heading">
           <h2
             id="standing-heading"
-            className="font-display text-2xl tracking-[-1.6px] md:text-[32px]"
+            className="font-display text-2xl tracking-[-1.6px] [word-spacing:0.072em] md:text-[32px]"
           >
             Where you stand
           </h2>
@@ -361,7 +361,7 @@ export default async function DashboardPage() {
               <div>
                 <h2
                   id="gaps-heading"
-                  className="font-display text-2xl tracking-[-1.6px] md:text-[32px]"
+                  className="font-display text-2xl tracking-[-1.6px] [word-spacing:0.072em] md:text-[32px]"
                 >
                   Gaps from your readiness score
                 </h2>
@@ -437,7 +437,7 @@ export default async function DashboardPage() {
             <div>
               <h2
                 id="findings-heading"
-                className="font-display text-2xl tracking-[-1.6px] md:text-[32px]"
+                className="font-display text-2xl tracking-[-1.6px] [word-spacing:0.072em] md:text-[32px]"
               >
                 Open findings
               </h2>
@@ -487,7 +487,7 @@ export default async function DashboardPage() {
                           {finding.daysOpen}d
                         </span>
                       </span>
-                      <span className="mt-2 block font-display text-xl leading-[1.15] tracking-[-1.2px]">
+                      <span className="mt-2 block font-display text-xl leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em]">
                         {RULE_CLASS_META[finding.ruleClass].title}
                       </span>
                       <span className="mt-1 block text-sm leading-[1.5] text-muted-foreground">
@@ -514,7 +514,7 @@ export default async function DashboardPage() {
                       aria-hidden="true"
                     />
                   </span>
-                  <h3 className="mt-6 font-display text-2xl tracking-[-1.6px]">
+                  <h3 className="mt-6 font-display text-2xl tracking-[-1.6px] [word-spacing:0.072em]">
                     Nothing flagged against this file
                   </h3>
                   <p className="mx-auto mt-3 max-w-lg text-sm leading-[1.55] text-muted-foreground">
@@ -531,7 +531,7 @@ export default async function DashboardPage() {
                     height={400}
                     className="mx-auto h-auto w-36 md:w-44"
                   />
-                  <h3 className="mt-6 font-display text-2xl tracking-[-1.6px]">
+                  <h3 className="mt-6 font-display text-2xl tracking-[-1.6px] [word-spacing:0.072em]">
                     Your file is empty
                   </h3>
                   <p className="mx-auto mt-3 max-w-lg text-sm leading-[1.55] text-muted-foreground">
@@ -572,7 +572,7 @@ export default async function DashboardPage() {
         <section aria-labelledby="actions-heading" className="mt-10">
           <h2
             id="actions-heading"
-            className="font-display text-2xl tracking-[-1.6px] md:text-[32px]"
+            className="font-display text-2xl tracking-[-1.6px] [word-spacing:0.072em] md:text-[32px]"
           >
             Keep the file current
           </h2>
@@ -670,7 +670,7 @@ function ActionCard({
         <span className="flex size-10 items-center justify-center rounded-md bg-primary/15 text-brass-deep transition-colors duration-150 group-hover/action:bg-primary/25 dark:text-primary">
           {icon}
         </span>
-        <span className="mt-4 block font-display text-xl leading-[1.15] tracking-[-1.2px]">
+        <span className="mt-4 block font-display text-xl leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em]">
           {title}
         </span>
         <span className="mt-2 block text-sm leading-[1.55] text-muted-foreground">

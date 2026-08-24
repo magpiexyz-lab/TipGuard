@@ -138,7 +138,7 @@ export function ScoreResults({
             <p className="eyebrow">Audit-readiness — {band.label}</p>
             <h2
               id="verdict-heading"
-              className="mt-3 text-3xl leading-tight tracking-[-1px] sm:text-[44px] sm:leading-[1.1] sm:tracking-[-1.6px]"
+              className="mt-3 text-3xl leading-tight tracking-[-1px] [word-spacing:0.06em] sm:text-[44px] sm:leading-[1.1] sm:tracking-[-1.6px]"
             >
               {verdictSentence(result, claimsTipCredit)}
             </h2>
@@ -207,7 +207,7 @@ export function ScoreResults({
         <p className="eyebrow">Rule library</p>
         <h2
           id="state-rule-heading"
-          className="mt-3 text-2xl tracking-[-0.8px] sm:text-3xl sm:tracking-[-1.6px]"
+          className="mt-3 text-2xl tracking-[-0.8px] [word-spacing:0.06em] sm:text-3xl sm:tracking-[-1.6px]"
         >
           What {stateLabel(stateCode)} requires
         </h2>
@@ -271,7 +271,7 @@ export function ScoreResults({
         <p className="eyebrow">{hasGaps ? "Ranked by points lost" : "Nothing deducted"}</p>
         <h2
           id="gaps-heading"
-          className="mt-3 text-2xl tracking-[-0.8px] sm:text-3xl sm:tracking-[-1.6px]"
+          className="mt-3 text-2xl tracking-[-0.8px] [word-spacing:0.06em] sm:text-3xl sm:tracking-[-1.6px]"
         >
           {hasGaps ? "Your open gaps" : "No open gaps in these checks"}
         </h2>
@@ -368,7 +368,7 @@ export function ScoreResults({
         <div className="overflow-hidden rounded-xl">
           <div className="surface-ink texture-rule bloom-brass p-8 sm:p-12">
             <p className="eyebrow">Next step</p>
-            <h2 className="mt-3 max-w-2xl text-3xl leading-tight tracking-[-1px] text-[#ECE8DA] sm:text-[40px] sm:tracking-[-1.6px]">
+            <h2 className="mt-3 max-w-2xl text-3xl leading-tight tracking-[-1px] [word-spacing:0.06em] text-[#ECE8DA] sm:text-[40px] sm:tracking-[-1.6px]">
               {ctaLabel}
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#A8AF9B]">

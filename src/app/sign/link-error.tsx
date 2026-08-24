@@ -103,7 +103,7 @@ export function SigningLinkError({
               view owns the h1 otherwise, and the two never render together. */}
           <h1
             id="signing-link-error"
-            className="mt-3 font-display text-[26px] leading-[1.15] tracking-[-1.2px] text-foreground sm:text-[32px]"
+            className="mt-3 font-display text-[26px] leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em] text-foreground sm:text-[32px]"
           >
             {heading}
           </h1>

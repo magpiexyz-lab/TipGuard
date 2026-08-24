@@ -154,7 +154,7 @@ function ReadyView({
 }) {
   return (
     <>
-      <h1 className="mt-7 max-w-[18ch] font-display text-[38px] leading-[1.04] tracking-[-1.4px] text-foreground sm:text-[52px] sm:tracking-[-2px]">
+      <h1 className="mt-7 max-w-[18ch] font-display text-[38px] leading-[1.04] tracking-[-1.4px] [word-spacing:0.06em] text-foreground sm:text-[52px] sm:tracking-[-2px]">
         Sign your tip-credit notice
       </h1>
       <p className="mt-5 max-w-[54ch] text-[17px] leading-[1.55] text-ink-soft sm:text-xl">
@@ -180,7 +180,7 @@ function ReadyView({
         <p className="eyebrow">Step 1 of 2</p>
         <h2
           id="the-notice"
-          className="mt-2 font-display text-[28px] leading-[1.1] tracking-[-1.6px] text-foreground sm:text-[34px]"
+          className="mt-2 font-display text-[28px] leading-[1.1] tracking-[-1.6px] [word-spacing:0.072em] text-foreground sm:text-[34px]"
         >
           The notice from {link.employerName}
         </h2>
@@ -224,7 +224,7 @@ function AlreadySignedView({
 }) {
   return (
     <>
-      <h1 className="mt-7 max-w-[20ch] font-display text-[38px] leading-[1.04] tracking-[-1.4px] text-foreground sm:text-[52px] sm:tracking-[-2px]">
+      <h1 className="mt-7 max-w-[20ch] font-display text-[38px] leading-[1.04] tracking-[-1.4px] [word-spacing:0.06em] text-foreground sm:text-[52px] sm:tracking-[-2px]">
         This notice is already signed
       </h1>
       <p className="mt-5 max-w-[54ch] text-[17px] leading-[1.55] text-ink-soft sm:text-xl">
@@ -235,7 +235,7 @@ function AlreadySignedView({
       <section aria-labelledby="signed-record" className="mt-8">
         <h2
           id="signed-record"
-          className="font-display text-[28px] leading-[1.1] tracking-[-1.6px] text-foreground sm:text-[34px]"
+          className="font-display text-[28px] leading-[1.1] tracking-[-1.6px] [word-spacing:0.072em] text-foreground sm:text-[34px]"
         >
           Your signature record
         </h2>
@@ -351,7 +351,7 @@ function Orientation() {
     <section aria-labelledby="what-this-is" className="reveal-ledger mt-10">
       <h2
         id="what-this-is"
-        className="font-display text-[24px] leading-[1.15] tracking-[-1.2px] text-foreground sm:text-[28px]"
+        className="font-display text-[24px] leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em] text-foreground sm:text-[28px]"
       >
         What you are being asked to do
       </h2>
@@ -364,7 +364,7 @@ function Orientation() {
                 <Icon className="size-3.5" aria-hidden="true" />
                 Step {index + 1}
               </p>
-              <h3 className="mt-2.5 font-display text-[18px] leading-[1.15] tracking-[-0.6px] text-foreground">
+              <h3 className="mt-2.5 font-display text-[18px] leading-[1.15] tracking-[-0.6px] [word-spacing:0.06em] text-foreground">
                 {step.title}
               </h3>
               <p className="mt-1.5 text-sm leading-[1.5] text-ink-soft">
@@ -391,7 +391,7 @@ function RecordedFacts() {
     <section aria-labelledby="what-is-recorded" className="reveal-ledger mt-12">
       <h2
         id="what-is-recorded"
-        className="font-display text-[24px] leading-[1.15] tracking-[-1.2px] text-foreground sm:text-[28px]"
+        className="font-display text-[24px] leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em] text-foreground sm:text-[28px]"
       >
         What gets recorded when you sign
       </h2>

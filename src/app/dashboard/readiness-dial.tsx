@@ -73,7 +73,7 @@ export function ReadinessDial({
       <div className="flex h-full flex-col justify-between rounded-lg bg-card p-5 elev-1">
         <div>
           <p className="eyebrow">Audit-readiness score</p>
-          <h3 className="mt-4 font-display text-2xl leading-[1.15] tracking-[-1.2px]">
+          <h3 className="mt-4 font-display text-2xl leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em]">
             You have not scored this restaurant yet
           </h3>
           <p className="mt-3 text-sm leading-[1.55] text-muted-foreground">
@@ -134,7 +134,7 @@ export function ReadinessDial({
         </svg>
       </div>
 
-      <p className={cn("text-center font-display text-xl tracking-[-1.2px]", band.text)}>
+      <p className={cn("text-center font-display text-xl tracking-[-1.2px] [word-spacing:0.06em]", band.text)}>
         {band.label}
       </p>
       <p className="mt-2 text-center text-sm leading-[1.5] text-muted-foreground">

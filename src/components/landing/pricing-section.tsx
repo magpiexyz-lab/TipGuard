@@ -43,7 +43,7 @@ export function PricingSection({ variant }: { variant: Variant }) {
           </AnimatedShinyText>
           <h2
             id="pricing-heading"
-            className="mt-3 font-display text-[24px] font-semibold leading-[1.1] tracking-[-1.6px] text-paper sm:text-[28px] lg:text-[32px]"
+            className="mt-3 font-display text-[24px] font-semibold leading-[1.1] tracking-[-1.6px] [word-spacing:0.072em] text-paper sm:text-[28px] lg:text-[32px]"
           >
             Price the paperwork, or price the claim.
           </h2>

@@ -89,7 +89,7 @@ export default function AuditFilePage() {
           {/* The global h1 rule tracks -2px, which is a display measure. At these
               sizes that is far too tight and the words close up; the em value
               below scales the tracking with the type instead. */}
-          <h1 className="mt-2 max-w-3xl text-3xl leading-[1.04] font-bold tracking-[-0.028em] sm:text-[40px]">
+          <h1 className="mt-2 max-w-3xl text-3xl leading-[1.04] font-bold tracking-[-0.028em] [word-spacing:0.067em] sm:text-[40px]">
             Your audit file
           </h1>
           <p className="mt-3 max-w-2xl text-base leading-[1.55] text-paper/70">
@@ -161,7 +161,7 @@ export default function AuditFilePage() {
         {/* Not signed in */}
         {result?.status === "unauthenticated" ? (
           <div className="rounded-xl bg-card p-8 ring-1 ring-foreground/10">
-            <h2 className="font-heading text-2xl leading-[1.15] tracking-[-0.02em]">
+            <h2 className="font-heading text-2xl leading-[1.15] tracking-[-0.02em] [word-spacing:0.048em]">
               Sign in to open your audit file
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-[1.55] text-ink-soft">
@@ -217,7 +217,7 @@ export default function AuditFilePage() {
                   <p className="eyebrow">Section one</p>
                   <h2
                     id="cover-index-heading"
-                    className="mt-3 text-3xl tracking-[-0.022em]"
+                    className="mt-3 text-3xl tracking-[-0.022em] [word-spacing:0.053em]"
                   >
                     Cover index
                   </h2>
@@ -244,7 +244,7 @@ export default function AuditFilePage() {
               <p className="eyebrow">Section two</p>
               <h2
                 id="signed-notices-heading"
-                className="mt-3 text-3xl tracking-[-0.022em]"
+                className="mt-3 text-3xl tracking-[-0.022em] [word-spacing:0.053em]"
               >
                 Signed acknowledgments
               </h2>
@@ -271,7 +271,7 @@ export default function AuditFilePage() {
                 <p className="eyebrow">Standing caveat</p>
                 <h2
                   id="disclaimer-heading"
-                  className="mt-3 font-heading text-xl leading-[1.15] tracking-[-0.015em] text-balance"
+                  className="mt-3 font-heading text-xl leading-[1.15] tracking-[-0.015em] [word-spacing:0.036em] text-balance"
                 >
                   What this file is, and what it is not
                 </h2>

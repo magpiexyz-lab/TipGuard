@@ -144,7 +144,7 @@ export function NoticeList({
             />
           </span>
           <div className="max-w-md">
-            <h3 className="font-display text-xl tracking-[-1.2px]">
+            <h3 className="font-display text-xl tracking-[-1.2px] [word-spacing:0.06em]">
               No notices drafted yet
             </h3>
             <p className="mt-2 text-sm text-muted-foreground">

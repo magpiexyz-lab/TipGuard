@@ -246,7 +246,7 @@ export default function NoticesPage() {
           <div className="mx-auto flex max-w-[1180px] flex-col gap-4 px-5 py-6 sm:px-8 md:py-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="eyebrow">Step 06 / 06 &middot; Notices</p>
-              <h1 className="mt-2 font-display text-[26px] leading-[1.06] tracking-[-0.025em] text-[#ECE8DA] sm:text-[32px]">
+              <h1 className="mt-2 font-display text-[26px] leading-[1.06] tracking-[-0.025em] [word-spacing:0.06em] text-[#ECE8DA] sm:text-[32px]">
                 Send the notices for signature
               </h1>
               <p className="mt-3 max-w-xl text-base leading-[1.55] text-[#A8AF9B]">
@@ -430,7 +430,7 @@ export default function NoticesPage() {
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h2
               id="notice-ledger-heading"
-              className="font-display text-2xl tracking-[-1.2px]"
+              className="font-display text-2xl tracking-[-1.2px] [word-spacing:0.06em]"
             >
               Every employee, every notice
             </h2>
@@ -482,7 +482,7 @@ export default function NoticesPage() {
             {notices !== null && counts.total > 0 && visible.length === 0 ? (
               <Card className="elev-1 rounded-[10px] bg-card">
                 <div className="flex flex-col items-center gap-3 px-6 py-10 text-center">
-                  <h3 className="font-display text-xl tracking-[-1.2px]">
+                  <h3 className="font-display text-xl tracking-[-1.2px] [word-spacing:0.06em]">
                     Nothing sitting in {FILTER_LABEL[filter].toLowerCase()}
                   </h3>
                   <p className="max-w-md text-sm text-muted-foreground">
