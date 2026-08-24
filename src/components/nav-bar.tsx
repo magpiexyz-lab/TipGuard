@@ -32,17 +32,36 @@ const CHROMELESS_EXACT = ["/", "/login", "/signup"];
 const CHROMELESS_WHEN_SIGNED_OUT = ["/sign"];
 const CHROMELESS_PREFIXES = ["/v/", "/auth/"];
 
-const NAV_LINKS = [
-  // Golden-path pages first, in funnel sequence.
-  { href: "/score", label: "Readiness score", public: true },
+// DELIBERATE DEVIATION from the derive_scope_pages emission (wire.md Step
+// 5b.3). That derivation lists every scope page except landing/login/signup and
+// /auth/*, which is a page inventory, not a menu: it has no notion of WHO a page
+// is for. Emitting it verbatim produced eight links, and one of them was a dead
+// end -- /sign is the employee surface, reachable only with an emailed token, so
+// an owner clicking "Sign a notice" landed on "This signing link is incomplete".
+//
+// Two audiences, two menus:
+const PUBLIC_LINKS = [
+  { href: "/score", label: "Readiness score" },
+  { href: "/pricing", label: "Pricing" },
+];
+
+// Signed-in owners get the pages they actually work in, in workflow order
+// rather than the derivation's golden-path-then-alphabetical ordering (which
+// put Audit file ahead of Dashboard).
+//
+// Not here on purpose:
+//   /score   - the anonymous acquisition hook. Once an account exists the score
+//              lives on the dashboard; re-taking it overwrites nothing useful.
+//   /pricing - reachable from the dashboard upgrade CTA, which b-10 requires on
+//              every account, plus the landing page and the footer. checkout_started
+//              (h-06) is still measurable from those.
+//   /sign    - employee-only, see above.
+const OWNER_LINKS = [
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/staff", label: "Staff" },
   { href: "/notices", label: "Notices" },
-  // Behavior-only pages, alphabetical.
-  { href: "/audit-file", label: "Audit file" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/pricing", label: "Pricing", public: true },
-  { href: "/sign", label: "Sign a notice" },
   { href: "/violations", label: "Findings" },
+  { href: "/audit-file", label: "Audit file" },
 ];
 
 export function NavBar() {
@@ -93,17 +112,10 @@ export function NavBar() {
 
   const navLinks = (
     <>
-      {/* DERIVED-FROM: derive_scope_pages */}
-      {/* Emitted from `derive_scope_pages(experiment)` — the canonical SET
-          inventory, NOT the golden_path sequence. Excludes landing, login,
-          signup and the /auth/* routes. Ordering: golden_path pages first in
-          funnel sequence, behavior-only pages appended alphabetically.
-          See .claude/procedures/wire.md Step 5b.3. */}
-      {/* Signed-out visitors only ever see the pages they can actually open.
-          /score is anonymous by design (b-01/b-02) and /pricing is public;
-          Staff, Notices, Audit file, Dashboard, Findings and Sign a notice all
-          need a session, so offering them before login is a row of dead ends. */}
-      {NAV_LINKS.filter((link) => signedIn || link.public).map((link) => (
+      {/* DERIVED-FROM: derive_scope_pages (deliberately narrowed — see the
+          PUBLIC_LINKS / OWNER_LINKS note above before widening this back to the
+          raw derive_scope_pages emission from wire.md Step 5b.3). */}
+      {(signedIn ? OWNER_LINKS : PUBLIC_LINKS).map((link) => (
         <Link
           key={link.href}
           href={link.href}
