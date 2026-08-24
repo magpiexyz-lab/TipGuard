@@ -15,7 +15,11 @@ const publicPaths = [
   // these URLs to publish the app, and a visitor deciding whether to hand over
   // a payroll roster must be able to read them before creating an account.
   "/privacy",
-  "/score",
+  // /score is deliberately NOT public. b-01/b-02 originally ran the
+  // questionnaire anonymously; the owner moved the account ahead of the score
+  // on 2026-08-24 so every interested operator is captured as a real contact.
+  // derive_pages.py public_paths will keep emitting /score until b-02 loses its
+  // anonymous_allowed flag in experiment.yaml, which this change also does.
   "/sign",
   "/signup",
   "/terms",
@@ -62,9 +66,13 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
+    // /score arrives from the landing CTA, so the visitor is almost always new.
+    // Sending them to /login would ask them to sign in to an account they have
+    // not created yet; every other gated page is somewhere you return to.
+    const target = pathname === "/score" ? "/signup" : "/login";
+    const redirectUrl = new URL(target, request.url);
+    redirectUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
   return response;

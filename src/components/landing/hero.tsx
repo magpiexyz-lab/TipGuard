@@ -6,7 +6,7 @@ import { CtaButton } from "./cta-button";
 import { SignatureCard } from "./signature-card";
 import { HERO_IMAGE, SECTION_IDS } from "./content";
 
-const ASSURANCES = ["7 questions", "No account", "No card"];
+const ASSURANCES = ["7 questions", "2 minutes", "No card"];
 
 /**
  * Hero — full-bleed ink over real photography.

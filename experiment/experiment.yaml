@@ -65,9 +65,14 @@ hypotheses:
     experiment_level: 1
     depends_on: []
     status: pending
+  # RESCOPED 2026-08-24 with the signup gate (see the note above behaviors).
+  # This used to measure whether the fear hook held an ANONYMOUS visitor through
+  # the form. Everyone who reaches /score has now already created an account, so
+  # it measures completion by an already-committed user and should be expected
+  # to run high. It is no longer a demand signal; treat a pass as weak evidence.
   - id: h-02
     category: activate
-    statement: ">=60% of visitors who start the free audit-readiness score finish all questions and see their score — i.e., the fear hook holds attention through an unauthenticated multi-step form."
+    statement: ">=60% of signed-in owners who start the audit-readiness score finish all questions and see their score."
     metric:
       formula: "score_completed / score_started"
       threshold: 0.60
@@ -78,14 +83,25 @@ hypotheses:
     status: pending
   - id: h-03
     category: activate
-    statement: ">=40% of visitors who see a failing audit-readiness score create an account to save the score and fix the gaps."
+    # REWRITTEN 2026-08-24 with the signup gate. The old formula was
+    # signup_complete / score_completed -- signup AFTER the score. The gate puts
+    # signup first, so that ratio is now inverted and meaningless. This measures
+    # the thing the gate actually created: how many people who wanted the score
+    # were willing to open an account to get it.
+    #
+    # This is now THE number to watch. It is the cost of the gate, stated
+    # directly: every point below 100% is an interested operator who bounced at
+    # a signup form instead of seeing their exposure. The 40% threshold is
+    # carried over from the old hypothesis and is a guess, not a benchmark --
+    # re-baseline it once there is real traffic.
+    statement: ">=40% of visitors who click the score CTA complete signup to reach the questionnaire."
     metric:
-      formula: "signup_complete / score_completed"
+      formula: "signup_complete / cta_click"
       threshold: 0.40
       operator: gte
     priority_score: 86
     experiment_level: 3
-    depends_on: [h-02]
+    depends_on: [h-01]
     status: pending
   - id: h-04
     category: activate
@@ -146,43 +162,51 @@ hypotheses:
 # --- 3. Behaviors ---
 # Each behavior IS a feature requirement — observable test of a pending hypothesis.
 behaviors:
+  # OWNER DECISION (2026-08-24): the score is gated behind an account. The
+  # previous design ran the questionnaire anonymously and asked for the account
+  # afterwards, on the reasoning that value-before-signup converts better and
+  # that PostHog already identifies anonymous visitors. The owner reaffirmed the
+  # gate after that tradeoff was put to them, to capture every interested
+  # operator as a real contact rather than an anonymous distinct_id.
+  #
+  # Consequence carried into the funnel: h-02 and h-03 no longer measure what
+  # they were written to measure. See the note on each.
   - id: b-01
     hypothesis_id: h-01
-    pages: [landing, score]
+    pages: [landing, signup]
     anonymous_allowed: true
     given: "A restaurant owner lands on TipGuard from an ad, a forum post, or a search for tip-credit rules"
     when: "They read the exposure framing and click the primary 'Get My Free Audit-Readiness Score' CTA"
-    then: "cta_click fires with the variant slug and the user is routed to /score without being asked to sign up"
+    then: "cta_click fires with the variant slug and the user is routed to /signup, which states that the account is what unlocks the score"
     tests:
       - "Landing renders headline, subheadline, and a visible primary CTA above the fold"
       - "landing_view fires on page load with UTM, referrer, and variant properties"
-      - "Clicking the primary CTA fires cta_click and navigates to /score"
-      - "/score is reachable without an authenticated session"
+      - "Clicking the primary CTA fires cta_click and navigates to /signup"
+      - "No landing or /score copy promises a score without an account"
     level: 3
   - id: b-02
     hypothesis_id: h-02
     pages: [score]
-    anonymous_allowed: true
-    given: "An anonymous visitor is on the free audit-readiness score page"
+    given: "A signed-in owner is on the audit-readiness score page"
     when: "They answer the questionnaire (state, tip credit claimed, signed notices on file, tip pool composition, overtime basis, new-hire process, staff count)"
-    then: "score_started fires on first answer; a 0-100 readiness score, a ranked gap list, and an estimated back-pay exposure range render immediately; score_completed fires once with the score and gap count"
+    then: "score_started fires on first answer; a 0-100 readiness score, a ranked gap list, and an estimated back-pay exposure range render immediately; score_completed fires once with the score and gap count; the result is written straight to the signed-in account"
     tests:
       - "score_started fires on the first answered question; score_completed fires exactly once on results render"
-      - "Score, ranked gap list, and estimated exposure range render without requiring authentication"
+      - "An unauthenticated visitor opening /score is redirected to /signup and never sees a question"
       - "Scoring logic is a pure function with unit tests covering each gap rule and both score extremes"
-      - "Results state shows a 'Save my score and fix these gaps' CTA routing to /signup"
+      - "Results state routes the owner on to /staff to start closing the gaps"
     level: 3
   - id: b-03
     hypothesis_id: h-03
-    pages: [signup, dashboard]
-    given: "A visitor has just seen a failing audit-readiness score"
+    pages: [signup, score]
+    given: "A visitor has clicked the landing CTA and is on the signup page"
     when: "They create an account with email/password or Google"
-    then: "signup_start fires on form mount; the Supabase account is created; the anonymous score and gap list are attached to the new account; signup_complete fires once; the user lands on /dashboard showing their score and open gaps"
+    then: "signup_start fires on form mount; the Supabase account is created; signup_complete fires once; the user lands on /score to take the questionnaire the CTA promised"
     tests:
       - "Signup validates email format and password length and creates a Supabase session"
       - "signup_start fires on /signup mount; signup_complete fires exactly once after successful auth"
-      - "The pre-signup score and gap list persist onto the new account row and render on /dashboard"
-      - "User is redirected to /dashboard after signup"
+      - "A visitor who signed up from the score CTA lands on /score, not /dashboard"
+      - "The score written after signup persists onto the account row and renders on /dashboard"
     level: 3
   - id: b-04
     hypothesis_id: h-05
@@ -330,12 +354,12 @@ golden_path:
   - step: "Click 'Get My Free Audit-Readiness Score'"
     event: cta_click
     page: landing
+  - step: "Create an account, which is what unlocks the score"
+    event: signup_complete
+    page: signup
   - step: "Answer the questionnaire and see the readiness score, gap list, and exposure estimate"
     event: score_completed
     page: score
-  - step: "Create an account to save the score and fix the gaps"
-    event: signup_complete
-    page: signup
   - step: "Import the tipped-staff roster"
     event: roster_imported
     page: staff

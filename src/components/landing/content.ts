@@ -167,7 +167,7 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Do I need an account to see my score?",
-    a: "No. The audit-readiness score is seven questions, no signup, no card. You see your score, your ranked gap list and an estimated exposure range immediately. An account only matters when you want to save it and start closing gaps.",
+    a: "Yes — a free account, no card. It takes a moment and it is what your score, your ranked gap list and your exposure range are saved to, so the file is still there when you come back to close the gaps.",
   },
   {
     q: "My state eliminated the tip credit. Does this still apply?",

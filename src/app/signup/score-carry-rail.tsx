@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -277,18 +275,6 @@ function FileContents() {
         ))}
       </ul>
 
-      <Link
-        href="/score"
-        className="group mt-8 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-brass transition-colors duration-[140ms] hover:text-[#ece8da] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brass"
-      >
-        <span className="border-b border-transparent pb-0.5 transition-colors duration-[140ms] group-hover:border-brass">
-          Haven&rsquo;t scored yet? Take the free 2-minute score first
-        </span>
-        <ArrowRight
-          className="h-4 w-4 transition-transform duration-[140ms] group-hover:translate-x-0.5"
-          aria-hidden="true"
-        />
-      </Link>
     </div>
   );
 }

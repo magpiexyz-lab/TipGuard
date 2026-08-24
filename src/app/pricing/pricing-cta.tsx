@@ -46,7 +46,7 @@ export function PricingCta({
           <ArrowRight className="size-4" aria-hidden="true" />
         </Link>
         <p className={cn("text-sm leading-[1.5]", muted)}>
-          Two minutes, no account, no card. Already have an account?{" "}
+          Two minutes, free account, no card. Already have an account?{" "}
           <Link
             href="/login"
             className={cn(

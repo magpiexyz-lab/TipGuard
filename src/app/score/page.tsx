@@ -147,7 +147,7 @@ export default function ScorePage() {
           </p>
 
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5">
-            {["About 2 minutes", "No account required", "Nothing sent to your staff"].map(
+            {["About 2 minutes", "Free while you close your gaps", "Nothing sent to your staff"].map(
               (item) => (
                 <span key={item} data-evidence className="text-xs text-[#A8AF9B]">
                   {item}

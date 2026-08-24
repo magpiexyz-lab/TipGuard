@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { trackSignupStart } from "@/lib/events";
 import { BrandHeader } from "@/components/brand-header";
 import { ScoreCarryRail } from "./score-carry-rail";
@@ -40,7 +40,7 @@ export function SignupClient() {
         <div className="mx-auto w-full max-w-md">
           <BrandHeader className="mb-6" />
 
-          <p className="eyebrow">Step 4 of 6 &middot; Create account</p>
+          <p className="eyebrow">Step 3 of 6 &middot; Create account</p>
           <h1 className="mt-2 font-display text-3xl leading-[1.04] tracking-[-0.028em] [word-spacing:0.067em] sm:text-[40px]">
             {pending
               ? "Keep your score. Close the gaps."
@@ -52,7 +52,12 @@ export function SignupClient() {
               : "One account holds your roster, your state-specific notices, the signed acknowledgments, and the export you hand an investigator."}
           </p>
 
-          <SignupForm pending={pending} />
+          {/* SignupForm reads ?next= to honour the /score gate, and
+              useSearchParams() opts a route out of static prerendering unless
+              it sits inside a Suspense boundary. */}
+          <Suspense fallback={null}>
+            <SignupForm pending={pending} />
+          </Suspense>
         </div>
       </div>
 

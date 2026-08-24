@@ -46,19 +46,21 @@ test.describe("b-01: reads the exposure framing and clicks the primary CTA", () 
     expect(landing?.properties).toHaveProperty("variant");
   });
 
-  test("Clicking the primary CTA fires cta_click and navigates to /score", async ({ page }) => {
+  test("Clicking the primary CTA fires cta_click and navigates to /signup", async ({ page }) => {
     const analytics = await captureAnalytics(page);
     await page.goto("/");
     await page.locator('[data-cta="hero"]').first().click();
-    await expect(page).toHaveURL(/\/score/);
+    await expect(page).toHaveURL(/\/signup/);
     await expect.poll(() => analytics.map((event) => event.event)).toContain("cta_click");
   });
 
-  test("/score is reachable without an authenticated session", async ({ page, context }) => {
+  // Inverted 2026-08-24: this asserted that /score was reachable anonymously.
+  // The owner moved the account ahead of the score, so the guarantee is now the
+  // opposite one and this test protects the gate rather than the open door.
+  test("an unauthenticated visitor opening /score is sent to signup", async ({ page, context }) => {
     await context.clearCookies();
     await page.goto("/score");
-    await expect(page).toHaveURL(/\/score/);
-    await expect(page.getByRole("radiogroup").first()).toBeVisible();
+    await expect(page).toHaveURL(/\/signup/);
   });
 });
 
