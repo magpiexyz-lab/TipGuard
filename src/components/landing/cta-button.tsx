@@ -10,7 +10,7 @@ import type { VariantSlug } from "@/lib/variants";
  * The single conversion control on this page (b-01).
  *
  * Fires `cta_click` with the variant slug and the position of the control that
- * was clicked, then navigates to `/score` — the free, unauthenticated
+ * was clicked, then navigates to `/signup` — the account is what unlocks
  * audit-readiness hook. Tracking is synchronous (the analytics lib queues
  * before the SDK resolves), so the click is never lost to the navigation.
  */
@@ -32,7 +32,10 @@ export function CtaButton({
 }) {
   return (
     <Link
-      href="/score"
+      // b-01: the CTA now lands on /signup. /score is gated (owner decision,
+      // 2026-08-24), and pointing the CTA at it would just bounce the visitor
+      // through a redirect before showing the same form.
+      href="/signup?next=/score"
       data-cta={position}
       onClick={() => trackCtaClick({ variant: variantSlug, cta_position: position })}
       className={cn(

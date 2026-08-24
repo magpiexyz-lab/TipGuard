@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Check, Eye, EyeOff, LoaderCircle, MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase";
@@ -19,7 +19,24 @@ import { formatUsd, scoreBand } from "./score-format";
  * Where the owner lands once a session exists. `/dashboard` is the first
  * authenticated surface and renders the carried score (b-03).
  */
-const POST_AUTH_DESTINATION = "/dashboard";
+const DEFAULT_POST_AUTH_DESTINATION = "/dashboard";
+
+/**
+ * Where to land after signup. The proxy sends a signed-out visitor from /score
+ * to /signup?next=/score, and that visitor clicked a CTA promising a score --
+ * dropping them on /dashboard instead would break the promise that got them to
+ * sign up (b-03).
+ *
+ * Only same-origin absolute paths are honoured. An open redirect here would let
+ * a crafted link bounce a freshly authenticated operator to another host.
+ */
+function postAuthDestination(next: string | null): string {
+  if (!next) return DEFAULT_POST_AUTH_DESTINATION;
+  if (!next.startsWith("/") || next.startsWith("//")) {
+    return DEFAULT_POST_AUTH_DESTINATION;
+  }
+  return next;
+}
 
 /**
  * Persists the anonymous questionnaire result onto the freshly created account
@@ -34,6 +51,8 @@ const MIN_PASSWORD_LENGTH = 8;
 
 export function SignupForm({ pending }: { pending: PendingScore | null | undefined }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const destination = postAuthDestination(searchParams.get("next"));
   const emailId = useId();
   const passwordId = useId();
   const passwordHintId = useId();
@@ -95,7 +114,7 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
       email: email.trim(),
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${POST_AUTH_DESTINATION}`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(destination)}`,
       },
     });
 
@@ -123,7 +142,7 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
 
     if (pending) await attachPendingScore(pending);
     trackSignupComplete({ auth_method: "email", had_score: Boolean(pending) });
-    router.push(POST_AUTH_DESTINATION);
+    router.push(destination);
   }
 
   async function handleGoogleSignup() {
@@ -136,7 +155,7 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${POST_AUTH_DESTINATION}`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(destination)}`,
       },
     });
     if (oauthError) {

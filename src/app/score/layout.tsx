@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Free Tip-Credit Audit-Readiness Score | TipGuard",
   description:
-    "Answer seven questions about how you run tipped pay and get a 0-100 audit-readiness score, a ranked list of your tip-credit gaps, and an estimated back-pay exposure range. No account required.",
+    "Answer seven questions about how you run tipped pay and get a 0-100 audit-readiness score, a ranked list of your tip-credit gaps, and an estimated back-pay exposure range. Free with a TipGuard account.",
   openGraph: {
     title: "Free Tip-Credit Audit-Readiness Score | TipGuard",
     description:

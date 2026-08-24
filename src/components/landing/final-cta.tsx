@@ -52,7 +52,7 @@ export function FinalCta({ variant }: { variant: Variant }) {
             size="lg"
           />
           <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft">
-            No account · no card · your answers stay yours
+            Free account · no card · your answers stay yours
           </span>
         </div>
 
