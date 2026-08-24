@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+
+import { createClient } from "@/lib/supabase";
 import Link from "next/link";
 import { ScrollProgress } from "@/components/magicui/scroll-progress";
 import { cn } from "@/lib/utils";
@@ -28,6 +31,26 @@ export function SiteHeader({
   ctaLabel: string;
 }) {
   const [scrolled, setScrolled] = useState(false);
+  // Offering "Sign in" and "Sign up" to someone who is already signed in reads
+  // as though the session was lost. Signed out is the safe default while this
+  // resolves: a first-time visitor, the common case here, sees the correct
+  // header immediately and never gets a flash of account navigation.
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth
+      .getUser()
+      .then((res: { data: { user: unknown | null } }) =>
+        setSignedIn(res.data.user !== null)
+      )
+      .catch(() => setSignedIn(false));
+    const { data } = supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) =>
+        setSignedIn(session?.user != null)
+    );
+    return () => data.subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -96,24 +119,38 @@ export function SiteHeader({
               not enough: it is the wrong word for someone who has no account
               yet, and /signup was otherwise reachable only from the score
               results page. */}
-          <Link
-            href="/login"
-            className={cn(
-              "hidden min-h-11 items-center text-sm transition-colors duration-[140ms] sm:inline-flex",
-              scrolled ? "text-ink-soft hover:text-ink" : "text-paper/75 hover:text-paper"
-            )}
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className={cn(
-              "hidden min-h-11 items-center text-sm font-medium transition-colors duration-[140ms] sm:inline-flex",
-              scrolled ? "text-ink hover:text-brass-deep" : "text-paper hover:text-brass"
-            )}
-          >
-            Sign up
-          </Link>
+          {signedIn ? (
+            <Link
+              href="/dashboard"
+              className={cn(
+                "hidden min-h-11 items-center text-sm font-medium transition-colors duration-[140ms] sm:inline-flex",
+                scrolled ? "text-ink hover:text-brass-deep" : "text-paper hover:text-brass"
+              )}
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={cn(
+                  "hidden min-h-11 items-center text-sm transition-colors duration-[140ms] sm:inline-flex",
+                  scrolled ? "text-ink-soft hover:text-ink" : "text-paper/75 hover:text-paper"
+                )}
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className={cn(
+                  "hidden min-h-11 items-center text-sm font-medium transition-colors duration-[140ms] sm:inline-flex",
+                  scrolled ? "text-ink hover:text-brass-deep" : "text-paper hover:text-brass"
+                )}
+              >
+                Sign up
+              </Link>
+            </>
+          )}
           <CtaButton
             variantSlug={variantSlug}
             position="header"

@@ -1,3 +1,11 @@
+import {
+  demoAccount,
+  demoEmployees,
+  demoNotices,
+  demoSignatures,
+  demoOpenViolations,
+} from "@/lib/demo-fixtures";
+
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
@@ -22,15 +30,23 @@ function createDemoClient() {
           return (payload: unknown) => chainable(terminal, { hasMutation: true, payload });
         }
         if (prop === "select") {
-          // Reset terminal to seed data but PRESERVE ctx so .insert(p).select().single() carries hasMutation through.
-          return () => chainable({ data: DEMO_SEED_DATA, error: null }, ctx);
+          // Preserve the terminal (which now carries this table's rows) as well
+          // as ctx, so .insert(p).select().single() still carries hasMutation
+          // through while .from("employees").select() keeps the employee rows
+          // instead of resetting to the generic seed.
+          return () => chainable(terminal, ctx);
         }
         if (prop === "single" || prop === "maybeSingle") {
           if (ctx.hasMutation) {
             const row = { id: `demo-${Date.now()}`, created_at: new Date().toISOString(), ...(ctx.payload as object) };
             return () => chainable({ data: row, error: null });
           }
-          return () => chainable({ data: null, error: null });
+          // A read (no mutation) resolves to the first row of the table rather
+          // than null. Returning null here is what made resolveAccount() report
+          // no_account for every demo request.
+          const rows = (terminal as { data?: unknown[] })?.data;
+          const first = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+          return () => chainable({ data: first, error: null });
         }
         return chainable(terminal, ctx);
       },
@@ -44,8 +60,29 @@ function createDemoClient() {
     aud: "authenticated",
     created_at: new Date().toISOString(),
   };
+  // Table-aware seeds. The generic three-row DEMO_SEED_DATA above matches no
+  // real table, and maybeSingle() returns null without a mutation -- so the
+  // accounts lookup in resolveAccount() found nothing, every authenticated
+  // route fell to no_account, and /staff, /notices and /audit-file rendered
+  // empty. /dashboard and /violations only looked populated because they hold
+  // their own fixtures and never call the API at all.
+  //
+  // Correctly shaped rows per table let each route run its REAL query path
+  // against demo data, so the demo exercises the same joining, ranking and
+  // counting code as production instead of a parallel mock.
+  const demoTable = (table: string): unknown[] => {
+    const now = Date.now();
+    if (table === "accounts") return [demoAccount()];
+    if (table === "employees") return demoEmployees(now);
+    if (table === "notices") return demoNotices(now);
+    if (table === "signatures") return demoSignatures(now);
+    if (table === "pay_periods") return [];
+    if (table === "violations") return demoOpenViolations(now);
+    return DEMO_SEED_DATA;
+  };
   return {
-    from: () => chainable({ data: DEMO_SEED_DATA, error: null }, {}),
+    from: (table: string) =>
+      chainable({ data: demoTable(table), error: null }, {}),
     auth: new Proxy(
       {
         getUser: () =>
