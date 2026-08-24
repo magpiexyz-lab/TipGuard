@@ -146,7 +146,7 @@ export function ViolationsClient({
           <p className="eyebrow">Compliance findings &middot; Live scan</p>
           <div className="mt-4 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <h1 className="font-display text-3xl leading-[1.04] tracking-[-0.028em] md:text-[40px]">
+              <h1 className="font-display text-3xl leading-[1.04] tracking-[-0.028em] [word-spacing:0.067em] md:text-[40px]">
                 {open.length > 0
                   ? "Findings open against your file"
                   : "Your file has no open findings"}
@@ -282,7 +282,7 @@ export function ViolationsClient({
               </ol>
             ) : (
               <div className="rounded-lg bg-card p-8 text-center elev-1">
-                <h3 className="font-display text-2xl tracking-[-1.2px]">
+                <h3 className="font-display text-2xl tracking-[-1.2px] [word-spacing:0.06em]">
                   Nothing resolved yet
                 </h3>
                 <p className="mx-auto mt-3 max-w-md text-sm leading-[1.55] text-muted-foreground">
@@ -304,7 +304,7 @@ export function ViolationsClient({
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-display text-xl tracking-[-1.2px]">
+            <DialogTitle className="font-display text-xl tracking-[-1.2px] [word-spacing:0.06em]">
               Mark this finding resolved?
             </DialogTitle>
             <DialogDescription>
@@ -417,7 +417,7 @@ function FindingCard({
             )}
           </div>
 
-          <h3 className="mt-3 font-display text-[22px] leading-[1.15] tracking-[-1.2px] md:text-[26px]">
+          <h3 className="mt-3 font-display text-[22px] leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em] md:text-[26px]">
             {meta.title}
           </h3>
           <p className="mt-2 text-sm leading-[1.5] text-muted-foreground">
@@ -547,7 +547,7 @@ function CleanLedger({ resolvedCount }: { resolvedCount: number }) {
       <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-seal/10">
         <ShieldCheck className="size-7 text-seal dark:text-seal-soft" aria-hidden="true" />
       </span>
-      <h3 className="mt-6 font-display text-3xl tracking-[-1.6px]">Clean ledger</h3>
+      <h3 className="mt-6 font-display text-3xl tracking-[-1.6px] [word-spacing:0.072em]">Clean ledger</h3>
       <p className="mx-auto mt-3 max-w-lg text-base leading-[1.55] text-muted-foreground">
         {resolvedCount > 0
           ? `All ${resolvedCount} finding${
@@ -591,7 +591,7 @@ function NeverScanned({
         height={400}
         className="mx-auto h-auto w-40 md:w-52"
       />
-      <h3 className="mt-6 font-display text-3xl tracking-[-1.6px]">
+      <h3 className="mt-6 font-display text-3xl tracking-[-1.6px] [word-spacing:0.072em]">
         No compliance scan on file
       </h3>
       <p className="mx-auto mt-3 max-w-lg text-base leading-[1.55] text-muted-foreground">

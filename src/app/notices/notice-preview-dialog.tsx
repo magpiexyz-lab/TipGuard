@@ -44,7 +44,7 @@ export function NoticePreviewDialog({
                 Tip-credit notice &middot; {notice.state} &middot; rule{" "}
                 {notice.rule_version}
               </p>
-              <DialogTitle className="font-display text-2xl tracking-[-1.2px]">
+              <DialogTitle className="font-display text-2xl tracking-[-1.2px] [word-spacing:0.06em]">
                 {notice.employee.name}
               </DialogTitle>
               <DialogDescription>

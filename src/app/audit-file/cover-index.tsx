@@ -30,7 +30,7 @@ export function CoverIndex({ entries }: { entries: CoverIndexEntry[] }) {
             className="h-40 w-auto"
           />
         </div>
-        <h3 className="mt-7 font-heading text-xl tracking-[-0.015em] text-balance">
+        <h3 className="mt-7 font-heading text-xl tracking-[-0.015em] [word-spacing:0.036em] text-balance">
           The file has no cover index yet
         </h3>
         <p className="mt-2 max-w-md text-sm leading-[1.55] text-ink-soft">

@@ -34,7 +34,7 @@ export function FinalCta({ variant }: { variant: Variant }) {
         <p className="eyebrow">Two minutes, seven questions</p>
         <h2
           id="final-cta-heading"
-          className="mx-auto mt-5 max-w-[18ch] font-display text-[32px] font-bold leading-[1.06] tracking-[-1.6px] text-ink sm:text-[44px] lg:text-[52px] lg:tracking-[-2px]"
+          className="mx-auto mt-5 max-w-[18ch] font-display text-[32px] font-bold leading-[1.06] tracking-[-1.6px] [word-spacing:0.072em] text-ink sm:text-[44px] lg:text-[52px] lg:tracking-[-2px]"
         >
           Find out what is missing before someone else does.
         </h2>

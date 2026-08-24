@@ -65,7 +65,7 @@ export function SiteHeader({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={LOGO.src} alt={LOGO.alt} width={24} height={24} className="size-6" />
           </span>
-          <span className="font-display text-xl font-semibold tracking-[-0.6px]">
+          <span className="font-display text-xl font-semibold tracking-[-0.6px] [word-spacing:0.06em]">
             TipGuard
           </span>
         </a>

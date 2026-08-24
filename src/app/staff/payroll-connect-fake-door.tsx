@@ -131,7 +131,7 @@ export function PayrollConnectFakeDoor() {
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl tracking-[-1.2px]">
+          <DialogTitle className="font-display text-xl tracking-[-1.2px] [word-spacing:0.06em]">
             Payroll sync is on the roadmap
           </DialogTitle>
           <DialogDescription>
@@ -220,7 +220,7 @@ export function PayrollConnectFakeDoor() {
                 className="mt-0.5 size-5 shrink-0 text-seal"
               />
               <div>
-                <h3 className="font-display text-lg tracking-[-1.2px]">
+                <h3 className="font-display text-lg tracking-[-1.2px] [word-spacing:0.06em]">
                   Noted &mdash; {PROVIDER_LABELS[provider]} is on the list
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">

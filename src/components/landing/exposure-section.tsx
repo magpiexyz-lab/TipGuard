@@ -22,7 +22,7 @@ export function ExposureSection({ variant }: { variant: Variant }) {
             <p className="eyebrow">The gap nobody audits until it is audited</p>
             <h2
               id="exposure-heading"
-              className="mt-5 font-display text-[30px] font-semibold leading-[1.1] tracking-[-1.6px] text-ink sm:text-[38px] lg:text-[44px]"
+              className="mt-5 font-display text-[30px] font-semibold leading-[1.1] tracking-[-1.6px] [word-spacing:0.072em] text-ink sm:text-[38px] lg:text-[44px]"
             >
               The credit is conditional. The paperwork is the condition.
             </h2>
@@ -68,7 +68,7 @@ export function ExposureSection({ variant }: { variant: Variant }) {
                 <span className="figure shrink-0 pt-1 text-sm text-brass-deep">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <p className="max-w-[46ch] font-display text-xl font-semibold leading-[1.3] tracking-[-0.6px] text-ink sm:text-2xl">
+                <p className="max-w-[46ch] font-display text-xl font-semibold leading-[1.3] tracking-[-0.6px] [word-spacing:0.06em] text-ink sm:text-2xl">
                   {point}
                 </p>
               </div>
@@ -82,7 +82,7 @@ export function ExposureSection({ variant }: { variant: Variant }) {
             className="mt-10 rounded-xl bg-paper-raised p-7 shadow-ledger-2 sm:p-9"
           >
             <p className="eyebrow">What changes</p>
-            <p className="mt-4 font-display text-2xl leading-[1.2] tracking-[-1.2px] text-ink sm:text-[28px]">
+            <p className="mt-4 font-display text-2xl leading-[1.2] tracking-[-1.2px] [word-spacing:0.06em] text-ink sm:text-[28px]">
               {variant.promise}
             </p>
             <div className="tg-tick-rule mt-7" />

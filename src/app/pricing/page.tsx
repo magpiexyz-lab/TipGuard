@@ -70,7 +70,7 @@ export default function PricingPage() {
 
         <h1
           id="pricing-heading"
-          className="mt-2 max-w-4xl text-3xl leading-[1.04] font-bold tracking-[-0.028em] sm:text-[40px]"
+          className="mt-2 max-w-4xl text-3xl leading-[1.04] font-bold tracking-[-0.028em] [word-spacing:0.067em] sm:text-[40px]"
         >
           One fixed line item against an unbounded one
         </h1>

@@ -212,7 +212,7 @@ export function Questionnaire({
           <h2
             ref={headingRef}
             tabIndex={-1}
-            className="mt-2 text-xl leading-tight tracking-[-0.025em] outline-none sm:text-[26px] sm:leading-[1.12]"
+            className="mt-2 text-xl leading-tight tracking-[-0.025em] [word-spacing:0.06em] outline-none sm:text-[26px] sm:leading-[1.12]"
           >
             {current.prompt}
           </h2>

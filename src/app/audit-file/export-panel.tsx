@@ -95,7 +95,7 @@ export function ExportPanel({
   return (
     <div className="rounded-xl bg-card p-6 ring-1 ring-foreground/10">
       <p className="eyebrow">Export</p>
-      <h2 className="mt-3 font-heading text-2xl leading-[1.15] tracking-[-0.02em]">
+      <h2 className="mt-3 font-heading text-2xl leading-[1.15] tracking-[-0.02em] [word-spacing:0.048em]">
         Build the dated audit file
       </h2>
       <p className="mt-3 max-w-xl text-sm leading-[1.55] text-ink-soft">

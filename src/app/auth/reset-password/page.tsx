@@ -114,13 +114,13 @@ export default function ResetPasswordPage() {
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-brass/15 ring-1 ring-brass/25">
               <ShieldCheck className="h-5 w-5 text-brass-deep" aria-hidden="true" />
             </span>
-            <span className="font-display text-lg leading-none tracking-[-0.6px]">
+            <span className="font-display text-lg leading-none tracking-[-0.6px] [word-spacing:0.06em]">
               TipGuard
             </span>
           </Link>
 
           <p className="eyebrow mt-8">Account access</p>
-          <h1 className="mt-2 font-display text-[26px] leading-[1.06] tracking-[-0.025em] sm:text-[32px]">
+          <h1 className="mt-2 font-display text-[26px] leading-[1.06] tracking-[-0.025em] [word-spacing:0.06em] sm:text-[32px]">
             Set a new password
           </h1>
           <p className="mt-4 text-base leading-[1.55] text-muted-foreground">

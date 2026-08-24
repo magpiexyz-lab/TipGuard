@@ -105,7 +105,7 @@ function CarriedScore({ pending }: { pending: PendingScore }) {
         </span>
       </div>
 
-      <h2 className="mt-2 font-display text-2xl leading-[1.1] tracking-[-0.025em] text-[#ece8da]">
+      <h2 className="mt-2 font-display text-2xl leading-[1.1] tracking-[-0.025em] [word-spacing:0.06em] text-[#ece8da]">
         This record attaches to your account
       </h2>
 
@@ -249,7 +249,7 @@ function FileContents() {
   return (
     <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
       <p className="eyebrow text-brass">What your file holds</p>
-      <h2 className="mt-2 font-display text-2xl leading-[1.1] tracking-[-0.025em] text-[#ece8da]">
+      <h2 className="mt-2 font-display text-2xl leading-[1.1] tracking-[-0.025em] [word-spacing:0.06em] text-[#ece8da]">
         Your account is the file you hand over
       </h2>
       <p className="mt-4 text-sm leading-[1.55] text-[#a8af9b]">

@@ -29,7 +29,7 @@ export function UpgradeCta({
       <div className="grid gap-8 lg:grid-cols-[1.25fr_1fr] lg:items-center">
         <div>
           <p className="eyebrow">TipGuard Shield &middot; ${SHIELD_PRICE_USD}/mo</p>
-          <h3 className="mt-4 font-display text-3xl leading-[1.1] tracking-[-1.6px] md:text-[40px]">
+          <h3 className="mt-4 font-display text-3xl leading-[1.1] tracking-[-1.6px] [word-spacing:0.072em] md:text-[40px]">
             Convert an open-ended wage claim into a fixed line item
           </h3>
           <p className="mt-4 max-w-xl text-base leading-[1.55] text-muted-foreground">

@@ -83,7 +83,7 @@ export function Hero({ variant }: { variant: Variant }) {
 
           <h1
             id="hero-headline"
-            className="tg-rise mt-5 max-w-[15ch] font-display text-[38px] font-bold leading-[1.04] tracking-[-0.03em] text-paper sm:text-[52px] lg:text-[58px] xl:text-[64px]"
+            className="tg-rise mt-5 max-w-[15ch] font-display text-[38px] font-bold leading-[1.04] tracking-[-0.03em] [word-spacing:0.072em] text-paper sm:text-[52px] lg:text-[58px] xl:text-[64px]"
             style={{ animationDelay: "70ms" }}
           >
             {variant.headline}

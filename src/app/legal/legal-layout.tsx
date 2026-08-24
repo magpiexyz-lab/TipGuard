@@ -25,7 +25,7 @@ export function LegalPage({
       <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
         TipGuard
       </p>
-      <h1 className="mt-4 font-display text-[34px] leading-[1.1] tracking-[-1.2px] sm:text-[44px]">
+      <h1 className="mt-4 font-display text-[34px] leading-[1.1] tracking-[-1.2px] [word-spacing:0.06em] sm:text-[44px]">
         {title}
       </h1>
       <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
@@ -59,7 +59,7 @@ export function LegalPage({
 export function Section({ heading, children }: { heading: string; children: ReactNode }) {
   return (
     <section>
-      <h2 className="font-heading text-xl leading-[1.25] tracking-[-0.01em]">{heading}</h2>
+      <h2 className="font-heading text-xl leading-[1.25] tracking-[-0.01em] [word-spacing:0.03em]">{heading}</h2>
       <div className="mt-3 flex flex-col gap-3 text-[15px] leading-[1.65] text-muted-foreground">
         {children}
       </div>

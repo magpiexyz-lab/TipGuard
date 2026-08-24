@@ -134,7 +134,7 @@ export function SignForm({
       <div className="overflow-hidden rounded-xl bg-paper-raised elev-2">
         <div className="border-b border-border px-5 py-5 sm:px-7">
           <p className="eyebrow">Step 2 of 2</p>
-          <h3 className="mt-2 font-display text-[22px] leading-[1.15] tracking-[-1.2px] text-foreground sm:text-[26px]">
+          <h3 className="mt-2 font-display text-[22px] leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em] text-foreground sm:text-[26px]">
             Confirm you received this notice
           </h3>
           <p className="mt-2 text-[15px] leading-[1.55] text-ink-soft">
@@ -182,7 +182,7 @@ export function SignForm({
             <div
               aria-hidden="true"
               className={cn(
-                "min-h-[2.75rem] font-display text-[26px] leading-[1.1] tracking-[-0.5px] transition-all duration-200 ease-out sm:text-[30px]",
+                "min-h-[2.75rem] font-display text-[26px] leading-[1.1] tracking-[-0.5px] [word-spacing:0.06em] transition-all duration-200 ease-out sm:text-[30px]",
                 trimmed ? "text-foreground opacity-100" : "text-ink-soft opacity-40"
               )}
             >
@@ -268,7 +268,7 @@ function SignedConfirmation({
             <p className="eyebrow">Acknowledgment complete</p>
             <h3
               id="signature-recorded"
-              className="mt-2 font-display text-[24px] leading-[1.15] tracking-[-1.2px] text-foreground sm:text-[28px]"
+              className="mt-2 font-display text-[24px] leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em] text-foreground sm:text-[28px]"
             >
               Your signature is on file
             </h3>
@@ -284,7 +284,7 @@ function SignedConfirmation({
 
         <div className="px-5 py-6 sm:px-7">
           <div className="rounded-lg bg-paper px-4 pt-5 pb-3 ring-1 ring-foreground/10">
-            <p className="font-display text-[26px] leading-[1.1] tracking-[-0.5px] text-foreground sm:text-[30px]">
+            <p className="font-display text-[26px] leading-[1.1] tracking-[-0.5px] [word-spacing:0.06em] text-foreground sm:text-[30px]">
               {signerName}
             </p>
             <div className="mt-1 border-t border-foreground/25" />

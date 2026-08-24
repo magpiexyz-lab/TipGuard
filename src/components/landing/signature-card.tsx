@@ -100,7 +100,7 @@ export function SignatureCard() {
             </span>
           </div>
 
-          <p className="mt-4 font-display text-2xl font-semibold tracking-[-1.2px]">
+          <p className="mt-4 font-display text-2xl font-semibold tracking-[-1.2px] [word-spacing:0.06em]">
             {RECORD.employee}
           </p>
           <p className="mt-1 text-sm text-ink-soft">{RECORD.role}</p>

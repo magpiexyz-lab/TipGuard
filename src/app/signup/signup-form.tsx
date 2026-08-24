@@ -405,7 +405,7 @@ function ConfirmationSent({ email }: { email: string }) {
         <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-seal/10">
           <MailCheck className="h-5 w-5 text-seal" aria-hidden="true" />
         </span>
-        <h2 className="mt-5 font-display text-2xl leading-[1.15] tracking-[-1.2px]">
+        <h2 className="mt-5 font-display text-2xl leading-[1.15] tracking-[-1.2px] [word-spacing:0.06em]">
           Confirm your email to open the file
         </h2>
         <p className="mt-3 text-base leading-[1.55] text-muted-foreground">
