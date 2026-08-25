@@ -449,6 +449,6 @@ stack:
 target_geo: [US]               # Tip credit is a US federal/state wage construct.
 
 deploy:
-  url: null
-  repo: null
-  domain: null                 # Parent domain for hosting + email. Default: draftlabs.org
+  url: https://tipguard.draftlabs.org
+  repo: https://github.com/magpiexyz-lab/TipGuard
+  domain: draftlabs.org        # Parent domain for hosting + email.
