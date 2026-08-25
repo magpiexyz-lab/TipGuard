@@ -83,20 +83,26 @@ hypotheses:
     status: pending
   - id: h-03
     category: activate
-    # REWRITTEN 2026-08-24 with the signup gate. The old formula was
-    # signup_complete / score_completed -- signup AFTER the score. The gate puts
-    # signup first, so that ratio is now inverted and meaningless. This measures
-    # the thing the gate actually created: how many people who wanted the score
-    # were willing to open an account to get it.
+    # REWRITTEN TWICE. Original was signup_complete / score_completed -- signup
+    # AFTER the score, which the 2026-08-24 gate inverted into nonsense.
     #
-    # This is now THE number to watch. It is the cost of the gate, stated
-    # directly: every point below 100% is an interested operator who bounced at
-    # a signup form instead of seeing their exposure. The 40% threshold is
-    # carried over from the old hypothesis and is a guess, not a benchmark --
-    # re-baseline it once there is real traffic.
-    statement: ">=40% of visitors who click the score CTA complete signup to reach the questionnaire."
+    # The first replacement was signup_complete / cta_click, and live PostHog
+    # data showed that was also wrong: cta_click had 7 unique users against 21
+    # for signup_start, because the header "Sign up" link and direct visits
+    # reach /signup without ever touching the landing CTA. Numerator and
+    # denominator came from different populations, so the ratio could exceed
+    # 100% and measured nothing coherent.
+    #
+    # signup_start fires on signup form mount, so both events now come from the
+    # same population on the same page: of everyone who reached the form, how
+    # many finished it. That IS the cost of the gate -- every point below 100%
+    # is an operator who wanted the score and bounced at account creation.
+    #
+    # 0.40 is still a placeholder, not a benchmark. Re-baseline on real traffic
+    # before treating a miss as a signal.
+    statement: ">=40% of visitors who reach the signup page complete the account that unlocks the score."
     metric:
-      formula: "signup_complete / cta_click"
+      formula: "signup_complete / signup_start"
       threshold: 0.40
       operator: gte
     priority_score: 86
