@@ -172,7 +172,7 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
     <div>
       {pending ? <CarrySummary pending={pending} /> : null}
 
-      <form onSubmit={handleSignup} noValidate className="mt-8">
+      <form onSubmit={handleSignup} noValidate className="mt-5">
         <div className="grid gap-2">
           <Label htmlFor={emailId} className="text-sm font-medium">
             Work email
@@ -205,7 +205,7 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
           </p>
         </div>
 
-        <div className="mt-5 grid gap-2">
+        <div className="mt-4 grid gap-2">
           <Label htmlFor={passwordId} className="text-sm font-medium">
             Password
           </Label>
@@ -294,7 +294,7 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
           type="submit"
           disabled={submitting !== null}
           aria-label={submitting === "email" ? "Creating your account" : undefined}
-          className="mt-7 h-11 w-full rounded-full px-6 text-base font-medium transition-all duration-[140ms] hover:brightness-95"
+          className="mt-5 h-11 w-full rounded-full px-6 text-base font-medium transition-all duration-[140ms] hover:brightness-95"
         >
           {submitting === "email" ? (
             <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -306,7 +306,7 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
           )}
         </Button>
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="mt-3 text-center text-sm text-muted-foreground">
           Free while you close your gaps. No card required.
         </p>
       </form>
@@ -316,7 +316,7 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
           button at all on the primary auth path. */}
       {GOOGLE_SIGN_IN_ENABLED ? (
         <>
-      <div className="relative my-8">
+      <div className="relative my-5">
         <Separator />
         <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
           Or continue with
@@ -343,7 +343,7 @@ export function SignupForm({ pending }: { pending: PendingScore | null | undefin
         </>
       ) : null}
 
-      <p className="mt-8 text-sm text-muted-foreground">
+      <p className="mt-5 text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link
           href="/login"
