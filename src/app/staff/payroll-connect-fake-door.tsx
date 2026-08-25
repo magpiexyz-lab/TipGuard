@@ -174,7 +174,7 @@ export function PayrollConnectFakeDoor() {
                         )
                       }
                       className={cn(
-                        "min-h-11 rounded-md px-4 text-sm font-medium ring-1 transition-all duration-[140ms] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                        "min-h-11 cursor-pointer rounded-md px-4 text-sm font-medium ring-1 transition-all duration-[140ms] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                         active
                           ? "bg-brass/15 text-brass-deep ring-brass dark:text-brass"
                           : "bg-background text-muted-foreground ring-border hover:text-foreground"

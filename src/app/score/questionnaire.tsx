@@ -148,7 +148,7 @@ export function Questionnaire({
                     setStepIndex(index);
                   }}
                   className={cn(
-                    "flex w-full items-start gap-2.5 py-2 pl-3 pr-1 text-left",
+                    "flex w-full cursor-pointer items-start gap-2.5 py-2 pl-3 pr-1 text-left",
                     "border-l-2 transition-colors duration-[var(--duration-fast)]",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass",
                     active ? "border-l-brass" : "border-l-transparent",

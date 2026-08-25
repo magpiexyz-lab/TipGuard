@@ -16,21 +16,21 @@ import { formatUtc, type CoverIndexEntry } from "./audit-file-contract";
 export function CoverIndex({ entries }: { entries: CoverIndexEntry[] }) {
   if (entries.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-xl bg-card px-6 py-14 text-center ring-1 ring-foreground/10 elev-1">
+      <div className="flex flex-col items-center justify-center rounded-xl bg-card px-6 py-8 text-center ring-1 ring-foreground/10 elev-1">
         {/* The illustration ships with a baked #f3f0e6 (--paper) field. Seated
             on --paper-raised it reads as a pasted-on square, so it gets a
             paper plate of the exact same value — the frame is intentional and
             the seam disappears. */}
-        <div className="rounded-2xl bg-paper p-6 ring-1 ring-foreground/[0.07] elev-1">
+        <div className="rounded-2xl bg-paper p-4 ring-1 ring-foreground/[0.07] elev-1">
           <Image
             src="/images/empty-state.webp"
             alt="An open, empty file drawer holding a single hanging folder"
             width={400}
             height={400}
-            className="h-40 w-auto"
+            className="h-28 w-auto"
           />
         </div>
-        <h3 className="mt-7 font-heading text-xl tracking-[-0.015em] [word-spacing:0.036em] text-balance">
+        <h3 className="mt-5 font-heading text-xl tracking-[-0.015em] [word-spacing:0.036em] text-balance">
           The file has no cover index yet
         </h3>
         <p className="mt-2 max-w-md text-sm leading-[1.55] text-ink-soft">
@@ -41,7 +41,7 @@ export function CoverIndex({ entries }: { entries: CoverIndexEntry[] }) {
           href="/staff"
           className={cn(
             buttonVariants(),
-            "mt-6 h-11 rounded-full px-6 text-base font-medium"
+            "mt-5 h-11 rounded-full px-6 text-base font-medium"
           )}
         >
           Import your roster to start the file

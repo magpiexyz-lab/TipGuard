@@ -91,7 +91,7 @@ export function RadioCards({
             onClick={() => onChange(option.value)}
             onKeyDown={(event) => handleRadioGroupKey(event, values, value, onChange)}
             className={cn(
-              "group/option relative flex min-h-11 w-full items-start gap-2.5 rounded-lg bg-card px-3 py-2.5 text-left",
+              "group/option relative flex min-h-11 w-full cursor-pointer items-start gap-2.5 rounded-lg bg-card px-3 py-2.5 text-left",
               "ring-1 ring-foreground/10 outline-none",
               "transition-[box-shadow,transform,background-color] duration-[var(--duration-fast)] ease-[var(--ease-stamp)]",
               "hover:-translate-y-0.5 hover:shadow-[var(--shadow-ledger-2)]",
