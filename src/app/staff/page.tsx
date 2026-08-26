@@ -128,7 +128,12 @@ export default function StaffPage() {
       </div>
 
       <div className="mx-auto grid max-w-[1180px] gap-8 px-5 py-6 sm:px-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="flex flex-col gap-8">
+        {/* min-w-0: a grid item defaults to min-width:auto, so the roster
+            table (which scrolls internally via overflow-x-auto) was instead
+            stretching this column to its full content width -- 596px inside a
+            393px viewport -- and dragging the import section with it. The lg
+            track already guards this with minmax(0,1fr); mobile did not. */}
+        <div className="flex min-w-0 flex-col gap-8">
           <section aria-labelledby="import-heading">
             <h2
               id="import-heading"
