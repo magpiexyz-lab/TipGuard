@@ -7,6 +7,7 @@ import { VARIANTS, DEFAULT_VARIANT } from "@/lib/variants";
 import { NavBar } from "@/components/nav-bar";
 import { RetainTracker } from "@/components/RetainTracker";
 import { PendingScoreClaim } from "@/components/pending-score-claim";
+import { AnalyticsIdentity } from "@/components/analytics-identity";
 import { FeedbackWidget } from "@/components/feedback-widget";
 
 // Font variables MUST be bound on <html>, not <body> — the :root-scoped rules
@@ -132,6 +133,13 @@ export default function RootLayout({
           {children}
         </main>
         <PendingScoreClaim />
+        {/* Calls identify(user.id) once a Supabase session exists, so PostHog
+            merges the anonymous pre-signup distinct_id (which carries gclid /
+            utm_*) into the signed-in user id that server-side signup_complete
+            reports against. Mounted here because no single page sees every
+            session-establishing path — Google OAuth returns through a server
+            route, so nothing on the page side can do this. */}
+        <AnalyticsIdentity />
         <FeedbackWidget />
         <RetainTracker />
       </body>
